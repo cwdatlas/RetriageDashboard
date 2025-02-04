@@ -1,1 +1,16 @@
-Here is the read me! lets make this nice. first we can fill it with our specifications
+## Welcome to The Mock Mass Casualty Event Dashboard 
+### For The Carroll College Nursing Program
+
+### Hardware Requirements
+
+- Threads:
+- Memory:
+- Storage:
+
+### Software Versions
+- Linux Version
+- React Version
+- Spring Version
+- Spring Frameworks...
+- Mysql version
+- Libraries
