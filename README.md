@@ -25,6 +25,7 @@ If you are using podman instead of docker, make sure to replace docker with podm
 
 ## Use Cases
 ### Retriage Nurse
+- Ability to log into a Retriage Nurse account
 - Ability to add, remove, or otherwise change an admitting patient
 - Allocate a patient to a particular service, 
 such as an MRI machine, CT machine, ambulance, or specialty office
@@ -32,8 +33,9 @@ such as an MRI machine, CT machine, ambulance, or specialty office
 - Manage hospital resources
 
 ### Administrator / Director
+- Ability to log into a Administrator/Director account
 - Be able to review the activities of the Retriage Nurse in realtime and in the form of logs
-- Ability to start, stop, monitor, and setup the environment
+- Ability to start, stop, monitor, and set up the environment
 
 
 ## Security
