@@ -1,0 +1,14 @@
+/* Body styling */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1e90ff;  /* Blue color */
+}
+
+.container {
+    text-align: center;
+}
