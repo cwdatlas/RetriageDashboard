@@ -20,7 +20,7 @@
 ### Running Instructions
 #### Database Creation (Container)
 If you are using podman instead of docker, make sure to replace docker with podman in the below command
-- docker run --name retriage -e MYSQL_ROOT_PASSWORD=secretPass -d mysql:9.2.0 --expose=3306
+- `docker run --name retriage -e MYSQL_ROOT_PASSWORD=secretPass -d mysql:9.2.0 --expose=3306`
 
 
 ## Use Cases
