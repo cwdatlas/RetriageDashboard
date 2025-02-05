@@ -14,8 +14,8 @@
 - Mysql Version: 9.2.0
 - Java Version: 21 (21.0.3)
 - JavaScript Version: ECMAScript 2023
-- HTML Version: 
-- CSS Version:
+- HTML Version: **TBA**
+- CSS Version: **TBA**
 
 ### Running Instructions
 #### Database Creation (Container)
