@@ -26,7 +26,7 @@ If you are using podman instead of docker, make sure to replace docker with podm
 ## Use Cases
 ### Retriage Nurse
 #### Account Management
-- Ability to admit or create a patient file with all relevant information such as name, date of birth,
+- Ability to admit or create a patient file with all relevant information such as First and Last name, date of birth,
 current condition (Denoted by a color i.e. Red for Critical, Black for dead).
 - Ability to log into and out of a triage account with a username and password setup through Okta services
 - Ability to update a patient's file given any conditional or placement changes through the use of a GUI
