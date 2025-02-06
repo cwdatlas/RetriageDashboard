@@ -25,14 +25,19 @@ If you are using podman instead of docker, make sure to replace docker with podm
 
 ## Use Cases
 ### Retriage Nurse
-- Ability to log into a Retriage Nurse account
-- Ability to add, remove, or otherwise change an admitting patient
-- Allocate a patient to a particular service, 
-such as an MRI machine, CT machine, ambulance, or specialty office
-- Log time, patient information, and update accordingly
-- Manage hospital resources
+#### Account Management
+- Ability to admit or create a patient file with all relevant information such as name, date of birth,
+current condition (Denoted by a color i.e. Red for Critical, Black for dead).
+- Ability to log into and out of a triage account with a username and password setup through Okta services
+- Ability to update a patient's file given any conditional or placement changes through the use of a GUI
+
+#### Patient Interaction
+- Ability to assign or remove a patient to an open bed or service such as 
+CT Machine, MRI, Ambulance or Specialty Office through the use of a GUI.
+- Ability to log the time of any patient changes through the use of time stamps in each action
 
 ### Administrator / Director
+#### Account Management
 - Ability to log into a Administrator/Director account
 - Be able to review the activities of the Retriage Nurse in realtime and in the form of logs
 - Ability to start, stop, monitor, and set up the environment
