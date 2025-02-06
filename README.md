@@ -38,9 +38,12 @@ CT Machine, MRI, Ambulance or Specialty Office through the use of a GUI.
 
 ### Administrator / Director
 #### Account Management
-- Ability to log into a Administrator/Director account
-- Be able to review the activities of the Retriage Nurse in realtime and in the form of logs
-- Ability to start, stop, monitor, and set up the environment
+- Ability to log into and out of an Administrator/Director account
+- Ability to create, modify, and delete Retriage Nurse accounts. 
+#### Event Organization
+- Ability to create, modify, and delete special services that the hospital enviornment provides, 
+through the use of a GUI. The creation of these services include specialized names, waiting times and functions.
+- Ability to start, stop, monitor, and set up the hospital environment to begin the event. 
 
 
 ## Security
