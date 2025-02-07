@@ -29,22 +29,37 @@ public class PatientService {
     private final PatientRepo patientRepo;
 
 
+    /**
+     * To Comment
+     */
     public Page<Patient> getAllPatients(int page, int size) {
         return PatientRepo.findAll(PageRequest.of(page,size, Sort.by("name")));
     }
 
+    /**
+     * To Comment
+     */
     public Patient getPatient(String id) {
         return patientRepo.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
     }
 
+    /**
+     * To Comment
+     */
     public Object createPatient (Patient patient){
         return PatientRepo.save(patient);
     }
 
+    /**
+     * To Comment
+     */
     public void deletePatient(Patient patient) {
         //Assign later
     }
 
+    /**
+     * To Comment
+     */
     public String uploadPhoto(String id, MultipartFile file){
         Patient patient = getPatient(id);
         String photoURL = null;
@@ -53,6 +68,9 @@ public class PatientService {
         return photoURL;
     }
 
+    /**
+     * To Comment
+     */
     private final BiFunction<String, MultipartFile,String> photoFunction = (id,image) -> {
         try{
             Path fileStorageLocation = Paths.get("").toAbsolutePath().normalize();
@@ -60,9 +78,12 @@ public class PatientService {
                 //If file doesn't exist, it will save it to a specified location
                 Files.createDirectories(fileStorageLocation);
             }
+            Files.copy(image.getInputStream(),fileStorageLocation.resolve(id +".png"), REPLACE_EXISTING);
         }catch (Exception exception) {
             throw new RuntimeException("Unable to find Image");
         }
     }
+
+    //STOPPED AT 24:30!
 
 }
