@@ -2,28 +2,37 @@ package com.retriage.retriage.repo;
 /**
  * @author John Botonakis
  * @version 1.0
- *
  */
 
 import com.retriage.retriage.domain.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+/**
+ * To Comment
+ */
+public Object save(Patient patient) {
+    //TODO
+}
+
+@Repository //
+
+/**
+ * To Comment
+ */
 public interface PatientRepo extends JpaRepository<Patient, String> {
 
     Optional<Patient> findByID(String id);
-    Optional <Patient> findByPhone(String phone);
-    Optional <Patient> findByFName(String firstname);
-    Optional <Patient> findByLName(String lastname);
+
+    Optional<Patient> findByPhone(String phone);
+
+    Optional<Patient> findByFName(String firstname);
+
+    Optional<Patient> findByLName(String lastname);
 
 
-}
-public Object save(Patient patient){
-    //TODO
 }
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository

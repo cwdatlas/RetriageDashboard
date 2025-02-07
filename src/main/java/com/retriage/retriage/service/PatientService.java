@@ -2,7 +2,6 @@ package com.retriage.retriage.service;
 /**
  * @author John Botonakis
  * @version 1.0
- *
  */
 
 import com.retriage.retriage.domain.Patient;
@@ -19,34 +18,68 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
 @Slf4j
 @Transactional(rollbackOn = Exception.class)
 @RequiredArgsConstructor
 public class PatientService {
+
     private final PatientRepo patientRepo;
-
-
     /**
      * To Comment
      */
-    public Page<Patient> getAllPatients(int page, int size) {
-        return PatientRepo.findAll(PageRequest.of(page,size, Sort.by("name")));
+    private final BiFunction<String, MultipartFile, String> photoFunction = (id, image) -> {
+        try {
+            Path fileStorageLocation = Paths.get("").toAbsolutePath().normalize();
+            if (!Files.exists(fileStorageLocation)) {
+                //If file doesn't exist, it will save it to a specified location
+                Files.createDirectories(fileStorageLocation);
+            }
+            Files.copy(image.getInputStream(), fileStorageLocation.resolve(id + ".png"), REPLACE_EXISTING);
+        } catch (Exception exception) {
+            throw new RuntimeException("Unable to find Image");
+        }
     }
 
     /**
      * To Comment
      */
-    public Patient getPatient(String id) {
+    public String uploadPhoto(String id, MultipartFile file) {
+        Patient patient = getPatient(id);
+        String photoURL = null;
+        patient.setPhotoURL(photoURL);
+        PatientRepo.save(patient);
+
+    /**
+     * To Comment
+     */
+    private final Function<String, String> fileExtension = filename -> Optional.of(filename).filter(name -> name.contains("."))
+            .map(name -> name.substring(filename.lastIndexOf("."))).orElse(".png");
+
+    /**
+     * To Comment
+     */
+    public Page<Patient> getAllPatients(int page, int size) {
+        return PatientRepo.findAll(PageRequest.of(page, size, Sort.by("name")));
+    }
+
+    /**
+     * To Comment
+     */
+    public Patient getPatient (String id) {
         return patientRepo.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
     }
 
     /**
      * To Comment
      */
-    public Object createPatient (Patient patient){
+    public Object createPatient(Patient patient) {
         return PatientRepo.save(patient);
     }
 
@@ -55,35 +88,8 @@ public class PatientService {
      */
     public void deletePatient(Patient patient) {
         //Assign later
+    }       return photoURL;
     }
 
-    /**
-     * To Comment
-     */
-    public String uploadPhoto(String id, MultipartFile file){
-        Patient patient = getPatient(id);
-        String photoURL = null;
-        patient.setPhotoURL(photoURL);
-        PatientRepo.save(patient);
-        return photoURL;
-    }
-
-    /**
-     * To Comment
-     */
-    private final BiFunction<String, MultipartFile,String> photoFunction = (id,image) -> {
-        try{
-            Path fileStorageLocation = Paths.get("").toAbsolutePath().normalize();
-            if (!Files.exists(fileStorageLocation)){
-                //If file doesn't exist, it will save it to a specified location
-                Files.createDirectories(fileStorageLocation);
-            }
-            Files.copy(image.getInputStream(),fileStorageLocation.resolve(id +".png"), REPLACE_EXISTING);
-        }catch (Exception exception) {
-            throw new RuntimeException("Unable to find Image");
-        }
-    }
-
-    //STOPPED AT 24:30!
-
+    //STOPPED AT 27:32!
 }
