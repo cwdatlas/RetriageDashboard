@@ -25,8 +25,8 @@ public class Patient {
     @UuidGenerator
     @Column(name = "ID", unique = true,updatable = false)
     private String ID;
-    private String firstName;
-    private String lastName;
+    private String firstname;
+    private String lastname;
     private String phone;
     private String condition;
     private String photoID;
