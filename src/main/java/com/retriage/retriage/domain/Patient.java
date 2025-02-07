@@ -20,7 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(NON_DEFAULT)
-public class Contact {
+public class Patient {
     @Id
     @UuidGenerator
     @Column(name = "ID", unique = true,updatable = false)
@@ -30,7 +30,7 @@ public class Contact {
     private String phone;
     private String condition;
     private String photoID;
-    public Contact(String ID, String firstName, String lastName, String email, String phone) {
+    public Patient(String ID, String firstName, String lastName, String email, String phone) {
 
     }
 }
