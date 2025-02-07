@@ -34,7 +34,7 @@ public class PatientService {
     }
 
     public Patient getPatient(String id) {
-        return patientRepo.findById(id).orElseThrow() -> new RuntimeException("Patient not found");
+        return patientRepo.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
     }
 
     public Object createPatient (Patient patient){
@@ -53,7 +53,7 @@ public class PatientService {
         return photoURL;
     }
 
-    private final BiFunction<String, MultipartFile,String> photoFunction(id,image) -> {
+    private final BiFunction<String, MultipartFile,String> photoFunction = (id,image) -> {
         try{
             Path fileStorageLocation = Paths.get("").toAbsolutePath().normalize();
             if (!Files.exists(fileStorageLocation)){
