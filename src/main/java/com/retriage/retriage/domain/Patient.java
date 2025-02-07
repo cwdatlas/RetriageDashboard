@@ -1,4 +1,9 @@
 package com.retriage.retriage.domain;
+/**
+ * @author John Botonakis
+ * @version 1.0
+ *
+ */
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
