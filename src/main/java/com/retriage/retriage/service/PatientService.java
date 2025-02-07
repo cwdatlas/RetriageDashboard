@@ -52,7 +52,8 @@ public class PatientService {
         } catch (Exception exception) {
             throw new RuntimeException("Unable to find Image");
         }
-    }
+        return id;
+    };
 
     /**
      * To Comment
@@ -63,8 +64,10 @@ public class PatientService {
         patient.setPhotoURL(photoURL);
         PatientRepo.save(patient);
 
-
-        //STOPPED AT 27:32!
+        return photoURL;
     }
+
+    //STOPPED AT 29:34!
+
 
 }
