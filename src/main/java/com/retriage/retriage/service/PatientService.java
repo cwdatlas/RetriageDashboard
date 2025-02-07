@@ -31,6 +31,13 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class PatientService {
 
     private final PatientRepo patientRepo;
+
+    /**
+     * To Comment 27:00
+     */
+    final Function<String, String> fileExtension = filename -> Optional.of(filename).filter(name -> name.contains("."))
+            .map(name -> name.substring(filename.lastIndexOf("."))).orElse(".png");
+
     /**
      * To Comment
      */
@@ -41,7 +48,7 @@ public class PatientService {
                 //If file doesn't exist, it will save it to a specified location
                 Files.createDirectories(fileStorageLocation);
             }
-            Files.copy(image.getInputStream(), fileStorageLocation.resolve(id + ".png"), REPLACE_EXISTING);
+            Files.copy(image.getInputStream(), fileStorageLocation.resolve(id + fileExtension.apply(image.getOriginalFilename())), REPLACE_EXISTING);
         } catch (Exception exception) {
             throw new RuntimeException("Unable to find Image");
         }
@@ -56,40 +63,8 @@ public class PatientService {
         patient.setPhotoURL(photoURL);
         PatientRepo.save(patient);
 
-    /**
-     * To Comment
-     */
-    private final Function<String, String> fileExtension = filename -> Optional.of(filename).filter(name -> name.contains("."))
-            .map(name -> name.substring(filename.lastIndexOf("."))).orElse(".png");
 
-    /**
-     * To Comment
-     */
-    public Page<Patient> getAllPatients(int page, int size) {
-        return PatientRepo.findAll(PageRequest.of(page, size, Sort.by("name")));
+        //STOPPED AT 27:32!
     }
 
-    /**
-     * To Comment
-     */
-    public Patient getPatient (String id) {
-        return patientRepo.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
-    }
-
-    /**
-     * To Comment
-     */
-    public Object createPatient(Patient patient) {
-        return PatientRepo.save(patient);
-    }
-
-    /**
-     * To Comment
-     */
-    public void deletePatient(Patient patient) {
-        //Assign later
-    }       return photoURL;
-    }
-
-    //STOPPED AT 27:32!
 }
