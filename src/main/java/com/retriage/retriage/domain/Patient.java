@@ -36,6 +36,9 @@ public class Patient {
     private String condition;
     private String photoID;
     public Patient(String ID, String firstName, String lastName, String email, String phone) {
+    }
 
+    public void setPhotoURL(String photoURL){
+        //TODO
     }
 }

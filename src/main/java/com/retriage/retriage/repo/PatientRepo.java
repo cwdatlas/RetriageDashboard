@@ -21,7 +21,9 @@ public interface PatientRepo extends JpaRepository<Patient, String> {
     Optional <Patient> findByLName(String lastname);
 
 
-
+}
+public Object save(Patient patient){
+    //TODO
 }
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
