@@ -1,9 +1,4 @@
 package com.retriage.retriage.domain;
-/**
- * @author John Botonakis
- * @version 1.0
- */
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,23 +11,29 @@ import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
+/**
+ * @author John Botonakis
+ * @version 1.0
+ */
 
 
 @Entity //
-@Table(name = "patients") //
+@Table(name = "patients") //Refers to the table it will be stored in
 @Getter //
 @Setter //
 @NoArgsConstructor //
 @AllArgsConstructor //
-@JsonInclude(NON_DEFAULT) //
+@JsonInclude(NON_DEFAULT) //Maps information to JSON only what is not the set default
+
 /**
- * To Comment
+ * Patient Class
+ * @desc: A class representing a Patient for the hospital, to be saved in the database.
  */
 public class Patient {
     @Id
     @UuidGenerator
-    @Column(name = "ID", unique = true, updatable = false)
-    private String ID;
+    @Column(name = "ID", unique = true, updatable = false) // Specifies how the patient object gets stored
+    private String ID; // Primary key
     private String firstname;
     private String lastname;
     private String phone;

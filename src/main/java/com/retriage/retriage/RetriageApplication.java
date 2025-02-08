@@ -11,5 +11,4 @@ public class RetriageApplication {
 		SpringApplication.run(RetriageApplication.class, args);
 	}
 
-
 }

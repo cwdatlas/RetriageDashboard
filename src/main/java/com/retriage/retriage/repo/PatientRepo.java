@@ -1,21 +1,21 @@
 package com.retriage.retriage.repo;
-/**
- * @author John Botonakis
- * @version 1.0
- */
-
 import com.retriage.retriage.domain.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+/**
+ * @author John Botonakis
+ * @version 1.0
+ */
+
 
 /**
  * To Comment
  */
-public Object save(Patient patient) {
-    //TODO
-}
+//public Object save(Patient patient) {
+//    //TODO
+//}
 
 @Repository //
 
@@ -24,15 +24,12 @@ public Object save(Patient patient) {
  */
 public interface PatientRepo extends JpaRepository<Patient, String> {
 
-    Optional<Patient> findByID(String id);
+    Optional<Patient> findByID (String id);//Pass in a string, try to find the user, possible no user exists
 
-    Optional<Patient> findByPhone(String phone);
-
-    Optional<Patient> findByFName(String firstname);
-
-    Optional<Patient> findByLName(String lastname);
-
-
+//  TODO:
+//    Optional<Patient> findByPhone(String phone);
+//    Optional<Patient> findByFName(String firstname);
+//    Optional<Patient> findByLName(String lastname);
 }
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
