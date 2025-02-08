@@ -1,4 +1,5 @@
 #Start database using command `mysql.server start`
+#Stop database using command `mysql.server stop`
 #Check if the server is running `mysqladmin -u root -p ping`
 #mySQL config file location = /opt/homebrew/etc/my.cnf
 #
