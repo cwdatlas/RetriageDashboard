@@ -76,7 +76,7 @@ public class PatientService {
      * @param file The actual Photo file to save
      */
     public String uploadPhoto(String id, MultipartFile file) {
-        log.info("Uploading photo with id {}", id);
+        log.info("Uploading photo with id {}", id); //Slf4j Logging to console
         Patient patient = getPatientById(id); // Gets the patient ID
         String photoURL = photoFunction.apply(id, file); //Sets the URL of the photo  on the Patient Object
         patient.setPhotoURL(photoURL); //Applies the URL to the specific Patient
