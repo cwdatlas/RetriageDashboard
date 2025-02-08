@@ -57,7 +57,6 @@ public class PatientService {
     /**
      * Create a new Patient Object
      * @param patient The Patient object to be saved
-     * @return
      */
     public Patient createPatient (Patient patient){
         return patientRepo.save(patient);
@@ -75,14 +74,13 @@ public class PatientService {
      * Associates an uploaded photo with a patient
      * @param id The ID of the patient
      * @param file The actual Photo file to save
-     * @return
      */
     public String uploadPhoto(String id, MultipartFile file) {
         log.info("Uploading photo with id {}", id);
         Patient patient = getPatientById(id); // Gets the patient ID
         String photoURL = photoFunction.apply(id, file); //Sets the URL of the photo  on the Patient Object
         patient.setPhotoURL(photoURL); //Applies the URL to the specific Patient
-        PatientRepo.save(patient);
+        patientRepo.save(patient);
 
         return photoURL;
     }
@@ -98,10 +96,6 @@ public class PatientService {
     /**
      * Takes in an ID and an Image, ensures there is a directory to save it to, and saves the image.
      *
-     *
-     * @param id
-     * @param image
-     * @return
      */
     private final BiFunction<String, MultipartFile, String> photoFunction = (id, image) -> {
         //Format for saved images: PatientIDPhotoName.fileextention
