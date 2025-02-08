@@ -89,14 +89,15 @@ public class PatientService {
 
     /**
      * Takes in a filename, scans to see where the extension separator is ".", returns a fixed file name
-     * otherwise, just return ".png" as the return tag
+     * otherwise, just return ".png" as the default
      */
     final Function<String, String> fileExtension = filename -> Optional.of(filename).filter(name -> name.contains("."))
-            .map(name -> "." + name.substring(filename.lastIndexOf("."))).orElse(".png");
+            .map(name -> "." + name.substring(filename.lastIndexOf(".")+ 1)).orElse(".png");
 
 
     /**
-     * Takes in an ID and an Image,
+     * Takes in an ID and an Image, ensures there is a directory to save it to, and saves the image.
+     *
      *
      * @param id
      * @param image
@@ -112,12 +113,12 @@ public class PatientService {
             //If file doesn't exist, it will create a directory, then save it to that location
             if (!Files.exists(fileStorageLocation)) {
                 Files.createDirectories(fileStorageLocation);
-                Files.createDirectories(fileStorageLocation);
             }
             //Save the file, and if it exists already, replace it
             Files.copy(image.getInputStream(), fileStorageLocation.resolve(filename), REPLACE_EXISTING);
 
-            return ServletUriComponentsBuilder.fromCurrentContextPath().path("/patients/image/"+ filename).toUriString();
+            //Returns
+            return ServletUriComponentsBuilder.fromCurrentContextPath().path("/patients/image/" + filename).toUriString();
         } catch (Exception exception) {
             throw new RuntimeException("Unable to save Image");
         }
@@ -125,7 +126,7 @@ public class PatientService {
 
 
 
-    //STOPPED AT 29:34!
+    //STOPPED AT
 
 
 }
