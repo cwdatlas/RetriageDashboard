@@ -1,8 +1,12 @@
+#Start database using command `mysql.server start`
 spring:
+  #Datasource: an object that manages the connection to your database
   datasource:
-    url: #
-    username:
+    #Stopped at 35:05
+    url: jdbc:mysql://localhost:3306/patient_database?serverTimezone=UTC #
+    username: root
     password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform:
     generate-ddl: true
@@ -23,7 +27,7 @@ spring:
     async:
       request-timeout: 3600000
 server:
-  port: 8080
+  port: 3306
   error:
     path: /user/error
     whitelabel:
