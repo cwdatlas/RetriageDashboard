@@ -58,7 +58,7 @@ public class PatientService {
      * Create a new Patient Object
      * @param patient The Patient object to be saved
      */
-    public Patient createPatient (Patient patient){
+    public static Patient createPatient(Patient patient){
         return patientRepo.save(patient);
     }
 

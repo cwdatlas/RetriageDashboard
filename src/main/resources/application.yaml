@@ -1,14 +1,18 @@
 #Start database using command `mysql.server start`
+#Check if the server is running `mysqladmin -u root -p ping`
+#mySQL config file location = /opt/homebrew/etc/my.cnf
+#
 spring:
   #Datasource: an object that manages the connection to your database
   datasource:
     #Stopped at 35:05
-    url: jdbc:mysql://localhost:3306/patient_database?serverTimezone=UTC #
-    username: root
-    password:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/patient_database?serverTimezone=UTC #Database Connection URL
+    username: root #mySQL username
+    password: #mySQL password (blank intentionally
+    driver-class-name: com.mysql.cj.jdbc.Driver #Database platform (for MySQL 8+, use MySQL8Dialect)
   jpa:
-    database-platform:
+    #Let JPA generate database schema (tables, etc.) based on your entities
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     generate-ddl: true
     show-sql: true
     hibernate:
@@ -16,7 +20,6 @@ spring:
     properties:
       hibernate:
         globally_quoted_identifiers: true
-        dialect:
         format_sql: true
   servlet:
     multipart:
@@ -27,7 +30,7 @@ spring:
     async:
       request-timeout: 3600000
 server:
-  port: 3306
+  port: 8080
   error:
     path: /user/error
     whitelabel:
