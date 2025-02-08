@@ -33,7 +33,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class PatientService {
 
-    private  PatientRepo patientRepo;
+    private static PatientRepo patientRepo;
 
     /**
      * Returns all patients, sorted by name in alphabetical order
