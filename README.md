@@ -14,8 +14,6 @@
 - Mysql Version: 9.2.0
 - Java Version: 21 (21.0.3)
 - JavaScript Version: ECMAScript 2023
-- HTML Version: **TBA**
-- CSS Version: **TBA**
 
 ### Running Instructions
 #### Database Creation (Container)
@@ -25,30 +23,77 @@ If you are using podman instead of docker, make sure to replace docker with podm
 
 ## Use Cases
 ### Retriage Nurse
-#### Account Management
-- Ability to admit or create a patient file with all relevant information such as First and Last name, date of birth,
-current condition (Denoted by a color i.e. Red for Critical, Black for dead).
-- Ability to log into and out of a triage account with a username and password setup through Okta services
-- Ability to update a patient's file given any conditional or placement changes through the use of a GUI
-
-#### Patient Interaction
-- Ability to assign or remove a patient to an open bed or service such as 
-CT Machine, MRI, Ambulance or Specialty Office through the use of a GUI.
-- Ability to log the time of any patient changes through the use of time stamps in each action
+#### Description
+The Retriage Nurse takes patients and directs them to a service like MRI or surgery.
+1. Log in via carroll college nursing okta account. Nurse's name will be saved at first login.
+2. Option to change own name from personal profile page 
+3. CRUD permissions for patient accounts 
+4. Add a patient account to a service queue, such as an MRI machine, CT machine, ambulance, or specialty office 
+5. Log movement of patients to services, and patient CRUD events with a timestamp and the responsible nurse 
+6. Scan patient's triage tag to fill user ID during patient creation
 
 ### Administrator / Director
+#### Description
+The Director will create, start, stop and manage the Mass Casualty Event.
+When creating the event, they create services like MRI or ambulance then set the number of those services available.
+After creating or selecting a default service,
+the Director will confirm the number of Retriage Nurses participating, 
+the accounts they are associated with and length of time the event will last.
 #### Account Management
-- Ability to log into and out of an Administrator/Director account
-- Ability to create, modify, and delete Retriage Nurse accounts. 
+1. Ability to log into and out of an Administrator/Director account. 
+2. Ability to complete CRUD actions on Retriage Nurse profiles. 
 #### Event Organization
-- Ability to create, modify, and delete special services that the hospital enviornment provides, 
-through the use of a GUI. The creation of these services include specialized names, waiting times and functions.
-- Ability to start, stop, monitor, and set up the hospital environment to begin the event. 
+1. Ability to complete CRUD operations on services during event creation. 
+2. Service values include service name, reusable status, number of non-reusable resources, queue max length and service wait time. 
+3. Ability to start and stop event timer though event page. 
+4. Be able to review the activities of the Retriage Nurse in realtime and in the form of logs
 
+### Security
+Security will be handled by Okta. 
+The reason for this is twofold:
+- The ease of implementation.
+- In the case that the Mock Mass Casualty Event expands past Carroll College,
+  it will be able to integrate more organizations.
 
-## Security
-For this project, security will be handled by Okta which is what is used here at Carroll. 
-The reason for this, is twofold:
-- The ease of implementation, meaning that Okta will handle most authentication
-- This project will expand beyond Carroll the next time the Mass Casualty Event is held, 
-and using Okta will provide similar functionality both on and off campus
+Details,
+Use cases
+
+### Living Schedule: (Weekly Goals)
+- 2/14
+  - React front end, Spring Back end and Mysql database running and talking to each other.
+  - Persist a patient account from the front end to the database and back.
+  - Solidify project schedule and detailed use cases. 
+- 2/21
+  - Create Models for services, Retriage Nurses, Directors and Patients
+    - All Services will be built from the service model then populated with predefined data.
+  - Build Front page, Login, and event page and profile page
+    - The Home page requires login button and instructions on how to use the application
+    - Login will need to use okta. CCIT must designate who is a Director, but Directors choose who can be a Retriage Nurse
+    - Event page must provide a view of active services, Patient creation and time left in the event.
+    - Profile page must include username change and information we can find from okta integration
+    - **Functionality** is the focus for this week, **not style**.
+- 2/28
+  - Create Event Creation Page
+    - Event Creation page is only accessible by the Director and can be accessed from the home page.
+    - The Event Creation page allows the Director to choose between a set of predefined services:
+      - Ambulance, MRI, Surgery
+    - The Event creation page starts the event so a timer must start when the event starts.
+  - Build logging infrastructure
+    - Logging takes place when an object is created or changed by a Director or Retriage Nurse.
+      - Example: Patient 1234 is moved to MRI queue at 2:30pm 4/17/2025
+    - Logging will be saved to a text file and output to Director's Event Page
+- 3/7
+  - Add correct organization, colors and other esthetic changes to webapp
+  - Get in contact with Jeff Wald for help and guidance with first attempt at Carroll Design
+- 3/14
+  - TBD
+- 3/21
+  - TBD
+- 3/28
+  - TBD
+- 4/4
+  - Create online documentation for students in the future. 
+  - validate that all code is effectively commented and correct javadocs annotations
+- 4/11
+  - Build Pamphlet Director and Retriage Nurses can use to understand how to use the application
+- deadline by april 17th
