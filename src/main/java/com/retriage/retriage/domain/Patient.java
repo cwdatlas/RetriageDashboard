@@ -12,8 +12,11 @@ import org.hibernate.annotations.UuidGenerator;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 /**
+ * Patient
  * @author John Botonakis
  * @version 1.0
+ * @desc This Patient class is responsible for all the information pertaining to
+ * a patient that's able to be registered on our system.
  */
 
 
@@ -40,7 +43,7 @@ public class Patient {
     private String condition;
     private String photoID;
 
-    public Patient(String ID, String firstName, String lastName, String email, String phone) {
+    public Patient(String ID, String firstName, String lastName, String phone, String condition, String photoID) {
     }
 
     /**
