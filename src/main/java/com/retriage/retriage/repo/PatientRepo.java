@@ -3,6 +3,7 @@ import com.retriage.retriage.domain.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,7 +26,7 @@ import java.util.Optional;
  */
 public interface PatientRepo extends JpaRepository<Patient, String> {
 
-    Optional<Patient> findByID (String id);//Pass in a string, try to find the user, possible no user exists
+    List<Patient> findByID (String id);//Pass in a string, try to find the user
 
 //  TODO:
 //    Optional<Patient> findByPhone(String phone);

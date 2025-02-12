@@ -6,7 +6,6 @@
 spring:
   #Datasource: an object that manages the connection to your database
   datasource:
-    #Stopped at 35:05
     url: jdbc:mysql://localhost:3306/patient_database?serverTimezone=UTC #Database Connection URL
     username: root #mySQL username
     password: #mySQL password (blank intentionally

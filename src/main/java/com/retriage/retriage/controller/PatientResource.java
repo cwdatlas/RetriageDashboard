@@ -1,4 +1,4 @@
-package com.retriage.retriage.resource;
+package com.retriage.retriage.controller;
 
 import com.retriage.retriage.domain.Patient;
 import com.retriage.retriage.service.PatientService;
@@ -27,6 +27,10 @@ import static com.retriage.retriage.constant.Constant.PHOTO_DIRECTORY;
 public class PatientResource {
     // This field holds the service that contains the business logic for managing patients.
     private  PatientService patientService;
+
+    public PatientResource(PatientService patientService) {
+        this.patientService = patientService;
+    }
 
     // Handles HTTP POST requests to create a new patient.
     @PostMapping
@@ -62,22 +66,4 @@ public class PatientResource {
                 .body(patientService.getPatientById(id)); // Puts the found patient in the response body.
     }
 
-    // Handles HTTP GET requests to upload a photo for a patient.
-    @GetMapping("/photo") // Maps GET requests sent to "/patients/photo" to this method.
-    public ResponseEntity<String> uploadPhoto(
-            @RequestParam(value = "id") String id,       // Retrieves the "id" query parameter to identify the patient.
-            @RequestParam("file") MultipartFile file) {   // Retrieves the file from the request (should be a photo).
-        // Calls the service method to upload the photo and returns a result (like a URL or message) in a 200 OK response.
-        return ResponseEntity
-                .ok() // Sets the HTTP status to 200 OK.
-                .body(patientService.uploadPhoto(id, file)); // Puts the result of the photo upload in the response body.
-    }
-
-    // Handles HTTP GET requests to retrieve a patient's photo as a byte array.
-    @GetMapping(path = "/image/{filename}") // Maps GET requests sent to "/patients/image/{filename}" to this method.
-    public byte[] getPhoto(@PathVariable(value = "filename") String filename) throws IOException {
-        // @PathVariable extracts the "filename" from the URL.
-        // Reads the file from the file system:
-         return Files.readAllBytes(Paths.get(PHOTO_DIRECTORY + filename));
-    }
 }
