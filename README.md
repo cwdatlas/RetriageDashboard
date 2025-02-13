@@ -21,7 +21,9 @@
 ### Running Instructions
 #### Database Creation (Container)
 If you are using podman instead of docker, make sure to replace docker with podman in the below command
-- `docker run --detach -p 3306:3306 --name retriage_database -e MYSQL_ROOT_PASSWORD=secretPass -e MYSQL_DATABASE=retriageDashboard -e MYSQL_USER=backend -e MYSQL_PASSWORD=secretPass -d mysql:9.2.0`
+- `docker run --detach -p 3306:3306 --name retriage_database -e
+MYSQL_ROOT_PASSWORD=secretPass -e MYSQL_DATABASE=retriageDashboard -e 
+MYSQL_USER=backend -e MYSQL_PASSWORD=secretPass -d mysql:9.2.0`
 
 
 ## Use Cases
@@ -62,12 +64,12 @@ Details,
 Use cases
 
 ### Living Schedule: (Weekly Goals)
-- 2/14
-  - React front end, Spring Back end and Mysql database running and talking to each other.
-  - Persist a patient account from the front end to the database and back.
-  - Solidify project schedule and detailed use cases. 
+- ~~2/14~~
+  - ~~React front end, Spring Back end and Mysql database running and talking to each other.~~
+  - ~~Persist a patient account from the front end to the database and back.~~
+  - ~~Solidify project schedule and detailed use cases.~~ 
 - 2/21
-  - Create Models for services, Retriage Nurses, Directors and Patients
+  - Create Models for services, Retriage Nurses, Directors ~~and Patients~~
     - All Services will be built from the service model then populated with predefined data.
   - Build Front page, Login, and event page and profile page
     - The Home page requires login button and instructions on how to use the application
