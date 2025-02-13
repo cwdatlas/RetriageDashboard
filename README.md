@@ -9,7 +9,10 @@
 
 ### Software Versions
 - Linux Version: Ubuntu Server 24.04.1 LTS
+- Next.js Version: 15
 - React Version: 19
+- TypeScript Version: 5.7.3
+- ESLint Version: 9.20
 - Spring Framework Version: 3.4.2
 - Mysql Version: 9.2.0
 - Java Version: 21 (21.0.3)
@@ -86,11 +89,11 @@ Use cases
   - Add correct organization, colors and other esthetic changes to webapp
   - Get in contact with Jeff Wald for help and guidance with first attempt at Carroll Design
 - 3/14
-  - TBD
+  - Continue to update the style of the application.
 - 3/21
-  - TBD
+  - TBD -- Wiggle Room --
 - 3/28
-  - TBD
+  - Deployment of Application
 - 4/4
   - Create online documentation for students in the future. 
   - validate that all code is effectively commented and correct javadocs annotations
