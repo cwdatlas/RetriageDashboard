@@ -2,8 +2,8 @@ package com.retriage.retriage.models;
 
 import jakarta.persistence.*;
 @Entity
-@Table(name = "rtnurse")
-public class RTNurse {
+@Table(name = "nurse")
+public class Nurse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,7 +15,7 @@ public class RTNurse {
     /**
      * Default Constructor
      */
-    public RTNurse() {
+    public Nurse() {
     }
 
     /**
@@ -24,7 +24,7 @@ public class RTNurse {
      * @param lastName
      * @param status
      */
-    public RTNurse(String firstName, String lastName, String status) {
+    public Nurse(String firstName, String lastName, String status) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.status = status;
@@ -74,6 +74,10 @@ public class RTNurse {
         this.lastName = lastName;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getStatus() {
         return status;
     }
@@ -83,8 +87,8 @@ public class RTNurse {
      *
      * @param status
      */
-    //Active RTNurse - Actively running in a sim
-    //Inactive RTNurse - Someone who is just watching/ scheduled next
+    //Active Nurse - Actively running in a sim
+    //Inactive Nurse - Someone who is just watching/ scheduled next
     public void setStatus(String status) {
         this.status = status;
     }

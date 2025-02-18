@@ -14,16 +14,21 @@ import com.retriage.retriage.services.PatientService;
 @CrossOrigin
 @RequestMapping("/patients")
 public class PatientController {
-
+    /**
+     *
+     */
     private final PatientService patientService;
-
-    // Constructor injection of the service
+    /**
+     * Constructor injection of the service
+     */
     public PatientController(PatientService patientService) {
         this.patientService = patientService;
     }
 
-    // 1) Create a new Patient
-    // POST /patients
+    /**
+     *1) Create a new Patient
+     * POST /patients
+     */
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
         Patient saved = patientService.savePatient(patient);
@@ -33,15 +38,19 @@ public class PatientController {
                 .body(saved);
     }
 
-    // 2) Get all Patients
-    // GET /patients
+    /**
+     * 2) Get all Patients
+     * GET /patients
+     */
     @GetMapping(produces = "application/json")
     public List<Patient> getAllPatients() {
         return patientService.getAllPatients();
     }
 
-    // 3) Get one Patient by ID
-    // GET /patients/{id}
+    /**
+     * 3) Get one Patient by ID
+     * GET /patients/{id}
+     */
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
         Optional<Patient> optionalPatient = patientService.getPatientById(id);
@@ -50,11 +59,14 @@ public class PatientController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+
     // OPTIONAL: Update or partial updates (PUT/PATCH) and Delete
     // For completeness, here's a simple delete example
 
-    // 4) Delete a Patient
-    // DELETE /patients/{id}
+    /**
+     * 4) Delete a Patient
+     * DELETE /patients/{id}
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
