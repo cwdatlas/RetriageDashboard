@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import com.retriage.retriage.models.Patient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
