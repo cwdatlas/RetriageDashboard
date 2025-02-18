@@ -13,15 +13,19 @@ import com.retriage.retriage.services.DirectorService;
 @CrossOrigin
 @RequestMapping("/d")
 public class DirectorController {
-
+    /**
+     *
+     */
     private final DirectorService directorService;
 
+    /**
+     * Constructor injection of the service
+     */
     public DirectorController(DirectorService directorService) {this.directorService = directorService;}
 
     /**
-     *
-     * @param director
-     * @return
+     *1) Create a new Patient
+     * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<Director> createDirector(@RequestBody Director director) {
@@ -30,17 +34,22 @@ public class DirectorController {
                 created(URI.create("/d/" + saved.getId()))
                 .body(saved);
     }
-    // 2) Get all Patients
-    // GET /patients
+
+    /**
+     * 2) Get all Patients
+     * GET /patients
+     */
     @GetMapping(produces = "application/json")
     public List<Director> getAllDirectors() {
         return directorService.findAllDirectors();
     }
 
-    // 3) Get one Patient by ID
-    // GET /patients/{id}
+    /**
+     * 3) Get one Patient by ID
+     * GET /patients/{id}
+     */
     @GetMapping(value = "/d/{id}", produces = "application/json")
-    public ResponseEntity<Director> getPatientById(@PathVariable Long id) {
+    public ResponseEntity<Director> findDirectorByID(@PathVariable Long id) {
         Optional<Director> optionalDirector = directorService.findDirectorById(id);
         return optionalDirector
                 .map(director -> ResponseEntity.ok(director))
@@ -50,10 +59,12 @@ public class DirectorController {
     // OPTIONAL: Update or partial updates (PUT/PATCH) and Delete
     // For completeness, here's a simple delete example
 
-    // 4) Delete a Patient
-    // DELETE /patients/{id}
+    /**
+     * 4) Delete a Patient
+     * DELETE /patients/{id}
+     */
     @DeleteMapping("/d/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteDirector(@PathVariable Long id) {
         directorService.deleteDirectorById(id);
         return ResponseEntity.noContent().build();
     }
