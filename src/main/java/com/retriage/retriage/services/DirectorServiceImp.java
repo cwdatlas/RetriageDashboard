@@ -7,6 +7,7 @@ import com.retriage.retriage.models.Director;
 import com.retriage.retriage.repositories.DirectorRepository;
 import org.springframework.stereotype.Service;
 
+@Service
 public class DirectorServiceImp implements DirectorService {
     private final DirectorRepository directorRepository;
 
@@ -18,7 +19,6 @@ public class DirectorServiceImp implements DirectorService {
      * @param director
      * @return
      */
-    @Override
     public Director saveDirector(Director director) {
         return directorRepository.save(director);
     }
@@ -26,7 +26,6 @@ public class DirectorServiceImp implements DirectorService {
     /**
      * @return
      */
-    @Override
     public List<Director> findAllDirectors() {
         return directorRepository.findAll();
     }
@@ -35,7 +34,6 @@ public class DirectorServiceImp implements DirectorService {
      * @param id
      * @return
      */
-    @Override
     public Optional<Director> findDirectorById(Long id) {
         return directorRepository.findById(id);
     }
@@ -43,7 +41,6 @@ public class DirectorServiceImp implements DirectorService {
     /**
      * @param id
      */
-    @Override
     public void deleteDirectorById(Long id) {
         directorRepository.deleteById(id);
     }
