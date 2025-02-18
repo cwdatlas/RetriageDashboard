@@ -1,4 +1,5 @@
 package com.retriage.retriage.models;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -12,11 +13,18 @@ public class Director {
     private String lastName;
     private String status;
 
-    // Default constructor (required by JPA)
+    /**
+     * Default Constructor
+     */
     public Director() {
     }
 
-    // Optional convenience constructor
+    /**
+     *
+     * @param firstName
+     * @param lastName
+     * @param status
+     */
     public Director(String firstName, String lastName, String status) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -24,24 +32,45 @@ public class Director {
     }
 
     // Getters and setters
+
+    /**
+     *
+     * @return
+     */
     public Long getId() {
         return id;
     }
 
     // No setter for 'id' usually if it's auto-generated, but you can include it if needed.
 
+    /**
+     *
+     * @return
+     */
     public String getFirstName() {
         return firstName;
     }
 
+    /**
+     *
+     * @param firstName
+     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLastName() {
         return lastName;
     }
 
+    /**
+     *
+     * @param lastName
+     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -50,6 +79,11 @@ public class Director {
         return status;
     }
 
+
+    /**
+     *
+     * @param status
+     */
     //Active director - Actively running a sim
     //Inactive director - Someone who is just watching
     public void setStatus(String status) {
