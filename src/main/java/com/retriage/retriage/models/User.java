@@ -3,19 +3,21 @@ package com.retriage.retriage.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "director")
-public class Director {
+@Table(name = "usr")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //ID, name, email, role
     private Long id;
-
     private String firstName;
     private String lastName;
     private String status;
+    //Roles include User, Nurse, Guest
+    private String role;
     /**
      * Default Constructor
      */
-    public Director() {
+    public User() {
     }
 
     /**
