@@ -38,7 +38,7 @@ public class UserServiceImp implements UserService {
     }
 
     /**
-     * Finds a director via their ID
+     * Finds a User via their ID
      * @param id The ID of the User you're looking for
      * @return The User object assigned to the passed in ID
      */

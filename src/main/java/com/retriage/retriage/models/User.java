@@ -14,6 +14,23 @@ public class User {
     private String status;
     //Roles include User, Nurse, Guest
     private String role;
+
+    /**
+     *
+     * @return
+     */
+    public String getRole() {
+        return role;
+    }
+
+    /**
+     *
+     * @param role
+     */
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     /**
      * Default Constructor
      */

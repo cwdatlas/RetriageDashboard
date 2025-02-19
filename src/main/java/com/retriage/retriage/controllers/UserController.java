@@ -68,4 +68,39 @@ public class UserController {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * getAllActiveUsers()
+     */
+//    @GetMapping(produces = "application/json")
+//    public List<User> getAllActiveUsers() {
+//        return userService.findAllUsers();
+//    }
+
+    /**
+     *  getAllNurses()
+     */
+//    @GetMapping(produces = "application/json")
+//    public List<User> getAllNurses() {
+//        return userService.findAllUsers();
+//    }
+
+    /**
+     *  getAllDirectors()
+     */
+//    @GetMapping(produces = "application/json")
+//    public List<User> getAllDirector() {
+//        return userService.findAllUsers();
+//    }
+
+    /**
+     *  getAllGuests()
+     */
+//    @GetMapping(produces = "application/json")
+//    public List<User> getAllGuests() {
+//        return userService.findAllUsers();
+//    }
+
+
+
 }
