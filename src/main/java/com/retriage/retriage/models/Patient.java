@@ -14,6 +14,13 @@ public class Patient {
     private String lastName;
     private String status;
 
+    private enum Statuses{
+        Immediate,
+        Delayed,
+        Minor,
+        Expectant
+    }
+
     // Default constructor (required by JPA)
     public Patient() {
     }

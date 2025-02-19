@@ -2,6 +2,8 @@ package com.retriage.retriage.models;
 
 import jakarta.persistence.*;
 
+import javax.management.relation.Role;
+
 @Entity
 @Table(name = "usr")
 public class User {
@@ -14,6 +16,13 @@ public class User {
     private String status;
     //Roles include User, Nurse, Guest
     private String role;
+
+    private enum Roles{
+        User,
+        Nurse,
+        Guest,
+        Director
+    }
 
     /**
      *
@@ -35,6 +44,7 @@ public class User {
      * Default Constructor
      */
     public User() {
+        this.status = String.valueOf(Roles.User);
     }
 
     /**
