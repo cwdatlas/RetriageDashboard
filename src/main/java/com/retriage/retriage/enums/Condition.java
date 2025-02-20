@@ -1,6 +1,6 @@
 package com.retriage.retriage.enums;
 
-enum Condition{
+public enum Condition {
     Immediate,
     Delayed,
     Minor,
