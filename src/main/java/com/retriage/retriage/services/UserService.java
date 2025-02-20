@@ -8,6 +8,7 @@ import java.util.Optional;
 /**
  *
  */
+//TODO add all CRUD functions. Create Read Update and Delete. Some are already here, but more needs to be done
 public interface UserService {
     User saveUser(User user);
 

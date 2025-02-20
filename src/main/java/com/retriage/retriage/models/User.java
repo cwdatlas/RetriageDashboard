@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "users")
 public class User {
+    //TODO update model to match User from the database model
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

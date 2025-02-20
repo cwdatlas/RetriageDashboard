@@ -5,19 +5,16 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "event")
 public class Event {
-
+    //TODO update model to match User from the database model
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
     private int DirectorId;
-    private String resources;
+    private String resources; //TODO This should be a pointer to a different table, a key.
 
-    public Event(String name, int directorId, String resources) {
-        this.name = name;
-        DirectorId = directorId;
-        this.resources = resources;
+    public Event() {
     }
 
     public Long getId() {

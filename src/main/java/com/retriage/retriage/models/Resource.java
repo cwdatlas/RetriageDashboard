@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "resources")
 public class Resource {
+//TODO update model to match User from the database model
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +13,7 @@ public class Resource {
 
     private String name;
     private int processTime;
-    private String patientQueue;
+    private String patientQueue; //TODO This is a key. Look to the database model for directions
     private boolean active;
     private boolean reusable;
 
