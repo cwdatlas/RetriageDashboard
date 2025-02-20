@@ -102,3 +102,5 @@ The reason for this is twofold:
 - 4/11
     - Build Pamphlet Director and Retriage Nurses can use to understand how to use the application
 - deadline by april 17th
+
+![image](https://github.com/user-attachments/assets/2f966fef-0dfd-47a8-872a-21263b0eb799)
