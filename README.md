@@ -1,4 +1,5 @@
-## Welcome to The Mock Mass Casualty Event Dashboard 
+## Welcome to The Mock Mass Casualty Event Dashboard
+
 ### For The Carroll College Nursing Program
 
 ### Hardware Requirements
@@ -8,6 +9,7 @@
 - Storage: 100GB
 
 ### Software Versions
+
 - Linux Version: Ubuntu Server 24.04.1 LTS
 - Next.js Version: 15
 - React Version: 19
@@ -19,8 +21,11 @@
 - JavaScript Version: ECMAScript 2023
 
 ### Running Instructions
+
 #### Database Creation (Container)
+
 If you are using podman instead of docker, make sure to replace docker with podman in the below command
+
 - `docker run --detach -p 3306:3306 --name retriage_database -e
-MYSQL_ROOT_PASSWORD=secretPass -e MYSQL_DATABASE=retriageDashboard -e 
-MYSQL_USER=backend -e MYSQL_PASSWORD=secretPass -d mysql:9.2.0`
+  MYSQL_ROOT_PASSWORD=secretPass -e MYSQL_DATABASE=retriageDashboard -e
+  MYSQL_USER=backend -e MYSQL_PASSWORD=secretPass -d mysql:9.2.0`
