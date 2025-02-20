@@ -1,3 +1,18 @@
+//Only One event at a time
+//What properties are required to create a patient
+    //Internal ID vs local ID (Database vs Reused patient ID)
+//Patient properties (Name, Condition, ID, Bed Assignment, Queue Assignment)
+//Patient x Resource development
+//Deleting a Patient verbose explanation
+//Resource scheduler (Automatic or manual?) 
+    //What happens when A patient is removed before the operation is completed atomically
+//Simplify data model
+    //We made UML whoops 
+//Do the normal things we said we're going to do
+
+//Okta Actors
+    //
+
 # Use Cases
 
 ### Retriage Nurse
