@@ -13,27 +13,44 @@ public class PatientServiceImp implements PatientService {
 
     private final PatientRepository patientRepository;
 
-    // Constructor-based injection (best practice)
+    /**
+     * Patient Service constructor
+     * @param patientRepository Repository declared in PatientServiceImp
+     */
     public PatientServiceImp(PatientRepository patientRepository) {
         this.patientRepository = patientRepository;
     }
 
-    // Create or update a Patient
+    /**
+     * Saves a patient
+     * @param patient
+     * @return
+     */
     public Patient savePatient(Patient patient) {
         return patientRepository.save(patient);
     }
 
-    // Retrieve all patients
+    /**
+     * Retrieve all patients
+     * @return
+     */
     public List<Patient> getAllPatients() {
         return patientRepository.findAll();
     }
 
-    // Retrieve a single Patient by ID
+    /**
+     * Retrieve a single Patient by ID
+     * @param id
+     * @return
+     */
     public Optional<Patient> getPatientById(Long id) {
         return patientRepository.findById(id);
     }
 
-    // Optional: delete, update status, etc.
+    /**
+     * Optional: delete, update status, etc.
+     * @param id
+     */
     public void deletePatient(Long id) {
         patientRepository.deleteById(id);
     }
