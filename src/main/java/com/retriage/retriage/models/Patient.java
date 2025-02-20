@@ -1,5 +1,6 @@
 package com.retriage.retriage.models;
 
+import com.retriage.retriage.enums.Condition;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,28 +13,16 @@ public class Patient {
 
     private String firstName;
     private String lastName;
-    private String status;
+    private Condition condition;
 
-    private enum Statuses{
-        Immediate,
-        Delayed,
-        Minor,
-        Expectant
-    }
 
     // Default constructor (required by JPA)
     public Patient() {
     }
 
-    // Optional convenience constructor
-    public Patient(String firstName, String lastName, String status) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.status = status;
-    }
-
     // Getters and setters
     public Long getId() {
+
         return id;
     }
 
@@ -55,11 +44,11 @@ public class Patient {
         this.lastName = lastName;
     }
 
-    public String getStatus() {
-        return status;
+    public Condition getStatus() {
+        return condition;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatus(Condition condition) {
+        this.condition = condition;
     }
 }
