@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface EventRepository extends JpaRepository<User, Long> {
     //This is empty, intentionally
 
 }
