@@ -1,5 +1,5 @@
-# * @Author: John Botonakis
-# * @Resource: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
+# @Author: John Botonakis
+# @Resource: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
 
 spring:
   security:
