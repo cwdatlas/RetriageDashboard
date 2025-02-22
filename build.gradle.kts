@@ -25,6 +25,8 @@ dependencies {
 	runtimeOnly("com.mysql:mysql-connector-j")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+	//Okta Dependencies below:
+
 }
 
 tasks.withType<Test> {
