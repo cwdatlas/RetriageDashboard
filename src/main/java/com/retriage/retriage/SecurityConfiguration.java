@@ -45,6 +45,7 @@ public class SecurityConfiguration {
 
         return (responseToken) -> {
             Saml2Authentication authentication = delegate.convert(responseToken);
+            assert authentication != null;
             Saml2AuthenticatedPrincipal principal = (Saml2AuthenticatedPrincipal) authentication.getPrincipal();
             List<String> groups = principal.getAttribute("groups");
             Set<GrantedAuthority> authorities = new HashSet<>();
