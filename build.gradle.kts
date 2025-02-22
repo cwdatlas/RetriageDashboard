@@ -26,6 +26,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 	//Okta Dependencies below:
+	implementation("org.springframework.security.extensions:spring-security-saml2-core:2.0.0.RC1")
 
 }
 
