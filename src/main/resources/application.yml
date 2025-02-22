@@ -1,0 +1,8 @@
+spring:
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          okta:
+            assertingparty:
+              metadata-uri: https://dev-32534403.okta.com/app/exknid22hbn8vmKU05d7/sso/saml/metadata
