@@ -1,67 +1,40 @@
 package com.retriage.retriage.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "resources")
 public class Resource {
 //TODO update model to match User from the database model
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
+    @Setter
     private String name;
+    @Getter
+    @Setter
     private int processTime;
-    private String patientQueue; //TODO This is a key. Look to the database model for directions
+    @Getter
+    @Setter
     private boolean active;
-    private boolean reusable;
+    @Getter
+    @Setter
+    private boolean useable;
 
     public Resource() {
 
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
+    public Resource(String name, int processTime, boolean active, boolean useable) {
         this.name = name;
-    }
-
-    public int getProcessTime() {
-        return processTime;
-    }
-
-    public void setProcessTime(int processTime) {
         this.processTime = processTime;
-    }
-
-    public String getPatientQueue() {
-        return patientQueue;
-    }
-
-    public void setPatientQueue(String patientQueue) {
-        this.patientQueue = patientQueue;
-    }
-
-    public boolean isReusable() {
-        return reusable;
-    }
-
-    public void setReusable(boolean reusable) {
-        this.reusable = reusable;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
         this.active = active;
+        this.useable = useable;
     }
 }
