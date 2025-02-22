@@ -1,3 +1,8 @@
+/**
+ * build.gradle.kts
+ * @Author: Aidan Scott
+ * @Author: John Botonakis
+ */
 plugins {
 	// Apply the Java plugin to add support for Java language
 	java

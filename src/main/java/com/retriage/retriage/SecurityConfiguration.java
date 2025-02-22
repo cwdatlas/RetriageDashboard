@@ -21,13 +21,19 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 
 /**
+ * SecurityConfiguration
+ * <br></br>
  *  Configures Spring Security for SAML 2.0 Service Provider functionality.
  *  This class defines the security filter chain and customizes the SAML authentication provider
  *  to handle user group/role mapping from SAML attributes to Spring Security authorities.
+ * @Author: John Botonakis
+ * @Resource: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
  */
 @Configuration
 public class SecurityConfiguration {
     /**
+     * configure
+     * <br></br>
      *  Configures the Spring Security filter chain for handling SAML authentication and authorization.
      *  <p>
      *  This method defines the security rules and sets up the SAML 2.0 login and logout processes.
@@ -58,6 +64,8 @@ public class SecurityConfiguration {
     }
 
     /**
+     * Converter
+     * <br></br>
      *  Creates a custom converter to map SAML attributes (specifically "groups") to Spring Security GrantedAuthorities.
      *  <p>
      *  This converter is used by the {@link OpenSaml4AuthenticationProvider} to process SAML responses.

@@ -7,14 +7,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
+ * HomeController.java
+ * <br></br>
  *  Controller for handling requests to the home page after successful SAML authentication.
  *  This controller is responsible for displaying user information retrieved from the
  *  {@link Saml2AuthenticatedPrincipal} after the user has been authenticated via SAML.
+ *  @Author: John Botonakis
+ *  @Resource: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
  */
 @Controller
 public class HomeController {
     AuthenticationPrincipal Saml2AuthenticatedPrincipal;
     /**
+     * home Mapping
+     * <br></br>
      *  Handles requests to the root path ("/") and displays the home page with user information.
      *  <p>
      *  This method is invoked when a user accesses the application's root URL. It retrieves the
