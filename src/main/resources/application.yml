@@ -15,3 +15,27 @@ spring:
             singlelogout:
               binding: POST
               response-url: "{baseUrl}/logout/saml2/slo"
+
+# POTENTIAL AUTH0 AND OKTA INTEGRATION; SCALABILITY?
+#spring:
+#  security:
+#    saml2:
+#      relyingparty:
+#        registration:
+#          auth0:
+#            assertingparty:
+#              metadata-uri: <your-auth0-metadata-uri>
+#            signing:
+#              credentials: &signing-credentials
+#                - private-key-location: classpath:local.key
+#                  certificate-location: classpath:local.crt
+#            singlelogout: &logout-settings
+#              binding: POST
+#              response-url: "{baseUrl}/logout/saml2/slo"
+#          okta:
+#            assertingparty:
+#              metadata-uri: <your-okta-metadata-uri>
+#            signing:
+#              credentials: *signing-credentials
+#            singlelogout: *logout-settings
+#
