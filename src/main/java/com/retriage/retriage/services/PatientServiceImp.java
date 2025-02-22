@@ -1,11 +1,11 @@
 package com.retriage.retriage.services;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
 import com.retriage.retriage.models.Patient;
 import com.retriage.retriage.repositories.PatientRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -15,6 +15,7 @@ public class PatientServiceImp implements PatientService {
 
     /**
      * Patient Service constructor
+     *
      * @param patientRepository Repository declared in PatientServiceImp
      */
     public PatientServiceImp(PatientRepository patientRepository) {
@@ -23,6 +24,7 @@ public class PatientServiceImp implements PatientService {
 
     /**
      * Saves a patient
+     *
      * @param patient
      * @return
      */
@@ -32,6 +34,7 @@ public class PatientServiceImp implements PatientService {
 
     /**
      * Retrieve all patients
+     *
      * @return
      */
     public List<Patient> getAllPatients() {
@@ -40,6 +43,7 @@ public class PatientServiceImp implements PatientService {
 
     /**
      * Retrieve a single Patient by ID
+     *
      * @param id
      * @return
      */
@@ -49,6 +53,7 @@ public class PatientServiceImp implements PatientService {
 
     /**
      * Optional: delete, update status, etc.
+     *
      * @param id
      */
     public void deletePatient(Long id) {

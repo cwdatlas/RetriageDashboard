@@ -1,11 +1,11 @@
 package com.retriage.retriage.services;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -14,6 +14,7 @@ public class UserServiceImp implements UserService {
 
     /**
      * User Service constructor
+     *
      * @param userRepository Repository declared in UserServiceImp
      */
     public UserServiceImp(UserRepository userRepository) {
@@ -22,6 +23,7 @@ public class UserServiceImp implements UserService {
 
     /**
      * Saves a user
+     *
      * @param user
      * @return
      */
@@ -31,6 +33,7 @@ public class UserServiceImp implements UserService {
 
     /**
      * Finds all currently saved User accounts
+     *
      * @return
      */
     public List<User> findAllUsers() {
@@ -39,6 +42,7 @@ public class UserServiceImp implements UserService {
 
     /**
      * Finds a User via their ID
+     *
      * @param id The ID of the User you're looking for
      * @return The User object assigned to the passed in ID
      */
@@ -48,6 +52,7 @@ public class UserServiceImp implements UserService {
 
     /**
      * Remove a User from saved list.
+     *
      * @param id The ID of the director to be deleted
      */
     public void deleteUserById(Long id) {

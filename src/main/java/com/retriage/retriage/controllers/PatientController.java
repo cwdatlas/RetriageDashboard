@@ -1,14 +1,13 @@
 package com.retriage.retriage.controllers;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Optional;
-
+import com.retriage.retriage.models.Patient;
+import com.retriage.retriage.services.PatientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.retriage.retriage.models.Patient;
-import com.retriage.retriage.services.PatientService;
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -18,6 +17,7 @@ public class PatientController {
      *
      */
     private final PatientService patientService;
+
     /**
      * Constructor injection of the service
      */
@@ -26,7 +26,7 @@ public class PatientController {
     }
 
     /**
-     *1) Create a new Patient
+     * 1) Create a new Patient
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")

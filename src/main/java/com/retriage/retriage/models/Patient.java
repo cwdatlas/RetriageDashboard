@@ -1,6 +1,5 @@
 package com.retriage.retriage.models;
 
-import com.retriage.retriage.enums.Condition;
 import jakarta.persistence.*;
 
 @Entity
