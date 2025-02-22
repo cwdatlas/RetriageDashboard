@@ -6,14 +6,18 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "patients")
 public class Patient {
-    //TODO update model to match User from the database model
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String firstName;
     private String lastName;
-    private Condition condition;
+
+//    TODO:  Go back and properly fix Error 1 (SQL Syntax Error):
+//    RENAME the problematic column (currently named 'condition')
+//    to something that is NOT a reserved SQL keyword (e.g., 'patientCondition', 'conditionType', etc.).
+
+//    private Condition condition;
 
 
     // Default constructor (required by JPA)
@@ -44,11 +48,11 @@ public class Patient {
         this.lastName = lastName;
     }
 
-    public Condition getStatus() {
-        return condition;
-    }
-
-    public void setStatus(Condition condition) {
-        this.condition = condition;
-    }
+//    public Condition getStatus() {
+//        return condition;
+//    }
+//
+//    public void setStatus(Condition condition) {
+//        this.condition = condition;
+//    }
 }

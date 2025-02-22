@@ -30,6 +30,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-saml2-service-provider:6.0.6") // SAML2
 	implementation("org.opensaml:opensaml-core:4.0.1")    // Explicitly set OpenSAML core to 4.0.1
 	implementation("org.opensaml:opensaml-saml-api:4.0.1")  // Explicitly set OpenSAML api to 4.0.1
+//	implementation("org.opensaml:opensaml-saml-impl:4.1.1")
 }
 
 tasks.withType<Test> {
@@ -38,5 +39,5 @@ tasks.withType<Test> {
 
 //Needed for forcing dependency in Okta
 configurations.all {
-	resolutionStrategy.force("org.opensaml:opensaml-saml-impl:4.0.1")
+	resolutionStrategy.force("org.opensaml:opensaml-saml-impl:4.0.1")// Or try 4.1.1 if 4.0.1 doesn't work later
 }
