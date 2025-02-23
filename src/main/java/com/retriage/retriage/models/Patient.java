@@ -5,14 +5,19 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "patients")
 public class Patient {
-    //TODO update model to match User from the database model
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Getter
+    @Setter
+    private String cardId;
     @Getter
     @Setter
     private String firstName;
@@ -24,18 +29,22 @@ public class Patient {
     private Condition condition;
     @Getter
     @Setter
-    @OneToOne
-    private Resource resultType;
+    @ManyToMany
+    @JoinTable(
+            name = "patient_resources",
+            joinColumns = @JoinColumn(name = "patient_id"),
+            inverseJoinColumns = @JoinColumn(name = "resource_id")
+    )
+    private List<Resource> resourceList;
+    @Getter
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User retriageNurse;
+
 
 
     // Default constructor (required by JPA)
     public Patient() {
-    }
-
-    public Patient(String firstName, String lastName, Condition condition, Resource resultType) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.condition = condition;
-        this.resultType = resultType;
     }
 }

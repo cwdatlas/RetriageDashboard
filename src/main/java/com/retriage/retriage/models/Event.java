@@ -4,6 +4,7 @@ import com.retriage.retriage.enums.Status;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
 
 @Entity
 @Table(name = "event")
@@ -18,7 +19,9 @@ public class Event {
     private String name;
     @Getter
     @Setter
-    private int DirectorId;
+    @ManyToOne
+    @JoinColumn(name = "director_id", nullable = false)
+    private User director;
     @Getter
     @Setter
     private int startTime;
@@ -28,15 +31,15 @@ public class Event {
     @Getter
     @Setter
     private Status status;
+    @Getter
+    @Setter
+    @OneToMany(mappedBy = "parentEvent")
+    private List<Resource> resources;
+    @Getter
+    @Setter
+    @ManyToMany
+    private List<User> nurses;
 
     public Event() {
-    }
-
-    public Event(String name, int directorId, int startTime, int endTime, Status status) {
-        this.name = name;
-        DirectorId = directorId;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.status = status;
     }
 }
