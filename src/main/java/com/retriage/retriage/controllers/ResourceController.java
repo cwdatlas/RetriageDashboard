@@ -21,10 +21,12 @@ public class ResourceController {
     /**
      * Constructor injection of the service
      */
-    public ResourceController(UserService userService) {this.userService = userService;}
+    public ResourceController(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
-     *1) Create a new User
+     * 1) Create a new User
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
@@ -100,7 +102,6 @@ public class ResourceController {
 //    public List<User> getAllGuests() {
 //        return userService.findAllUsers();
 //    }
-
 
 
 }

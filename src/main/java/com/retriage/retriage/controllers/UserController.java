@@ -1,13 +1,13 @@
 package com.retriage.retriage.controllers;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Optional;
-
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -21,10 +21,12 @@ public class UserController {
     /**
      * Constructor injection of the service
      */
-    public UserController(UserService userService) {this.userService = userService;}
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
-     *1) Create a new User
+     * 1) Create a new User
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
@@ -100,7 +102,6 @@ public class UserController {
 //    public List<User> getAllGuests() {
 //        return userService.findAllUsers();
 //    }
-
 
 
 }

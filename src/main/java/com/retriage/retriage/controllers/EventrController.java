@@ -1,16 +1,14 @@
 package com.retriage.retriage.controllers;
 
-import com.retriage.retriage.models.Event;
-import com.retriage.retriage.models.User;
-import com.retriage.retriage.services.EventService;
 import com.retriage.retriage.forms.EventForm;
+import com.retriage.retriage.models.Event;
+import com.retriage.retriage.services.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -29,7 +27,7 @@ public class EventrController {
     }
 
     /**
-     *1) Create a new User
+     * 1) Create a new User
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
@@ -124,7 +122,6 @@ public class EventrController {
 //    public List<User> getAllGuests() {
 //        return userService.findAllUsers();
 //    }
-
 
 
 }
