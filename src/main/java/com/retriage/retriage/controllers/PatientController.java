@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import com.retriage.retriage.forms.PatientForm;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +32,17 @@ public class PatientController {
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
+    public ResponseEntity<Patient> createPatient(@Valid @RequestBody PatientForm patientForm) {
+        //Secondary Validation
+
+        //Setting patient values with validated values from the form
+        Patient patient =  new Patient();
+        patient.setCardId(patientForm.getCardId());
+        patient.setFirstName(patientForm.getFirstName());
+        patient.setLastName(patientForm.getLastName());
+        patient.setCondition(patientForm.getCondition());
+        patient.setResourceList(patientForm.getResourceList());
+        patient.setRetriageNurse(patientForm.getRetriageNurse());
         Patient saved = patientService.savePatient(patient);
         // Return 201 Created with Location header to point to the new resource
         return ResponseEntity

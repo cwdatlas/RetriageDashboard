@@ -1,18 +1,18 @@
 package com.retriage.retriage.controllers;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Optional;
-
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @CrossOrigin
-@RequestMapping("/resources")
-public class UserController {
+@RequestMapping("/users")
+public class ResourceController {
     /**
      *
      */
@@ -21,7 +21,7 @@ public class UserController {
     /**
      * Constructor injection of the service
      */
-    public UserController(UserService userService) {this.userService = userService;}
+    public ResourceController(UserService userService) {this.userService = userService;}
 
     /**
      *1) Create a new User
