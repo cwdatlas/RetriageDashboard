@@ -4,6 +4,7 @@ import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.models.Event;
 import com.retriage.retriage.services.EventService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("/events")
-public class EventrController {
+public class EventController {
     /**
      *
      */
@@ -22,7 +23,7 @@ public class EventrController {
     /**
      * Constructor injection of the service
      */
-    public EventrController(EventService eventService) {
+    public EventController(EventService eventService) {
         this.eventService = eventService;
     }
 
@@ -61,67 +62,21 @@ public class EventrController {
      * GET /patients/{id}
      */
 
-//    @GetMapping(value = "/usr/{id}", produces = "application/json")
-//    public ResponseEntity<Event> findUserByID(@PathVariable Long id) {
-//        boolean optionalDirector = eventService.findEventById(id);
-//        return optionalDirector
-//                .map(event -> ResponseEntity.ok(event))
-//                .orElseGet(() -> ResponseEntity.notFound().build());
-//    }
+    @GetMapping(value = "/usr/{id}", produces = "application/json")
+    public ResponseEntity<Event> findUserByID(@PathVariable Long id) {
+        Event event = eventService.findEventById(id);
+        return ResponseEntity.created(URI.create("/events/" + id)).body(event);
+    }
 
-    /**
-     * 2) Get all Patients
-     * GET /patients
-     */
+
     @GetMapping(produces = "application/json")
-    public List<Event> getAllUsers() {
+    public List<Event> getAllEvents() {
         return eventService.findAllEvents();
     }
 
-    // OPTIONAL: Update or partial updates (PUT/PATCH) and Delete
-    // For completeness, here's a simple delete example
-
-    /**
-     * 4) Delete a Patient
-     * DELETE /patients/{id}
-     */
-//    @DeleteMapping("/usr/{id}")
-//    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-//        userService.deleteUserById(id);
-//        return ResponseEntity.noContent().build();
-//    }
-
-    /**
-     * getAllActiveUsers()
-     */
-//    @GetMapping(produces = "application/json")
-//    public List<User> getAllActiveUsers() {
-//        return userService.findAllUsers();
-//    }
-
-    /**
-     *  getAllNurses()
-     */
-//    @GetMapping(produces = "application/json")
-//    public List<User> getAllNurses() {
-//        return userService.findAllUsers();
-//    }
-
-    /**
-     *  getAllDirectors()
-     */
-//    @GetMapping(produces = "application/json")
-//    public List<User> getAllDirector() {
-//        return userService.findAllUsers();
-//    }
-
-    /**
-     *  getAllGuests()
-     */
-//    @GetMapping(produces = "application/json")
-//    public List<User> getAllGuests() {
-//        return userService.findAllUsers();
-//    }
-
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
+        eventService.deleteEventById(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

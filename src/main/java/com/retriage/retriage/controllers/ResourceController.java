@@ -1,40 +1,52 @@
 package com.retriage.retriage.controllers;
 
-import com.retriage.retriage.models.User;
-import com.retriage.retriage.services.UserService;
+import com.retriage.retriage.forms.ResourceForm;
+import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.services.ResourceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/users")
+@RequestMapping("/resources")
 public class ResourceController {
     /**
      *
      */
-    private final UserService userService;
+    private final ResourceService resourceService;
 
     /**
      * Constructor injection of the service
      */
-    public ResourceController(UserService userService) {
-        this.userService = userService;
+    public ResourceController(ResourceService resourceService) {
+        this.resourceService = resourceService;
     }
 
     /**
-     * 1) Create a new User
+     * 1) Create a new Resource
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User saved = userService.saveUser(user);
-        return ResponseEntity.
-                created(URI.create("/usr/" + saved.getId()))
-                .body(saved);
+    public String createResource(@RequestBody ResourceForm resourceForm) {
+        //secondary validation
+
+        Resource newResource = new Resource();
+        newResource.setName(resourceForm.getName());
+        newResource.setActive(resourceForm.isActive());
+        newResource.setUseable(resourceForm.isUseable());
+        newResource.setPatients(resourceForm.getPatients());
+        newResource.setProcessTime(resourceForm.getProcessTime());
+        newResource.setParentEvent(resourceForm.getParentEvent());
+
+        boolean saved = resourceService.saveResource(newResource);
+        String response = "Unable to save";
+        if (saved) {
+            response = "Saved Successfully";
+        }
+        return response;
     }
 
     /**
@@ -42,19 +54,19 @@ public class ResourceController {
      * GET /patients
      */
     @GetMapping(produces = "application/json")
-    public List<User> getAllUsers() {
-        return userService.findAllUsers();
+    public List<Resource> getAllResources() {
+        return resourceService.findAllResources();
     }
 
     /**
      * 3) Get one Patient by ID
      * GET /patients/{id}
      */
-    @GetMapping(value = "/usr/{id}", produces = "application/json")
-    public ResponseEntity<User> findUserByID(@PathVariable Long id) {
-        Optional<User> optionalDirector = userService.findUserById(id);
+    @GetMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<Resource> findResourceByID(@PathVariable Long id) {
+        Optional<Resource> optionalDirector = resourceService.findResourceById(id);
         return optionalDirector
-                .map(user -> ResponseEntity.ok(user))
+                .map(resource -> ResponseEntity.ok(resource))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -65,43 +77,9 @@ public class ResourceController {
      * 4) Delete a Patient
      * DELETE /patients/{id}
      */
-    @DeleteMapping("/usr/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUserById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteResource(@PathVariable Long id) {
+        resourceService.deleteResourceById(id);
         return ResponseEntity.noContent().build();
     }
-
-    /**
-     * getAllActiveUsers()
-     */
-//    @GetMapping(produces = "application/json")
-//    public List<User> getAllActiveUsers() {
-//        return userService.findAllUsers();
-//    }
-
-    /**
-     *  getAllNurses()
-     */
-//    @GetMapping(produces = "application/json")
-//    public List<User> getAllNurses() {
-//        return userService.findAllUsers();
-//    }
-
-    /**
-     *  getAllDirectors()
-     */
-//    @GetMapping(produces = "application/json")
-//    public List<User> getAllDirector() {
-//        return userService.findAllUsers();
-//    }
-
-    /**
-     *  getAllGuests()
-     */
-//    @GetMapping(produces = "application/json")
-//    public List<User> getAllGuests() {
-//        return userService.findAllUsers();
-//    }
-
-
 }
