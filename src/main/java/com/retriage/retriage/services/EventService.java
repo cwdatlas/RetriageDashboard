@@ -11,9 +11,11 @@ import java.util.List;
 public interface EventService {
     boolean saveEvent(Event event);
 
-    boolean findEventById(Long id);
+    Event findEventById(Long id);
 
     Event UpdateEvent(long id, Event event);
 
     List<Event> findAllEvents();
+
+    boolean deleteEventById(Long id);
 }

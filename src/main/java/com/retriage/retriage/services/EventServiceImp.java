@@ -22,8 +22,8 @@ public class EventServiceImp implements EventService {
     }
 
     @Override
-    public boolean findEventById(Long id) {
-        return false;
+    public Event findEventById(Long id) {
+        return new Event();
     }
 
     @Override
@@ -34,5 +34,10 @@ public class EventServiceImp implements EventService {
     @Override
     public List<Event> findAllEvents() {
         return List.of();
+    }
+
+    @Override
+    public boolean deleteEventById(Long id) {
+        return false;
     }
 }
