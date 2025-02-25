@@ -11,6 +11,7 @@ import java.util.List;
 @Table(name = "patients")
 public class Patient {
     @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,15 +19,19 @@ public class Patient {
     @Getter
     @Setter
     private String cardId;
+
     @Getter
     @Setter
     private String firstName;
+
     @Getter
     @Setter
     private String lastName;
+
     @Getter
     @Setter
     private Condition condition;
+
     @Getter
     @Setter
     @ManyToMany
@@ -36,6 +41,7 @@ public class Patient {
             inverseJoinColumns = @JoinColumn(name = "resource_id")
     )
     private List<Resource> resourceList;
+
     @Getter
     @Setter
     @ManyToOne

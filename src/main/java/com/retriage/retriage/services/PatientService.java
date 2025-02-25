@@ -17,7 +17,7 @@ public interface PatientService {
 
     Optional<Patient> getPatientById(Long id);
 
-    boolean deletePatient(Long id);
+    void deletePatient(Long id);
 
-    boolean updatePatient(Patient patient);
+    boolean updatePatient(Long id, Patient patient);
 }
