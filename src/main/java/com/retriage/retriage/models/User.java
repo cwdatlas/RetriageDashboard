@@ -11,6 +11,7 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,15 +19,19 @@ public class User {
     @Getter
     @Setter
     private String email;
+
     @Getter
     @Setter
     private String firstName;
+
     @Getter
     @Setter
     private String lastName;
+
     @Getter
     @Setter
     private Role role;
+
     @Getter
     @Setter
     @OneToMany(mappedBy="retriageNurse")
@@ -35,6 +40,7 @@ public class User {
     public User(){
 
     }
+
 }
 
 

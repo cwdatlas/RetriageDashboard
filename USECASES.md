@@ -7,7 +7,7 @@
 //Resource scheduler (Automatic or manual?) 
     //What happens when A patient is removed before the operation is completed atomically
 //Simplify data model
-    //We made UML whoops 
+    //We made UML whoops
 //Do the normal things we said we're going to do
 
 //Okta Actors

@@ -147,7 +147,4 @@ public class PatientController {
         Patient updatedPatient = patientService.savePatient(existingPatient);
         return ResponseEntity.ok(updatedPatient);
     }
-
-
-
 }
