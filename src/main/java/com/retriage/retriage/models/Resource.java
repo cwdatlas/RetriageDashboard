@@ -18,19 +18,24 @@ public class Resource {
     @Getter
     @Setter
     private String name;
+
     @Getter
     @Setter
     private int processTime;
+
     @Getter
     @Setter
     private boolean active;
+
     @Getter
     @Setter
     private boolean useable;
+
     @Getter
     @Setter
     @ManyToMany
     private List<Patient> patients;
+
     @Getter
     @Setter
     @ManyToOne
