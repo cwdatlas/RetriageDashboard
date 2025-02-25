@@ -12,32 +12,70 @@ public class EventServiceImp implements EventService {
 
     private final EventRepository eventRepository;
 
-    EventServiceImp(EventRepository eventRepository) {
+    public EventServiceImp(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
 
+    /**
+     * Saves an event (Create/Update)
+     *
+     * @param event The event to save
+     * @return true if the event is saved successfully, false otherwise
+     */
     @Override
     public boolean saveEvent(Event event) {
-        return false;
+        if (event == null) {
+            return false;
+        }
+        eventRepository.save(event);
+        return true;
     }
-
+    /**
+     * Retrieves an event by ID
+     *
+     * @param id The ID of the event
+     * @return The found Event or null if not found
+     */
     @Override
     public Event findEventById(Long id) {
-        return new Event();
+        return eventRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Updates an existing event
+     *
+     * @param id    The ID of the event to update
+     * @param event The updated event data
+     * @return The updated event or null if not found
+     */
     @Override
     public Event UpdateEvent(long id, Event event) {
-        return null;
+        if (!eventRepository.existsById(id)) {
+            return null; // Return null if event doesn't exist
+        }
+        event.setId(id); // Ensure the ID stays the same
+        return eventRepository.save(event);
     }
 
+    /**
+     * Retrieves all events
+     *
+     * @return List of all events
+     */
     @Override
     public List<Event> findAllEvents() {
-        return List.of();
+        return eventRepository.findAll();
     }
 
+    /**
+     * Deletes an event by ID
+     *
+     * @param id The ID of the event to delete
+     */
     @Override
-    public boolean deleteEventById(Long id) {
-        return false;
+    public void deleteEventById(Long id) {
+        if (eventRepository.existsById(id)) {
+            eventRepository.deleteById(id);
+        }
     }
 }

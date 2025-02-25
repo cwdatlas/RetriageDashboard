@@ -74,9 +74,28 @@ public class EventController {
         return eventService.findAllEvents();
     }
 
+    /**
+     * 4) Delete an Event
+     * @param id
+     * @return
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
         eventService.deleteEventById(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    /**
+     * 5) Update an existing Event
+     * PUT /events/{id}
+     */
+    @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event event) {
+        Event updatedEvent = eventService.UpdateEvent(id, event);
+        if (updatedEvent == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedEvent);
+    }
+
 }

@@ -10,6 +10,7 @@ import java.util.List;
 @Table(name = "event")
 public class Event {
     @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,24 +18,30 @@ public class Event {
     @Getter
     @Setter
     private String name;
+
     @Getter
     @Setter
     @ManyToOne
     @JoinColumn(name = "director_id", nullable = false)
     private User director;
+
     @Getter
     @Setter
     private int startTime;
+
     @Getter
     @Setter
     private int endTime;
+
     @Getter
     @Setter
     private Status status;
+
     @Getter
     @Setter
     @OneToMany(mappedBy = "parentEvent")
     private List<Resource> resources;
+
     @Getter
     @Setter
     @ManyToMany

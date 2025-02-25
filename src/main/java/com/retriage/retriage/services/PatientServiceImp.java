@@ -22,12 +22,14 @@ public class PatientServiceImp implements PatientService {
         this.patientRepository = patientRepository;
     }
 
+
     /**
      * Saves a patient
      *
-     * @param patient
-     * @return
+     * @param patient The patient to be saved
+     * @return The saved Patient
      */
+    @Override
     public Patient savePatient(Patient patient) {
         return patientRepository.save(patient);
     }
@@ -35,8 +37,9 @@ public class PatientServiceImp implements PatientService {
     /**
      * Retrieve all patients
      *
-     * @return
+     * @return list of all patients
      */
+    @Override
     public List<Patient> getAllPatients() {
         return patientRepository.findAll();
     }
@@ -44,26 +47,40 @@ public class PatientServiceImp implements PatientService {
     /**
      * Retrieve a single Patient by ID
      *
-     * @param id
-     * @return
+     * @param id patient ID
+     * @return patient object (if found)
      */
+    @Override
     public Optional<Patient> getPatientById(Long id) {
         return patientRepository.findById(id);
     }
 
     /**
-     * Optional: delete, update status, etc.
+     * Deletes a patient by ID
      *
-     * @param id
-     * @return
+     * @param id patient ID
      */
-    public boolean deletePatient(Long id) {
-        patientRepository.deleteById(id);
-        return false;
+    @Override
+    public void deletePatient(Long id) {
+        if (patientRepository.existsById(id)) {
+            patientRepository.deleteById(id);
+        }
     }
 
+    /**
+     * Updates a patient if they exist
+     *
+     * @param patient updated patient object
+     * @return true if update is successful, false otherwise
+     */
     @Override
-    public boolean updatePatient(Patient patient) {
-        return false;
+    public boolean updatePatient(Long id, Patient patient) {
+        if (!patientRepository.existsById(id)) {
+            return false; // Return false if patient doesn't exist
+        }
+
+        patient.setId(id); // Ensure ID stays the same
+        patientRepository.save(patient);
+        return true;
     }
 }
