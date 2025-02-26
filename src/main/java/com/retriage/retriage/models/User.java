@@ -18,11 +18,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
-
     private String firstName;
-
     private String lastName;
-
     private Role role;
 
 
@@ -80,6 +77,7 @@ public class User {
     public String getName() {
         return firstName + " " + lastName;
     }
+
 }
 
 
