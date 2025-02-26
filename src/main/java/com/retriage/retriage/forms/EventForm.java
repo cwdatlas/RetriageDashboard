@@ -8,28 +8,16 @@ import lombok.Setter;
 
 import java.util.List;
 
+@Setter
+@Getter
 public class EventForm {
 
-    @Getter
-    @Setter
     private String name;
-    @Getter
-    @Setter
     private User director;
-    @Getter
-    @Setter
     private int startTime;
-    @Getter
-    @Setter
     private int endTime;
-    @Getter
-    @Setter
     private Status status;
-    @Getter
-    @Setter
     private List<Resource> resources;
-    @Getter
-    @Setter
     private List<User> nurses;
 
     public EventForm() {
