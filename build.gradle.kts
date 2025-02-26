@@ -72,6 +72,16 @@ dependencies {
 	}
 	// Spring Security SAML 2.0 Service Provider dependency
 	implementation ("org.springframework.security:spring-security-saml2-service-provider")
+
+	//Testing Dependencies:
+	// Mockito Core (for mocking dependencies in unit tests)
+	testImplementation("org.mockito:mockito-core")
+	// Jackson (for JSON processing in integration tests)
+	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	// Spring Boot Test Starter (includes JUnit, Mockito, and Spring Test)
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	// Spring Security Test (Used for testing Authentication but may remove soon)
+	testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<Test> {
