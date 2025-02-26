@@ -8,8 +8,6 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Setter
-@Getter
 public class EventForm {
 
     private String name;
@@ -20,6 +18,63 @@ public class EventForm {
     private List<Resource> resources;
     private List<User> nurses;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<User> getNurses() {
+        return nurses;
+    }
+
+    public void setNurses(List<User> nurses) {
+        this.nurses = nurses;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public int getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(int endTime) {
+        this.endTime = endTime;
+    }
+
+    public int getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(int startTime) {
+        this.startTime = startTime;
+    }
+
+    public User getDirector() {
+        return director;
+    }
+
+    public void setDirector(User director) {
+        this.director = director;
+    }
+
     public EventForm() {
     }
+
 }
