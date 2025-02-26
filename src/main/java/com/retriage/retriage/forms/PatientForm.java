@@ -28,6 +28,54 @@ public class PatientForm {
     @Setter
     private User retriageNurse;
 
+    public String getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(String cardId) {
+        this.cardId = cardId;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    public List<Resource> getResourceList() {
+        return resourceList;
+    }
+
+    public void setResourceList(List<Resource> resourceList) {
+        this.resourceList = resourceList;
+    }
+
+    public User getRetriageNurse() {
+        return retriageNurse;
+    }
+
+    public void setRetriageNurse(User retriageNurse) {
+        this.retriageNurse = retriageNurse;
+    }
+
     public PatientForm() {
     }
 }
