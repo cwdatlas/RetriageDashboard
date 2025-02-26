@@ -41,6 +41,7 @@ class UserServiceImpTest {
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmail("john.doe@example.com");
+        System.out.println("User created! : " + user.getName());
     }
 
     @Test
