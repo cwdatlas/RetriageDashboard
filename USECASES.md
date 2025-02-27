@@ -85,9 +85,9 @@ The reason for this is twofold:
     - ~~React front end, Spring Back end and Mysql database running and talking to each other.~~
     - ~~Persist a patient account from the front end to the database and back.~~
     - ~~Solidify project schedule and detailed use cases.~~
-- 2/21
-    - Create Models for resources, Retriage Nurses, Directors ~~and Patients~~
-        - All resources will be built from the resource model then populated with predefined data.
+- ~~2/21~~
+    - ~~Create Models for resources, Retriage Nurses, Directors~~
+        - ~~All resources will be built from the resource model then populated with predefined data.~~
     - Build Front page, and event page
         - Login will need to use okta. CCIT must designate who is a Director
         - Event page must provide a view of active resources, Patient creation and time left in the event.
