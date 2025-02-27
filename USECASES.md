@@ -97,15 +97,22 @@ The reason for this is twofold:
         - Event Creation page is only accessible by the Director and can be accessed from the home page.
         - The Event Creation page allows the Director to choose between a set of predefined resources:
             - Ambulance, MRI, Surgery
-        - The Event creation page starts the event so a timer must start when the event starts.
-    - Build logging infrastructure
-        - Logging takes place when an object is created or changed by a Director or Retriage Nurse.
-            - Example: Patient 1234 is moved to MRI queue at 2:30pm 4/17/2025
-        - Logging will be saved to a text file and output to Director's Event Page
 - 3/7
+    - The Event creation page starts the event so a timer must start when the event starts.
+    - On the Event Creation page there will be a section to the right side of the page will have the resource template creation
+      - The resource template creation side has all but active as a savable variable
+      - The created templates need to be added to the event that is being made. Events are only added during creation time
+      - Events will be added with a corresponding int that represents the number of those events available
+    - The Event display page will display the current events attributes like 
+      John:
+        - Build logging infrastructure
+          - Logging takes place when an object is created or changed by a Director or Retriage Nurse.
+              - Example: Patient 1234 is moved to MRI queue at 2:30pm 4/17/2025
+                - Logging occurs at the controller and service level with appropriate severity level which is a case by case basis. 
+          - Logging will be saved to a text file and output to Director's Event Page
+- 3/14
     - Add correct organization, colors and other esthetic changes to webapp
     - Get in contact with Jeff Wald for help and guidance with first attempt at Carroll Design
-- 3/14
     - Continue to update the style of the application.
 - 3/21
     - TBD -- Wiggle Room --
