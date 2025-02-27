@@ -27,8 +27,6 @@ java {
 repositories {
 	// Use Maven Central repository for dependencies
 	mavenCentral()
-	//jcenter() repository is added for broader search, as a fallback for dependencies
-	jcenter()
 	//maven { url = uri("https://repo.maven.apache.org/maven2/") } // Explicit Maven Central URL -  (commented out as mavenCentral() already includes it)
 	// Add Shibboleth Maven repository for potential OpenSAML or related artifacts if needed
 	maven { url = uri("https://build.shibboleth.net/nexus/content/repositories/releases/") } // Add Shibboleth repo - for OpenSAML
@@ -40,7 +38,8 @@ dependencies {
 	// Spring Boot Starter Data JPA for database interaction using JPA
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	// Lombok for reducing boilerplate code in Java classes
-	implementation("org.projectlombok:lombok")
+	compileOnly("org.projectlombok:lombok:1.18.34")
+	annotationProcessor("org.projectlombok:lombok:1.18.34")
 	// Spring Boot Starter Thymeleaf for Thymeleaf templating engine
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	// Spring Boot Starter Test for testing Spring Boot applications
