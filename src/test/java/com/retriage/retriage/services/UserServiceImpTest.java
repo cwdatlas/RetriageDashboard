@@ -58,16 +58,20 @@ class UserServiceImpTest {
         System.out.println("Beginning Save User");
         // Assert that the saved user is not null
         assertNotNull(user);
+        System.out.println("Assertion Completed");
         // Additional assertions to verify the saved user
         assertEquals("John", user.getFirstName());
         assertEquals("Doe", user.getLastName());
+        System.out.println("Saved User: " + user.getName());
 
     }
 
     @Test
     //What are we testing: Ensure all users are retrieved using userRepository.findAll()
     void findAllUsers_ShouldReturnListOfUsers() {
+        System.out.println("Beginning Find All Users");
         List<User> users = Arrays.asList(user);
+        System.out.println("Grabbed list of users...");
         when(userRepository.findAll()).thenReturn(users);
 
         List<User> result = userService.findAllUsers();
