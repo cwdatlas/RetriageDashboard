@@ -3,6 +3,8 @@ package com.retriage.retriage.services;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +14,9 @@ import java.util.Optional;
 public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
+
+    // Add Logger for keeping track of any errors
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImp.class);
 
     /**
      * User Service constructor
@@ -30,6 +35,7 @@ public class UserServiceImp implements UserService {
      */
     public User saveUser(User user) {
         //Create or Update the User
+        logger.info("saveUser: User saved with ID: {}", user.getId()); // Log successful save
         return userRepository.save(user);
     }
 
@@ -61,6 +67,8 @@ public class UserServiceImp implements UserService {
     @Override
     public User updateUser(Long id, User user) {
         if (!userRepository.existsById(id)) {
+            String errorMessage = "User with id " + id + " not found for update.";
+            logger.error("updateUser: " + errorMessage); // Keep logger.error, use method name in log
             return null; // Return null if the user doesn't exist
         }
 
@@ -77,9 +85,14 @@ public class UserServiceImp implements UserService {
     public void deleteUserById(Long id) {
         if(userRepository.existsById(id)) {
             userRepository.deleteById(id);
+            logger.info("deleteUserById: User deleted successfully with ID: {}", id); // Log successful deletion
         } else {
+            // Create a descriptive error message
+            String errorMessage = "User with id " + id + " does not exist.";
+            // Log a warning
+            logger.warn("deleteUserById: " + errorMessage);
             // Handle the case when the user doesn't exist, e.g., log or throw an exception
-            throw new RuntimeException("User with id " + id + " does not exist.");
+            throw new RuntimeException(errorMessage); // Still throw the exception
         }
     }
 
