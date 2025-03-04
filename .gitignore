@@ -37,8 +37,6 @@ out/
 .vscode/
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-RetriageFrontEnd/
-
 # dependencies
 /RetriageFrontEnd/node_modules
 /RetriageFrontEnd/.pnp
