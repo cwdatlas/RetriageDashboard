@@ -37,10 +37,11 @@ out/
 .vscode/
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+RetriageFrontEnd/
 
 # dependencies
-RetriageFrontEnd/node_modules
-RetriageFrontEnd/.pnp
+/RetriageFrontEnd/node_modules
+/RetriageFrontEnd/.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -52,8 +53,8 @@ RetriageFrontEnd/.pnp
 RetriageFrontEnd/coverage
 
 # next.js
-RetriageFrontEnd/.next/
-RetriageFrontEnd/out/
+RetriageFrontEnd/.next/*
+RetriageFrontEnd/out/*
 
 # production
 RetriageFrontEnd/build
@@ -75,5 +76,5 @@ RetriageFrontEnd/.env*
 RetriageFrontEnd/.vercel
 
 # typescript
-RetriageFrontEnd/*.tsbuildinfo
-RetriageFrontEnd/next-env.d.ts
+/RetriageFrontEnd/*.tsbuildinfo
+/RetriageFrontEnd/next-env.d.ts
