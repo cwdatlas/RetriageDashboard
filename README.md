@@ -26,6 +26,4 @@
 
 If you are using podman instead of docker, make sure to replace docker with podman in the below command
 
-- `docker run --detach -p 3306:3306 --name retriage_database -e
-  MYSQL_ROOT_PASSWORD=secretPass -e MYSQL_DATABASE=retriageDashboard -e
-  MYSQL_USER=backend -e MYSQL_PASSWORD=secretPass -d mysql:9.2.0`
+- `docker run --detach -p 3306:3306 --name retriage_database -e MYSQL_ROOT_PASSWORD=secretPass -e MYSQL_DATABASE=retriageDashboard -e MYSQL_USER=backend -e MYSQL_PASSWORD=secretPass -d mysql:9.2.0`
