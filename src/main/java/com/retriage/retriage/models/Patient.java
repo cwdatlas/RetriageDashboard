@@ -4,7 +4,6 @@ import com.retriage.retriage.enums.Condition;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.List;
 
 @Entity
@@ -28,29 +27,25 @@ public class Patient {
     @Setter
     private String lastName;
 
+    // Use a safer column name instead of 'condition'
     @Getter
     @Setter
-    private Condition condition;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "patient_condition")
+    private Condition Condition;
 
+    //Not Owner
     @Getter
     @Setter
-    @ManyToMany
-    @JoinTable(
-            name = "patient_resources",
-            joinColumns = @JoinColumn(name = "patient_id"),
-            inverseJoinColumns = @JoinColumn(name = "resource_id")
-    )
+    @ManyToMany(mappedBy = "patients")
     private List<Resource> resourceList;
 
+    // Owner
     @Getter
     @Setter
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
     private User retriageNurse;
 
-
-
-    // Default constructor (required by JPA)
     public Patient() {
     }
 }

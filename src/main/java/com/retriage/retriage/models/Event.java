@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Table(name = "event")
+@Table(name = "events") // Renamed to avoid MySQL 'event' keyword conflicts
 public class Event {
     @Getter
     @Setter
@@ -19,10 +19,10 @@ public class Event {
     @Setter
     private String name;
 
+    //Owner of director
     @Getter
     @Setter
     @ManyToOne
-    @JoinColumn(name = "director_id", nullable = false)
     private User director;
 
     @Getter
@@ -37,11 +37,13 @@ public class Event {
     @Setter
     private Status status;
 
+    //Not Owner
     @Getter
     @Setter
     @OneToMany(mappedBy = "parentEvent")
     private List<Resource> resources;
 
+    //Owner
     @Getter
     @Setter
     @ManyToMany
