@@ -71,7 +71,6 @@ public class UserServiceImp implements UserService {
             logger.error("updateUser: " + errorMessage); // Keep logger.error, use method name in log
             return null; // Return null if the user doesn't exist
         }
-
         user.setId(id); // Ensure we maintain the correct ID
         return userRepository.save(user);
     }
