@@ -35,3 +35,45 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+RetriageFrontEnd/node_modules
+RetriageFrontEnd/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+RetriageFrontEnd/coverage
+
+# next.js
+RetriageFrontEnd/.next/
+RetriageFrontEnd/out/
+
+# production
+RetriageFrontEnd/build
+
+# misc
+RetriageFrontEnd/.DS_Store
+RetriageFrontEnd/*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+RetriageFrontEnd/.env*
+
+# vercel
+RetriageFrontEnd/.vercel
+
+# typescript
+RetriageFrontEnd/*.tsbuildinfo
+RetriageFrontEnd/next-env.d.ts
