@@ -41,6 +41,7 @@ public class UserServiceImp implements UserService {
     public User saveUser(@Valid User user) {
         //Create or Update the User
         logger.info("saveUser: User saved with ID: {}", user.getId()); // Log successful save
+
         return userRepository.save(user);
     }
 

@@ -22,6 +22,7 @@ public class User {
     @Setter
     @NotBlank(message = "Email cannot be blank") // Validation: Not blank
     @Email(message = "Email should be valid") // Validation: Valid email format
+    @NotNull
     private String email;
 
     @Getter

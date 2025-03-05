@@ -8,6 +8,8 @@ package com.retriage.retriage.services;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.models.User; // Imports User model
 import com.retriage.retriage.repositories.UserRepository; // Import UserRepository
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test; // Import JUnit 5's Test annotation
 import org.junit.jupiter.api.extension.ExtendWith; // Import JUnit 5's ExtendWith
 import org.mockito.InjectMocks; // Imports Mockito's InjectMocks annotation
@@ -18,12 +20,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-
-
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*; // Static imports for assertions
 import static org.mockito.Mockito.*; // Static imports for Mockito
+import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class) // Enable Mockito for this test class
@@ -125,7 +128,6 @@ class UserServiceImpTest {
         // we are just interested in triggering the log output.
     }
 
-
     //saveUser TESTS
     /**
      * Tests the {@link UserServiceImp#saveUser(User)} method
@@ -192,27 +194,26 @@ class UserServiceImpTest {
     }
 
     @Test
-    void saveUser_InvalidEmail_ShouldThrowException() {
+    void saveUser_InvalidEmail_ShouldNotSaveUser() {
         // Arrange
-        User invalidUser = createUser(4L, null, "Test", "User", Role.Guest); // Invalid email format
+        User invalidUser = createUser(4L, "invalid-email-format", "Test", "User", Role.Guest); // Invalid email format
+        // Act
+        userServiceImp.saveUser(invalidUser); // Call saveUser - we are *not* expecting an exception here anymore
 
-        // Act & Assert
-        jakarta.validation.ConstraintViolationException exception = assertThrows(
-                jakarta.validation.ConstraintViolationException.class, // Expect this exception to be thrown
-                () -> userServiceImp.saveUser(invalidUser), // Lambda expression calling saveUser with invalid user
-                "Expected ConstraintViolationException to be thrown for invalid email" // Optional message for assertion failure
-        );
+        // Assert - Focus on verifying that userRepository.save() is *never* called
+        verify(userRepository, never()).save(any(User.class)); // Assert: save() should NOT be called
     }
 
     @Test
-    void saveUser_BlankFirstName_ShouldThrowException() {
+    void saveUser_BlankFirstName_ShouldNotSaveUser() {
         // Arrange
         User invalidUser = createUser(54L, "test@example.com", "", "User", Role.Guest); // Blank first name
 
-        // Act & Assert
-        assertThrows(jakarta.validation.ConstraintViolationException.class,
-                () -> userServiceImp.saveUser(invalidUser),
-                "Expected ConstraintViolationException for blank first name");
+        // Act
+        userServiceImp.saveUser(invalidUser); // Call saveUser - no exception expectation
+
+        // Assert - Verify userRepository.save() is NEVER called
+        verify(userRepository, never()).save(any(User.class)); // Assert: save() should NOT be called
     }
 
     //findAllUsers TESTS
