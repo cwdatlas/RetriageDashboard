@@ -2,15 +2,20 @@ package com.retriage.retriage.services;
 
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.repositories.UserRepository;
+import jakarta.validation.Valid; // Import Valid annotation
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated; // Import Validated annotation
+import jakarta.validation.Valid;
+
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Validated
 public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
@@ -33,7 +38,7 @@ public class UserServiceImp implements UserService {
      * @param user The User to be saved
      * @return The saved User
      */
-    public User saveUser(User user) {
+    public User saveUser(@Valid User user) {
         //Create or Update the User
         logger.info("saveUser: User saved with ID: {}", user.getId()); // Log successful save
         return userRepository.save(user);
@@ -74,7 +79,6 @@ public class UserServiceImp implements UserService {
         user.setId(id); // Ensure we maintain the correct ID
         return userRepository.save(user);
     }
-
 
     /**
      * Remove a User from saved list.
