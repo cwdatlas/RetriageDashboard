@@ -1,4 +1,4 @@
-package com.retriage.retriage;
+package com.retriage.retriage.controllers;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
@@ -45,6 +45,4 @@ public class HomeController {
         // Return the name of the home view template (e.g., home.html)
         return "home";
     }
-
-
 }

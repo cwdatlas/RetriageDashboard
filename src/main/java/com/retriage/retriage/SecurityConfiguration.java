@@ -2,6 +2,7 @@ package com.retriage.retriage;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -55,6 +56,10 @@ public class SecurityConfiguration {
         //Authentication begins here
         // Configure HTTP security settings
         http.authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/events/**").permitAll()
+                        .requestMatchers("/patients/**").permitAll()
+                        .requestMatchers("/resources/**").permitAll()
+                        .requestMatchers("/users/**").permitAll()
                         .anyRequest().authenticated()) // Require authentication for any request to this application
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider))) // Use the custom SAML authentication provider
