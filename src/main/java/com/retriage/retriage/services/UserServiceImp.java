@@ -30,6 +30,7 @@ public class UserServiceImp implements UserService {
      */
     public UserServiceImp(UserRepository userRepository) {
         this.userRepository = userRepository;
+        logger.debug("UserServiceImp constructor: userRepository instance = {}", userRepository); // Debug log
     }
 
     /**
@@ -51,7 +52,9 @@ public class UserServiceImp implements UserService {
      * @return Every user account
      */
     public List<User> findAllUsers() {
+        logger.debug("findAllUsers: About to call userRepository.findAll()");
         return userRepository.findAll();
+
     }
 
     /**
@@ -61,6 +64,7 @@ public class UserServiceImp implements UserService {
      * @return The User object assigned to the passed in ID
      */
     public Optional<User> findUserById(Long id) {
+        logger.debug("findAllUsers: About to call userRepository.findAll()");
         return userRepository.findById(id);
     }
 
@@ -71,7 +75,10 @@ public class UserServiceImp implements UserService {
      * @return Saving the newly updated User
      */
     @Override
-    public User updateUser(Long id, User user) {
+    public User updateUser(Long id, @Valid User user) {
+        // Log user before validation
+        logger.debug("Updating user with ID: " + id);
+        logger.debug("User details: " + user);
         if (!userRepository.existsById(id)) {
             String errorMessage = "User with id " + id + " not found for update.";
             logger.error("updateUser: " + errorMessage); // Keep logger.error, use method name in log
