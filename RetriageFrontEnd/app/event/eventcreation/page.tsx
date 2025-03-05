@@ -157,7 +157,7 @@ export default function EventCreation() {
                     )}
                 </div>
 
-                {/* ========== SELECTED RESOURCES (EVENT) ========== */}
+                {/* ========== SELECTED RESOURCES ========== */}
                 <div style={{ marginBottom: "1rem" }}>
                     <h3>Event Resources:</h3>
                     {selectedResources.length === 0 ? (

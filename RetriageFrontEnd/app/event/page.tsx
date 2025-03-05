@@ -8,6 +8,7 @@ import Link from "next/link";
 
 export default function event() {
     const role = getCookies("role");
+
     if (role === Role.Director) {
         return (
             <main>

@@ -1,6 +1,4 @@
-import {User} from "@/app/models/user";
 import {Event} from "./../models/event";
-import {Resource} from "@/app/models/resource";
 
 export const dynamic = 'force-static'
 
@@ -8,7 +6,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8
 const ENDPOINT = "/events"
 
 export async function getAllEvents(): Promise<Event[]> {
-    const res = await fetch(`${API_BASE_URL}`+ENDPOINT, {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -24,7 +22,7 @@ export async function getAllEvents(): Promise<Event[]> {
  * Create a new event
  */
 export async function createEvent(event: { event: Event }): Promise<Event> {
-    const res = await fetch(`${API_BASE_URL}`+ENDPOINT, {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -42,7 +40,7 @@ export async function createEvent(event: { event: Event }): Promise<Event> {
  * Optionally, get a single event by ID
  */
 export async function getEventById(): Promise<Event> {
-    const res = await fetch(`${API_BASE_URL}`+ENDPOINT, {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -58,7 +56,7 @@ export async function getEventById(): Promise<Event> {
  * Optionally, delete a event
  */
 export async function deleteEvent(id: number): Promise<void> {
-    const res = await fetch(`${API_BASE_URL}`+ENDPOINT+`${id}`, {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + `${id}`, {
         method: "DELETE",
     });
     if (!res.ok) {
