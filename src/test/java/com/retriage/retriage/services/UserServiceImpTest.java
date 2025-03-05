@@ -500,7 +500,6 @@ class UserServiceImpTest {
         verify(userRepository, never()).save(any(User.class));
     }
 
-
     /**
      * Tests the {@link UserServiceImp#updateUser(Long, User)} method
      * when the updated user data contains a blank first name,
