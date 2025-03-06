@@ -105,7 +105,6 @@ public class UserServiceImp implements UserService {
         return userRepository.save(user);
     }
 
-
     /**
      * Remove a User from saved list.
      *
