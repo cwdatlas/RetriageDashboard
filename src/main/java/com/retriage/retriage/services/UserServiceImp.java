@@ -1,8 +1,11 @@
 package com.retriage.retriage.services;
 
+import com.retriage.retriage.controllers.ResourceTemplateController;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +13,8 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImp implements UserService {
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImp.class);
+
 
     private final UserRepository userRepository;
 
@@ -81,6 +86,23 @@ public class UserServiceImp implements UserService {
             // Handle the case when the user doesn't exist, e.g., log or throw an exception
             throw new RuntimeException("User with id " + id + " does not exist.");
         }
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        if (email != null) {
+            try {
+                List<User> users = userRepository.findByEmailIgnoreCase(email);
+                if (users.size() == 1) {
+                    return users.get(0);
+                } else {
+                    log.warn("GetUserByName: 0 or 1 < users found with name '{}'", email);
+                }
+            } catch (Exception e) {
+                log.info("getUserByName:", e);
+            }
+        }
+        return null;
     }
 
 }
