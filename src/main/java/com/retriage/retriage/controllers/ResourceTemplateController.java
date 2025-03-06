@@ -6,13 +6,16 @@ import com.retriage.retriage.services.ResourceTemplateService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/resources/templates")
+@RequestMapping("/api/resources/templates")
 public class ResourceTemplateController {
+    private static final Logger log = LoggerFactory.getLogger(ResourceTemplateController.class);
     /**
      *
      */
@@ -43,8 +46,10 @@ public class ResourceTemplateController {
 
         boolean saved = resourceService.saveResourceTmp(newResource);
         String response = "Unable to save";
+        log.warn("Unable to save template '{}'", newResource);
         if (saved) {
             response = "Saved Successfully";
+            log.debug("Saved new resource Template '{}'", newResource);
         }
         return response;
     }
@@ -55,7 +60,10 @@ public class ResourceTemplateController {
      */
     @GetMapping(produces = "application/json")
     public List<Resource> getAllResources() {
-        return resourceService.findAllResourcesTmp();
+        List<Resource> resources = resourceService.findAllResourcesTmp();
+        log.debug("Found {} resources", resources.size());
+        log.debug("Resources '{}' found", resources);
+        return resources;
     }
 
     /**

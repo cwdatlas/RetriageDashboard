@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/patients")
+@RequestMapping("/api/patients")
 public class PatientController {
     /**
      *
