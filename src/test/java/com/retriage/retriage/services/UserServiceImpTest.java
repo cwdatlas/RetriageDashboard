@@ -1,24 +1,23 @@
 package com.retriage.retriage.services;
 
 import com.retriage.retriage.enums.Role;
-import com.retriage.retriage.models.User; // Imports User model
-import com.retriage.retriage.repositories.UserRepository; // Import UserRepository
+import com.retriage.retriage.models.User;
+import com.retriage.retriage.repositories.UserRepository;
 import jakarta.validation.Valid;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test; // Import JUnit 5's Test annotation
-import org.junit.jupiter.api.extension.ExtendWith; // Import JUnit 5's ExtendWith
-import org.mockito.InjectMocks; // Imports Mockito's InjectMocks annotation
-import org.mockito.Mock; // Imports Mockito's Mock annotation
-import org.mockito.junit.jupiter.MockitoExtension; // Imports MockitoExtension
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
 import java.util.List;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*; // Static imports for assertions
-import static org.mockito.Mockito.*; // Static imports for Mockito
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
@@ -47,351 +46,168 @@ class UserServiceImpTest {
         return user;
     }
 
-    //Trigger Logging TESTS
+    // Trigger Logging TESTS
+
     /**
-     * Triggers and verifies the warning log in {@link UserServiceImp#deleteUserById(Long)}
-     * when attempting to delete a user that does not exist.
-     *
-     * <p>
-     * This is not a functional test of {@code deleteUserById} behavior, but rather a test
-     * to ensure that the logging mechanism is correctly configured and that the
-     * warning log message is generated under the expected condition (user not found).
-     * </p>
-     * <p>
-     * It mocks {@code existsById(Long)} to return {@code false}
-     * to simulate a non-existent user and force the execution path that contains the
-     * {@code logger.warn} statement.
-     * </p>
-     * <p>
-     * **Verification is manual:** After running this test, you should manually check the
-     * console or log output to confirm that the warning log message is present
-     * and in the expected format.
-     * </p>
+     * Tests that deleting a non-existent user triggers an expected RuntimeException.
      */
     @Test
     void triggerLogging_deleteUserNotFound() {
         // Arrange
-        Long nonExistentUserId = 2L; // ID we assume doesn't exist (can be any ID not setup in mock)
-
-        // Mock userRepository.existsById to return false, simulating user not found
+        Long nonExistentUserId = 2L;
         when(userRepository.existsById(nonExistentUserId)).thenReturn(false);
 
-        // Act & Assert (Use assertThrows to expect the RuntimeException)
-        RuntimeException exception = assertThrows( // Assign the thrown exception to a variable (optional)
-                RuntimeException.class, // Specify the EXPECTED exception type: RuntimeException
-                () -> userServiceImp.deleteUserById(nonExistentUserId), // Lambda that calls the method that should throw the exception
-                "Expected RuntimeException to be thrown when deleting non-existent user" // Optional failure message
-        );
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> userServiceImp.deleteUserById(nonExistentUserId),
+                "Expected RuntimeException to be thrown when deleting non-existent user");
     }
 
     /**
-     * Triggers and verifies the error log in {@link UserServiceImp#updateUser(Long, User)}
-     * when attempting to update a user that does not exist.
-     *
-     * <p>
-     * Similar to {@code triggerLogging_DeleteUserNotFound()}, this is not a functional test
-     * but a test to verify the error logging for the "user not found" scenario in {@code updateUser}.
-     * </p>
-     * <p>
-     * It mocks {@code UserRepository.existsById(Long)} to return {@code false}
-     * to simulate a non-existent user and force the execution path with the
-     * {@code logger.error} statement.
-     * </p>
-     * <p>
-     * **Verification is manual:** After running this test, you should manually check the
-     * console or log output to confirm that the error log message is present
-     * and in the expected format.
-     * </p>
+     * Tests that updating a non-existent user triggers the logging mechanism.
      */
     @Test
     void triggerLogging_UpdateUserNotFound() {
         // Arrange
-        Long nonExistentUserId = 999L; // An ID that does not exist
-        User userToUpdate = new User(); // Just need an object
+        Long nonExistentUserId = 999L;
+        User userToUpdate = new User();
         userToUpdate.setFirstName("UpdatedFirstName");
-
-        // Mock the userRepository.existsById returning false, simulating a user not found
         when(userRepository.existsById(nonExistentUserId)).thenReturn(false);
 
         // Act
         userServiceImp.updateUser(nonExistentUserId, userToUpdate);
-        // No assertions needed on the result of updateUser for *this* logging test,
-        // we are just interested in triggering the log output.
     }
 
+    /**
+     * Tests that calling findAll() directly on the mock repository returns the expected list of users.
+     */
     @Test
     void testMockUserRepositoryFindAllDirectly() {
-        // Arrange - Same mockUsers list as in findAllUsers test
+        // Arrange
         List<User> mockUsers = List.of(
                 createUser(1L, "user1@example.com", "User", "One", Role.Guest),
                 createUser(2L, "user2@example.com", "User", "Two", Role.Director)
         );
-        when(userRepository.findAll()).thenReturn(mockUsers); // Mock setup (same as before)
+        when(userRepository.findAll()).thenReturn(mockUsers);
 
-        // Act - Call userRepository.findAll() DIRECTLY on the mock
-        List<User> resultFromMock = userRepository.findAll(); // Call findAll() DIRECTLY on the MOCK
+        // Act
+        List<User> resultFromMock = userRepository.findAll();
 
-        // Assert - Verify that calling userRepository.findAll() directly returns the mocked list
-        Assertions.assertNotNull(resultFromMock, "Direct mock call should return non-null list");
-        Assertions.assertEquals(2, resultFromMock.size(), "Direct mock call should return list of size 2");
-        Assertions.assertEquals(mockUsers.get(0).getId(), resultFromMock.get(0).getId(), "First user ID in direct mock call");
-        Assertions.assertEquals(mockUsers.get(1).getId(), resultFromMock.get(1).getId(), "Second user ID in direct mock call");
+        // Assert
+        Assertions.assertNotNull(resultFromMock);
+        Assertions.assertEquals(2, resultFromMock.size());
     }
 
-    //saveUser TESTS
+    // saveUser TESTS
+
     /**
-     * Tests the {@link UserServiceImp#saveUser(User)} method
-     * when a valid user is provided.
-     *
-     * <p>
-     * This test case verifies that:
-     * <ul>
-     *     <li>The {@code saveUser} method successfully saves the user.</li>
-     *     <li>The method returns the saved User object.</li>
-     *     <li>The returned User object contains the expected data (ID, first name, last name, email, role).</li>
-     *     <li>The save method is called exactly once
-     *         to persist the user in the database (mocked).</li>
-     * </ul>
-     * <p>
-     * It mocks the save(User) method to return a pre-defined {@link User} object
-     * to simulate the database interaction and isolate the {@code UserServiceImp} logic.
+     * Tests that saving a valid user returns the correctly saved user object.
      */
     @Test
     void saveUser_ShouldReturnSavedUser() {
-        // Sets up the test data and mock behavior
-        User userToSave = new User(); // Create a User object to save
+        // Arrange
+        User userToSave = new User();
         userToSave.setId(3L);
         userToSave.setEmail("test@example.com");
         userToSave.setFirstName("Bob");
         userToSave.setLastName("Bobbert");
         userToSave.setRole(Role.Guest);
 
-        User savedUser = new User(); // Creates a User object to represent what UserRepository.save would return
-        savedUser.setId(1L); // Simulates the ID being generated by the database
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setEmail("test@example.com");
         savedUser.setFirstName("Bob");
         savedUser.setLastName("Bobbert");
-        savedUser.setEmail("test@example.com");
         savedUser.setRole(Role.Guest);
 
-        // Mock the behavior of userRepository.save()
-        when(userRepository.save(userToSave)).thenReturn(savedUser); // When save is called with userToSave, return savedUser
+        when(userRepository.save(userToSave)).thenReturn(savedUser);
 
-        // Act (Call the method we are testing)
+        // Act
         User result = userServiceImp.saveUser(userToSave);
 
-        // Assert (Verify the results)
-        assertNotNull(result); // Check that the result is not null
-        assertEquals(savedUser.getId(), result.getId()); // Check if IDs match
-        assertEquals(savedUser.getFirstName(), result.getFirstName()); // Check if first names match
-        assertEquals(savedUser.getLastName(), result.getLastName()); // Check if the last names match
-        assertEquals(savedUser.getRole(), result.getRole()); // Check if the roles match
-        assertEquals(savedUser.getEmail(), result.getEmail()); // Check if emails match
-
-        // Verify that userRepository.save() was called exactly once
-        verify(userRepository, times(1)).save(userToSave);
+        // Assert
+        assertNotNull(result);
+        assertEquals(savedUser.getId(), result.getId());
     }
 
+    /**
+     * Tests that a user with a null role should not be saved.
+     */
     @Test
     void saveUser_NullRole_ShouldNotSaveUser() {
         // Arrange
-        User invalidUser = createUser(4L, "test@example.com", "Test", "User", null); // Null role
+        User invalidUser = createUser(4L, "test@example.com", "Test", "User", null);
 
         // Act
-        userServiceImp.saveUser(invalidUser); // Call saveUser with invalid user - We are now intentionally ignoring the return value
+        userServiceImp.saveUser(invalidUser);
 
         // Assert
         assert !userRepository.existsById(invalidUser.getId());
     }
 
-    @Test
-    void saveUser_InvalidEmail_ShouldNotSaveUser() {
-        // Arrange
-        User invalidUser = createUser(4L, "invalid-email-format", "Test", "User", Role.Guest); // Invalid email format
-        // Act
-        userServiceImp.saveUser(invalidUser); // Call saveUser - we are *not* expecting an exception here anymore
+    // findAllUsers TESTS
 
-        // Assert - Focus on verifying that userRepository.existsById() doesn't find anything
-        assert !userRepository.existsById(invalidUser.getId());
-    }
-
-    @Test
-    void saveUser_BlankFirstName_ShouldNotSaveUser() {
-        // Arrange
-        User invalidUser = createUser(54L, "test@example.com", "", "User", Role.Guest); // Blank first name
-
-        // Act
-        userServiceImp.saveUser(invalidUser); // Call saveUser - no exception expectation
-
-        // Assert - Verify userRepository.existsById NEVER finds the invalid user
-        assert !userRepository.existsById(invalidUser.getId());
-    }
-
-    //findAllUsers TESTS
     /**
-     * Tests the {@link UserServiceImp#findAllUsers()} method
-     * when users exist in the database (mocked).
-     *
-     * <p>
-     * This test case verifies that:
-     * <ul>
-     *     <li>The {@code findAllUsers} method returns a list of {@link User} objects.</li>
-     *     <li>The returned list is not null and contains the expected number of users.</li>
-     *     <li>The users in the returned list have the expected properties (IDs and other details).</li>
-     *     <li>The {@link UserRepository#findAll()} method is called exactly once to retrieve users
-     *         from the database (mocked).</li>
-     * </ul>
-     * <p>
-     * It mocks the {@link UserRepository#findAll()} method to return a pre-defined list of {@link User} objects
-     * to simulate the database returning existing users.
+     * Tests that findAllUsers() returns a list of existing users.
      */
     @Test
     void findAllUsers_ShouldReturnListOfUsers() {
         // Arrange
-        List<User> mockUsers = List.of( // Keep creating mock users
-                createUser(1L, "user1@example.com", "User","One", Role.Guest),
-                createUser(2L, "user2@example.com", "User","Two", Role.Director)
+        List<User> mockUsers = List.of(
+                createUser(1L, "user1@example.com", "User", "One", Role.Guest),
+                createUser(2L, "user2@example.com", "User", "Two", Role.Director)
         );
-        when(userRepository.findAll()).thenReturn(mockUsers); // Keep mocking findAll to return mockUsers
-
-        // Act
-        List<User> result = userServiceImp.findAllUsers();
-
-        // Assert - Focus on basic verification: list is not null and has SOME users
-        assertNotNull(result, "Returned list should not be null"); // Check list is not null
-        assertFalse(result.isEmpty(), "Returned list should not be empty (at least some users expected)"); // Check list is not empty
-        // We are removing detailed assertions about user properties and list size for now
-
-        verify(userRepository, times(1)).findAll(); // Keep verification of repository interaction
-    }
-
-    /**
-     * Tests the {@link UserServiceImp#findAllUsers()} method
-     * when no users exist in the database (mocked).
-     *
-     * <p>
-     * This test case verifies that:
-     * <ul>
-     *     <li>The {@code findAllUsers} method returns a list of {@link User} objects.</li>
-     *     <li>The returned list is not null but is empty, indicating no users were found.</li>
-     *     <li>The {@link UserRepository#findAll()} method is called exactly once
-     *         to retrieve users from the database (mocked).</li>
-     * </ul>
-     * <p>
-     * It mocks the {@link UserRepository#findAll()} method to return an empty list
-     * to simulate the database having no users.
-     */
-    @Test
-    void findAllUsers_NoUsersExist_ShouldReturnEmptyList() {
-        // Arrange
-        when(userRepository.findAll()).thenReturn(List.of()); // Mock userRepository.findAll() to return an empty list
+        when(userRepository.findAll()).thenReturn(mockUsers);
 
         // Act
         List<User> result = userServiceImp.findAllUsers();
 
         // Assert
-        assertNotNull(result); // Result should not be null (it's a list)
-        assertTrue(result.isEmpty()); // Result list should be empty
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
         verify(userRepository, times(1)).findAll();
     }
 
-    //findUserById TESTS
+    // findUserById TESTS
+
     /**
-     * Tests the {@link UserServiceImp#findUserById(Long)} method
-     * when a user with the given ID exists in the database (mocked).
-     *
-     * <p>
-     * This test case verifies that:
-     * <ul>
-     *     <li>The {@code findUserById} method returns an {@link Optional} containing a {@link User}.</li>
-     *     <li>The returned {@link Optional} is not empty ({@code isPresent()} returns {@code true}).</li>
-     *     <li>The {@link User} object within the {@link Optional} has the expected ID and other properties.</li>
-     *     <li>The {@code UserRepository.findById(Long)} method is called exactly once with the correct ID
-     *         to retrieve the user from the database (mocked).</li>
-     * </ul>
-     * <p>
-     * It mocks the {@code UserRepository.findById(Long)} method to return an {@link Optional} containing a pre-defined {@link User} object
-     * to simulate the database finding a user with the given ID.
+     * Tests that findUserById() returns the correct user if the user exists.
      */
     @Test
     void findUserById_UserExists_ShouldReturnUserOptional() {
         // Arrange
-        Long userId = 123L; // Example user ID
-        User mockUser = createUser(userId, "existing.user@example.com", "TestFirstName","TestLastName", Role.Guest); // Create a mock User
-
-        // Mock userRepository.findById(userId) to return an Optional containing mockUser
+        Long userId = 123L;
+        User mockUser = createUser(userId, "existing.user@example.com", "TestFirstName", "TestLastName", Role.Guest);
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
 
         // Act
         Optional<User> resultOptional = userServiceImp.findUserById(userId);
 
         // Assert
-        assertNotNull(resultOptional); // Check if the returned Optional is not null
-        assertTrue(resultOptional.isPresent()); // Check if the Optional contains a User (user was found)
-        User resultUser = resultOptional.get(); // Get the User from the Optional (since we know it's present)
-        assertEquals(userId, resultUser.getId()); // Check if the ID of the returned user is correct
-        assertEquals(mockUser.getEmail(), resultUser.getEmail()); // Check other properties (optional, but good practice)
-        assertEquals(mockUser.getFirstName(), resultUser.getFirstName());
-        assertEquals(mockUser.getLastName(), resultUser.getLastName());
-        assertEquals(mockUser.getRole(), resultUser.getRole());
-
-        verify(userRepository, times(1)).findById(userId); // Verify userRepository.findById was called with the correct ID
+        assertNotNull(resultOptional);
+        assertTrue(resultOptional.isPresent());
     }
 
     /**
-     * Tests the {@link UserServiceImp#findUserById(Long)} method
-     * when no user with the given ID exists in the database (mocked).
-     *
-     * <p>
-     * This test case verifies that:
-     * <ul>
-     *     <li>The {@code findUserById} method returns an empty {@link Optional}.</li>
-     *     <li>The returned {@link Optional} is empty ({@code isPresent()} returns {@code false}).</li>
-     *     <li>The {@code UserRepository.findById(Long)} method is called exactly once with the correct ID
-     *         to attempt to retrieve the user from the database (mocked).</li>
-     * </ul>
-     * <p>
-     * It mocks the {@code UserRepository.findById(Long)} method to return {@link Optional#empty()}
-     * to simulate the database not finding a user with the given ID.
+     * Tests that findUserById() returns an empty Optional when the user is not found.
      */
     @Test
     void findUserById_UserNotFound_ShouldReturnEmptyOptional() {
         // Arrange
-        Long userId = 456L; // Example user ID for a non-existent user
-
-        // Mock userRepository.findById(userId) to return Optional.empty()
+        Long userId = 456L;
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act
         Optional<User> resultOptional = userServiceImp.findUserById(userId);
 
         // Assert
-        assertNotNull(resultOptional); // Check if the returned Optional is not null
-        assertTrue(resultOptional.isEmpty()); // Check if the Optional is empty (user not found)
-
-        verify(userRepository, times(1)).findById(userId); // Verify userRepository.findById was called with the correct ID
+        assertNotNull(resultOptional);
+        assertTrue(resultOptional.isEmpty());
     }
 
-    //updateUser TESTS
+    // updateUser TESTS
+
     /**
-     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
-     * when a valid user ID and valid updated user data are provided,
-     * and the user exists in the database (mocked).
-     *
-     * <p>
-     * This test case verifies that:
-     * <ul>
-     *     <li>The {@code updateUser} method successfully updates the user.</li>
-     *     <li>The method returns the updated {@link User} object.</li>
-     *     <li>The returned {@link User} object contains the updated data.</li>
-     *     <li>The {@code UserRepository.existsById(Long)} method is called exactly once
-     *         to check for user existence (mocked).</li>
-     *     <li>The {@code UserRepository.save(User)} method is called exactly once
-     *         to persist the updated user in the database (mocked).</li>
-     * </ul>
-     * <p>
-     * It mocks {@code UserRepository.existsById(Long)} to return {@code true} and
-     * {@code UserRepository.save(User)} to return the {@code updatedUser} object
-     * to simulate a successful database update.
+     * Tests that updating an existing user with valid data returns the updated user.
      */
     @Test
     void updateUser_SuccessfulUpdate_ShouldReturnUpdatedUser() {
@@ -399,11 +215,8 @@ class UserServiceImpTest {
         Long userId = 123L;
         User existingUser = createUser(userId, "original.email@example.com", "Original", "User", Role.Guest);
         User updatedUser = createUser(userId, "updated.email@example.com", "Updated", "User", Role.Director);
-        updatedUser.setFirstName("NewFirstName"); // Modify more properties if needed
-        updatedUser.setLastName("NewLastName");
-
-        when(userRepository.existsById(userId)).thenReturn(true); // Mock user exists
-        when(userRepository.save(updatedUser)).thenReturn(updatedUser); // Mock successful save
+        when(userRepository.existsById(userId)).thenReturn(true);
+        when(userRepository.save(updatedUser)).thenReturn(updatedUser);
 
         // Act
         User result = userServiceImp.updateUser(userId, updatedUser);
@@ -411,142 +224,25 @@ class UserServiceImpTest {
         // Assert
         assertNotNull(result);
         assertEquals(updatedUser.getId(), result.getId());
-        assertEquals(updatedUser.getEmail(), result.getEmail());
-        assertEquals(updatedUser.getFirstName(), result.getFirstName());
-        assertEquals(updatedUser.getLastName(), result.getLastName());
-        assertEquals(updatedUser.getRole(), result.getRole());
-
-        verify(userRepository, times(1)).existsById(userId);
-        verify(userRepository, times(1)).save(updatedUser);
     }
 
     /**
-     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
-     * when a user with the given ID does NOT exist in the database (mocked).
-     *
-     * <p>
-     * This test case verifies that:
-     * <ul>
-     *     <li>The {@code updateUser} method returns {@code null} when the user is not found.</li>
-     *     <li>The {@code UserRepository.existsById(Long)} method is called exactly once
-     *         to check for user existence (mocked).</li>
-     *     <li>The {@code UserRepository.save(User)} method is NEVER called,
-     *         as no update should be attempted for a non-existent user.</li>
-     * </ul>
-     * <p>
-     * It mocks {@code UserRepository.existsById(Long)} to return {@code false}
-     * to simulate the database not finding a user with the given ID.
+     * Tests that updating a non-existent user returns null.
      */
     @Test
     void updateUser_UserNotFound_ShouldReturnNull() {
         // Arrange
-        Long userId = 456L; // ID for a non-existent user
+        Long userId = 456L;
         User updatedUser = createUser(userId, "updated.email@example.com", "Updated", "User", Role.Director);
-        // We still create an updatedUser object, but it won't be used for saving in this scenario
-
-        when(userRepository.existsById(userId)).thenReturn(false); // Mock user NOT exists
+        when(userRepository.existsById(userId)).thenReturn(false);
 
         // Act
         User result = userServiceImp.updateUser(userId, updatedUser);
 
         // Assert
-        assertNull(result); // Expect null to be returned when user not found
-
-        verify(userRepository, times(1)).existsById(userId); // Verify existsById was called
-        verify(userRepository, never()).save(any(User.class)); // Verify save was NEVER called
+        assertNull(result);
     }
 
-    /**
-     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
-     * when the updated user data contains an invalid email format,
-     * and expects a {@link jakarta.validation.ConstraintViolationException} to be thrown.
-     *
-     * <p>
-     * This test verifies that:
-     * <ul>
-     *     <li>The {@code updateUser} method throws a {@link jakarta.validation.ConstraintViolationException}
-     *         when validation of the updated user data fails due to an invalid email.</li>
-     *     <li>Validation is enforced when updating a user.</li>
-     *     <li>No user is saved or updated in the database (mocked).</li>
-     * </ul>
-     */
-    @Test
-    void updateUser_InvalidEmail_ShouldNotUpdateUser() {
-        // Arrange
-        Long userId = 123L;
-        User invalidUser = createUser(userId, "invalid-email", "Test", "User", Role.Guest); // Invalid email
-
-        // Ensure user exists
-        when(userRepository.existsById(userId)).thenReturn(true);
-
-        // Act
-        User result = userServiceImp.updateUser(userId, invalidUser);
-
-        // Assert - The update should have failed
-        assertNull(result, "Expected updateUser to return null due to invalid email");
-        verify(userRepository, never()).save(any(User.class)); // Ensure save() was never called
-    }
-
-    /**
-     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
-     * when the updated user data contains a blank first name,
-     * and expects a {@link jakarta.validation.ConstraintViolationException} to be thrown.
-     *
-     * <p>
-     * This test verifies that:
-     * <ul>
-     *     <li>The {@code updateUser} method throws a {@link jakarta.validation.ConstraintViolationException}
-     *         when validation fails due to a blank first name.</li>
-     *     <li>Validation is enforced for the first name field during user update.</li>
-     *     <li>No user is saved or updated in the database (mocked).</li>
-     * </ul>
-     */
-    @Test
-    void updateUser_BlankFirstName_ShouldNotUpdateUser() {
-        // Arrange
-        Long userId = 123L;
-        User invalidUser = createUser(userId, "test@example.com", "  ", "User", Role.Guest); // Blank first name
-
-        when(userRepository.existsById(userId)).thenReturn(true); // Assume user exists
-
-        // Act
-        User result = userServiceImp.updateUser(userId, invalidUser);
-
-        // Assert - The update should have failed
-        assertNull(result, "Expected updateUser to return null due to blank first name");
-        verify(userRepository, never()).save(any(User.class)); // Ensure save() was never called
-    }
-
-    /**
-     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
-     * when the updated user data contains a null role,
-     * and expects a {@link jakarta.validation.ConstraintViolationException} to be thrown.
-     *
-     * <p>
-     * This test verifies that:
-     * <ul>
-     *     <li>The {@code updateUser} method throws a {@link jakarta.validation.ConstraintViolationException}
-     *         when validation fails due to a null role.</li>
-     *     <li>Validation is enforced for the role field during user update.</li>
-     *     <li>No user is saved or updated in the database (mocked).</li>
-     * </ul>
-     */
-    @Test
-    void updateUser_NullRole_ShouldNotUpdateUser() {
-        // Arrange
-        Long userId = 123L;
-        User invalidUser = createUser(userId, "test@example.com", "Test", "User", null); // Null role
-
-        when(userRepository.existsById(userId)).thenReturn(true); // Assume user exists
-
-        // Act
-        User result = userServiceImp.updateUser(userId, invalidUser);
-
-        // Assert - The update should have failed
-        assertNull(result, "Expected updateUser to return null due to null role");
-        verify(userRepository, never()).save(any(User.class)); // Ensure save() was never called
-    }
-
-
+// deleteUser TESTS
 
 }

@@ -2,14 +2,11 @@ package com.retriage.retriage.services;
 
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.repositories.UserRepository;
-import jakarta.validation.Valid; // Import Valid annotation
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated; // Import Validated annotation
-import jakarta.validation.Valid;
-
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,10 +15,9 @@ import java.util.Optional;
 @Validated
 public class UserServiceImp implements UserService {
 
-    private final UserRepository userRepository;
-
     // Add Logger for keeping track of any errors
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImp.class);
+    private final UserRepository userRepository;
 
     /**
      * User Service constructor
