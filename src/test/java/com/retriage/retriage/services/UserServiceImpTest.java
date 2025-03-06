@@ -1,13 +1,9 @@
 package com.retriage.retriage.services;
-//1) Add logging to this; Done after or inside of the method
-    //[Status] Method name: Error Message
-    //Log statuses: Warning, Severe, Error, etc
-//2) Build a fake user setup
-//3) Throw errors
 
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.models.User; // Imports User model
 import com.retriage.retriage.repositories.UserRepository; // Import UserRepository
+import jakarta.validation.Valid;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test; // Import JUnit 5's Test annotation
@@ -39,15 +35,8 @@ class UserServiceImpTest {
         userServiceImp = new UserServiceImp(userRepository); // Inject mock manually
     }
 
-    @TestConfiguration // Add this inner @TestConfiguration class
-    static class TestConfig {
-        @Bean  // Define a Validator bean
-        public LocalValidatorFactoryBean validator() {
-            return new LocalValidatorFactoryBean();
-        }
-    }
-
     // Helper method to create User objects for test setup
+    @Valid
     private User createUser(Long id, String email, String firstname, String lastName, Role role) {
         User user = new User();
         user.setId(id);
@@ -118,7 +107,7 @@ class UserServiceImpTest {
     void triggerLogging_UpdateUserNotFound() {
         // Arrange
         Long nonExistentUserId = 999L; // An ID that does not exist
-        User userToUpdate = new User(); // We just need an object
+        User userToUpdate = new User(); // Just need an object
         userToUpdate.setFirstName("UpdatedFirstName");
 
         // Mock the userRepository.existsById returning false, simulating a user not found
@@ -256,7 +245,7 @@ class UserServiceImpTest {
      * to simulate the database returning existing users.
      */
     @Test
-    void findAllUsers_ShouldReturnListOfUsers_Simplified() {
+    void findAllUsers_ShouldReturnListOfUsers() {
         // Arrange
         List<User> mockUsers = List.of( // Keep creating mock users
                 createUser(1L, "user1@example.com", "User","One", Role.Guest),
@@ -467,98 +456,97 @@ class UserServiceImpTest {
         verify(userRepository, never()).save(any(User.class)); // Verify save was NEVER called
     }
 
-//    /**
-//     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
-//     * when the updated user data contains an invalid email format,
-//     * and expects a {@link jakarta.validation.ConstraintViolationException} to be thrown.
-//     *
-//     * <p>
-//     * This test verifies that:
-//     * <ul>
-//     *     <li>The {@code updateUser} method throws a {@link jakarta.validation.ConstraintViolationException}
-//     *         when validation of the updated user data fails due to an invalid email.</li>
-//     *     <li>Validation is enforced when updating a user.</li>
-//     *     <li>No user is saved or updated in the database (mocked).</li>
-//     * </ul>
-//     */
-//    @Test
-//    void updateUser_InvalidEmail_ShouldThrowException() {
-//        // Arrange
-//        Long userId = 123L;
-//        User invalidUser = createUser(userId, "invalid-email-format", "Test", "User", Role.Guest); // Invalid email
-//
-//        // Mock user existence
-//        when(userRepository.existsById(userId)).thenReturn(true);
-//
-//        // Act & Assert
-//        // Using @Test(expected) to expect ConstraintViolationException
-//        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> {
-//            userServiceImp.updateUser(userId, invalidUser);
-//        });
-//
-//        // Verify that userRepository.save is never called
-//        verify(userRepository, never()).save(any(User.class));
-//    }
-//
-//    /**
-//     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
-//     * when the updated user data contains a blank first name,
-//     * and expects a {@link jakarta.validation.ConstraintViolationException} to be thrown.
-//     *
-//     * <p>
-//     * This test verifies that:
-//     * <ul>
-//     *     <li>The {@code updateUser} method throws a {@link jakarta.validation.ConstraintViolationException}
-//     *         when validation fails due to a blank first name.</li>
-//     *     <li>Validation is enforced for the first name field during user update.</li>
-//     *     <li>No user is saved or updated in the database (mocked).</li>
-//     * </ul>
-//     */
-//    @Test
-//    void updateUser_BlankFirstName_ShouldThrowException() {
-//        // Arrange
-//        Long userId = 123L;
-//        User invalidUser = createUser(userId, "test@example.com", "  ", "User", Role.Guest); // Blank first name
-//
-//        when(userRepository.existsById(userId)).thenReturn(true); // Assume user exists for validation test
-//
-//        // Act & Assert
-//        assertThrows(jakarta.validation.ConstraintViolationException.class,
-//                () -> userServiceImp.updateUser(userId, invalidUser),
-//                "Expected ConstraintViolationException for blank first name in updateUser");
-//
-//        verify(userRepository, never()).save(any(User.class)); // Verify save is not called
-//    }
-//
-//    /**
-//     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
-//     * when the updated user data contains a null role,
-//     * and expects a {@link jakarta.validation.ConstraintViolationException} to be thrown.
-//     *
-//     * <p>
-//     * This test verifies that:
-//     * <ul>
-//     *     <li>The {@code updateUser} method throws a {@link jakarta.validation.ConstraintViolationException}
-//     *         when validation fails due to a null role.</li>
-//     *     <li>Validation is enforced for the role field during user update.</li>
-//     *     <li>No user is saved or updated in the database (mocked).</li>
-//     * </ul>
-//     */
-//    @Test
-//    void updateUser_NullRole_ShouldThrowException() {
-//        // Arrange
-//        Long userId = 123L;
-//        User invalidUser = createUser(userId, "test@example.com", "Test", null, null); // Null role
-//
-//        when(userRepository.existsById(userId)).thenReturn(true); // Assume user exists for validation test
-//
-//        // Act & Assert
-//        assertThrows(jakarta.validation.ConstraintViolationException.class,
-//                () -> userServiceImp.updateUser(userId, invalidUser),
-//                "Expected ConstraintViolationException for null role in updateUser");
-//
-//        verify(userRepository, never()).save(any(User.class)); // Verify save is not called
-//    }
+    /**
+     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
+     * when the updated user data contains an invalid email format,
+     * and expects a {@link jakarta.validation.ConstraintViolationException} to be thrown.
+     *
+     * <p>
+     * This test verifies that:
+     * <ul>
+     *     <li>The {@code updateUser} method throws a {@link jakarta.validation.ConstraintViolationException}
+     *         when validation of the updated user data fails due to an invalid email.</li>
+     *     <li>Validation is enforced when updating a user.</li>
+     *     <li>No user is saved or updated in the database (mocked).</li>
+     * </ul>
+     */
+    @Test
+    void updateUser_InvalidEmail_ShouldNotUpdateUser() {
+        // Arrange
+        Long userId = 123L;
+        User invalidUser = createUser(userId, "invalid-email", "Test", "User", Role.Guest); // Invalid email
+
+        // Ensure user exists
+        when(userRepository.existsById(userId)).thenReturn(true);
+
+        // Act
+        User result = userServiceImp.updateUser(userId, invalidUser);
+
+        // Assert - The update should have failed
+        assertNull(result, "Expected updateUser to return null due to invalid email");
+        verify(userRepository, never()).save(any(User.class)); // Ensure save() was never called
+    }
+
+    /**
+     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
+     * when the updated user data contains a blank first name,
+     * and expects a {@link jakarta.validation.ConstraintViolationException} to be thrown.
+     *
+     * <p>
+     * This test verifies that:
+     * <ul>
+     *     <li>The {@code updateUser} method throws a {@link jakarta.validation.ConstraintViolationException}
+     *         when validation fails due to a blank first name.</li>
+     *     <li>Validation is enforced for the first name field during user update.</li>
+     *     <li>No user is saved or updated in the database (mocked).</li>
+     * </ul>
+     */
+    @Test
+    void updateUser_BlankFirstName_ShouldNotUpdateUser() {
+        // Arrange
+        Long userId = 123L;
+        User invalidUser = createUser(userId, "test@example.com", "  ", "User", Role.Guest); // Blank first name
+
+        when(userRepository.existsById(userId)).thenReturn(true); // Assume user exists
+
+        // Act
+        User result = userServiceImp.updateUser(userId, invalidUser);
+
+        // Assert - The update should have failed
+        assertNull(result, "Expected updateUser to return null due to blank first name");
+        verify(userRepository, never()).save(any(User.class)); // Ensure save() was never called
+    }
+
+    /**
+     * Tests the {@link UserServiceImp#updateUser(Long, User)} method
+     * when the updated user data contains a null role,
+     * and expects a {@link jakarta.validation.ConstraintViolationException} to be thrown.
+     *
+     * <p>
+     * This test verifies that:
+     * <ul>
+     *     <li>The {@code updateUser} method throws a {@link jakarta.validation.ConstraintViolationException}
+     *         when validation fails due to a null role.</li>
+     *     <li>Validation is enforced for the role field during user update.</li>
+     *     <li>No user is saved or updated in the database (mocked).</li>
+     * </ul>
+     */
+    @Test
+    void updateUser_NullRole_ShouldNotUpdateUser() {
+        // Arrange
+        Long userId = 123L;
+        User invalidUser = createUser(userId, "test@example.com", "Test", "User", null); // Null role
+
+        when(userRepository.existsById(userId)).thenReturn(true); // Assume user exists
+
+        // Act
+        User result = userServiceImp.updateUser(userId, invalidUser);
+
+        // Assert - The update should have failed
+        assertNull(result, "Expected updateUser to return null due to null role");
+        verify(userRepository, never()).save(any(User.class)); // Ensure save() was never called
+    }
+
 
 
 }
