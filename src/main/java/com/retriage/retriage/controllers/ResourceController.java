@@ -39,7 +39,6 @@ public class ResourceController {
         newResource.setUseable(resourceForm.isUseable());
         newResource.setPatients(resourceForm.getPatients());
         newResource.setProcessTime(resourceForm.getProcessTime());
-        newResource.setParentEvent(resourceForm.getParentEvent());
 
         boolean saved = resourceService.saveResource(newResource);
         String response = "Unable to save";

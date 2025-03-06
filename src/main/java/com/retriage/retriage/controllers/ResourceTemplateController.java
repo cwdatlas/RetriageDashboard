@@ -42,14 +42,14 @@ public class ResourceTemplateController {
         newResource.setUseable(resourceForm.isUseable());
         newResource.setPatients(resourceForm.getPatients());
         newResource.setProcessTime(resourceForm.getProcessTime());
-        newResource.setParentEvent(resourceForm.getParentEvent());
 
         boolean saved = resourceService.saveResourceTmp(newResource);
         String response = "Unable to save";
-        log.warn("Unable to save template '{}'", newResource);
         if (saved) {
             response = "Saved Successfully";
-            log.debug("Saved new resource Template '{}'", newResource);
+            log.debug("createResource: Saved new resource Template name '{}'", newResource.getName());
+        }else{
+            log.warn("createResource: Unable to save template name'{}'", newResource.getName());
         }
         return response;
     }

@@ -95,8 +95,10 @@ public class UserServiceImp implements UserService {
                 List<User> users = userRepository.findByEmailIgnoreCase(email);
                 if (users.size() == 1) {
                     return users.get(0);
-                } else {
-                    log.warn("GetUserByName: 0 or 1 < users found with name '{}'", email);
+                } else if(users.size() > 1){
+                    log.warn("GetUserByName: More than one users found with email '{}'", email);
+                }else{
+                    log.debug("GetUserByName: Zero user found with email '{}'", email);
                 }
             } catch (Exception e) {
                 log.info("getUserByName:", e);

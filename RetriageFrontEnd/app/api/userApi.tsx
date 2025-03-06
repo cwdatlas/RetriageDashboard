@@ -2,7 +2,7 @@ export const dynamic = 'force-static'
 import {User} from "./../models/user";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-const endpoint = "/users"
+const endpoint = "/api/users"
 /**
  * The user API is very tentative. This api will change once okta integration is in place
  */

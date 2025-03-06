@@ -4,6 +4,8 @@ import com.retriage.retriage.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.checkerframework.common.aliasing.qual.Unique;
+
 import java.util.List;
 
 @Entity
@@ -17,6 +19,7 @@ public class User {
 
     @Getter
     @Setter
+    @Unique
     private String email;
 
     @Getter
@@ -36,12 +39,6 @@ public class User {
     @Setter
     @OneToMany(mappedBy="retriageNurse")
     private List<Patient> createdPatients;
-
-    //Not Owner
-    @Getter
-    @Setter
-    @OneToMany(mappedBy="director")
-    private List<Event> createdEvents;
 
     public User(){
     }

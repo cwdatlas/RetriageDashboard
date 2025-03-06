@@ -36,12 +36,6 @@ public class Resource {
     @ManyToMany
     private List<Patient> patients;
 
-    //Owner
-    @Getter
-    @Setter
-    @ManyToOne
-    private Event parentEvent;
-
     public Resource() {
     }
 }

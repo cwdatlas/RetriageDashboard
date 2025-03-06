@@ -2,7 +2,7 @@ export const dynamic = 'force-static'
 import {Patient} from "./../models/patient";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-const endpoint = "/patients{"
+const endpoint = "/api/patients"
 /**
  * Fetch all patients from the backend
  */

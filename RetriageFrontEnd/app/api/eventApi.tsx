@@ -3,7 +3,7 @@ import {Event} from "./../models/event";
 export const dynamic = 'force-static'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-const ENDPOINT = "/events"
+const ENDPOINT = "/api/events"
 
 export async function getAllEvents(): Promise<Event[]> {
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
@@ -21,7 +21,7 @@ export async function getAllEvents(): Promise<Event[]> {
 /**
  * Create a new event
  */
-export async function createEvent(event: { event: Event }): Promise<Event> {
+export async function createEvent(event: Event): Promise<Event> {
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "POST",
         headers: {

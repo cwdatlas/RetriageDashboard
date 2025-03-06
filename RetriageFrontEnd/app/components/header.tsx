@@ -6,6 +6,7 @@ import {getCookies} from "@/app/api/cookieApi";
 
 export default function Header() {
     const username = getCookies("username")
+    const role = getCookies("role")
     return (
         <header>
             <div>
@@ -18,7 +19,8 @@ export default function Header() {
                 <button><Link href="/event">Current Event</Link></button>
             </div>
 
-            <div>{username}</div>
+            <div>Username: {username}</div>
+            <div>Role: {role}</div>
         </header>
     );
 }

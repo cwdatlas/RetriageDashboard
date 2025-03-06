@@ -23,9 +23,6 @@ public class ResourceForm {
     @Getter
     @Setter
     private List<Patient> patients;
-    @Getter
-    @Setter
-    private Event parentEvent;
 
     public ResourceForm() {
     }

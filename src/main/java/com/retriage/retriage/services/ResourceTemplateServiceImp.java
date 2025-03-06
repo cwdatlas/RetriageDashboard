@@ -1,7 +1,7 @@
 package com.retriage.retriage.services;
 
 import com.retriage.retriage.models.Resource;
-import com.retriage.retriage.repositories.ResourceRepository;
+import com.retriage.retriage.repositories.ResourceTemplateRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,14 +11,14 @@ import java.util.Optional;
 @Service
 public class ResourceTemplateServiceImp implements ResourceTemplateService {
 
-    private final ResourceRepository resourceRepository;
+    private final ResourceTemplateRepository resourceRepository;
 
     /**
      * Resource Service constructor
      *
      * @param resourceRepository Repository declared in ResourceServiceImp
      */
-    public ResourceTemplateServiceImp(ResourceRepository resourceRepository) {
+    public ResourceTemplateServiceImp(ResourceTemplateRepository resourceRepository) {
         this.resourceRepository = resourceRepository;
     }
 
