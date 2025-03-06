@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/resources")
+@RequestMapping("/api/resources")
 public class ResourceController {
     /**
      *
