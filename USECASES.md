@@ -1,14 +1,11 @@
-//Only One event at a time
 //What properties are required to create a patient
     //Internal ID vs local ID (Database vs Reused patient ID)
-//Patient properties (Name, Condition, ID, Bed Assignment, Queue Assignment)
+//Patient properties (Condition, ID, Bed Assignment, Queue Assignment)
 //Patient x Resource development
 //Deleting a Patient verbose explanation
 //Resource scheduler (Automatic or manual?) 
     //What happens when A patient is removed before the operation is completed atomically
-//Simplify data model
-    //We made UML whoops
-//Do the normal things we said we're going to do
+
 
 //Okta Actors
     //
@@ -60,10 +57,10 @@ the accounts they are associated with and length of time the event will last.
       the dropdown again
     - "Create New" will open a form that includes "Name", "Patient Process Time", "Max Number of Patients in Queue",
       and "Is Reusable Resource"
-3. When the event creation page is filled out the Director can click the create event button at the bottom of the page
+2. When the event creation page is filled out the Director can click the create event button at the bottom of the page
     - In the header of the Directors event page there will be a button to stop and start the event
     - A timer runs on the backend which is started and stopped and is checked against to end the event when time is up.
-4. Print event logs to a txt file and send them to Director when event completes.
+3. Print event logs to a txt file and send them to Director when event completes.
 
 ### Security
 
@@ -85,25 +82,25 @@ The reason for this is twofold:
     - ~~React front end, Spring Back end and Mysql database running and talking to each other.~~
     - ~~Persist a patient account from the front end to the database and back.~~
     - ~~Solidify project schedule and detailed use cases.~~
-- 2/21
-    - Create Models for resources, Retriage Nurses, Directors ~~and Patients~~
-        - All resources will be built from the resource model then populated with predefined data.
-    - Build Front page, and event page
-        - Login will need to use okta. CCIT must designate who is a Director
-        - Event page must provide a view of active resources, Patient creation and time left in the event.
-        - **Functionality** is the focus for this week, **not style**.
-- 2/28
-    - Create Event Creation Page
-        - Event Creation page is only accessible by the Director and can be accessed from the home page.
-        - The Event Creation page allows the Director to choose between a set of predefined resources:
-            - Ambulance, MRI, Surgery
-- 3/7
-    - The Event creation page starts the event so a timer must start when the event starts.
-    - On the Event Creation page there will be a section to the right side of the page will have the resource template creation
-      - The resource template creation side has all but active as a savable variable
-      - The created templates need to be added to the event that is being made. Events are only added during creation time
-      - Events will be added with a corresponding int that represents the number of those events available
-    - The Event display page will display the current events attributes like 
+- ~~2/21~~
+    - ~~Create Models for resources, Retriage Nurses, Directors and Patients~~
+        - ~~All resources will be built from the resource model then populated with predefined data.~~
+    - ~~Build Front page, and event page~~
+        - ~~Login will need to use okta. CCIT must designate who is a Director~~
+        - ~~Event page must provide a view of active resources, Patient creation and time left in the event.~~
+        - ~~**Functionality** is the focus for this week, **not style**.~~
+- ~~2/28~~
+    - ~~Create Event Creation Page~~
+        - ~~Event Creation page is only accessible by the Director and can be accessed from the home page.~~
+        - ~~The Event Creation page allows the Director to choose between a set of predefined resources:~~
+            - ~~Ambulance, MRI, Surgery~~
+- ~~3/7~~
+    - ~~The Event creation page starts the event so a timer must start when the event starts.~~
+    - ~~On the Event Creation page there will be a section to the right side of the page will have the resource template creation~~
+      - ~~The resource template creation side has all but active as a savable variable~~
+      - ~~The created templates need to be added to the event that is being made. Events are only added during creation time~~
+      - ~~Events will be added with a corresponding int that represents the number of those events available~~
+    - ~~The Event display page will display the current events attributes like~~
       John:
         - Build logging infrastructure
           - Logging takes place when an object is created or changed by a Director or Retriage Nurse.
