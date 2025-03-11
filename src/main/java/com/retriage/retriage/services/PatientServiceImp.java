@@ -31,6 +31,7 @@ public class PatientServiceImp implements PatientService {
      */
     @Override
     public Patient savePatient(Patient patient) {
+        validatePatient(patient);
         return patientRepository.save(patient);
     }
 
@@ -62,9 +63,10 @@ public class PatientServiceImp implements PatientService {
      */
     @Override
     public void deletePatient(Long id) {
-        if (patientRepository.existsById(id)) {
-            patientRepository.deleteById(id);
+        if (!patientRepository.existsById(id)) {
+            throw new IllegalArgumentException("Patient with ID " + id + " does not exist.");
         }
+        patientRepository.deleteById(id);
     }
 
     /**
@@ -76,11 +78,36 @@ public class PatientServiceImp implements PatientService {
     @Override
     public boolean updatePatient(Long id, Patient patient) {
         if (!patientRepository.existsById(id)) {
-            return false; // Return false if patient doesn't exist
+            throw new IllegalArgumentException("Cannot update: Patient with ID " + id + " does not exist.");
         }
 
+        validatePatient(patient);
         patient.setId(id); // Ensure ID stays the same
         patientRepository.save(patient);
         return true;
+    }
+
+    /**
+     * Validates a Patient object.
+     */
+    private void validatePatient(Patient patient) {
+        if (patient == null) {
+            throw new IllegalArgumentException("Patient object cannot be null.");
+        }
+        if (patient.getCardId() == null || patient.getCardId().trim().isEmpty()) {
+            throw new IllegalArgumentException("Patient card ID cannot be null or empty.");
+        }
+        if (patient.getFirstName() == null || patient.getFirstName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Patient first name cannot be null or empty.");
+        }
+        if (patient.getLastName() == null || patient.getLastName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Patient last name cannot be null or empty.");
+        }
+        if (patient.getCondition() == null) {
+            throw new IllegalArgumentException("Patient condition cannot be null.");
+        }
+        if (patient.getRetriageNurse() == null) {
+            throw new IllegalArgumentException("Each patient must be assigned a retriage nurse.");
+        }
     }
 }
