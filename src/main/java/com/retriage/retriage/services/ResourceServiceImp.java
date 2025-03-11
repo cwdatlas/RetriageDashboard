@@ -34,19 +34,16 @@ public class ResourceServiceImp implements ResourceService {
     public boolean saveResource(Resource resource) {
         logger.info("** Starting to save/update resource **");
         logger.debug("saveResource: Resource details - {}", resource);
-        if (resource == null) {
-            logger.warn("saveResource: Resource object is null, cannot save.");
-            return false; // Or consider throwing IllegalArgumentException if null resource is invalid
-        }
-        validateResource(resource); // Call the validation method here
-        logger.debug("saveResource: Resource validation passed.");
+        validateResource(resource); // Call validateResource here, it will throw exception if invalid
+        logger.debug("saveResource: Resource validation passed."); // Log only if validation passes
+
         Resource savedResource = resourceRepository.save(resource);
         boolean isSaved = savedResource != null;
         if (isSaved) {
             logger.info("saveResource: Resource saved successfully with ID: {}", savedResource.getId());
             logger.debug("saveResource: Saved Resource details - {}", savedResource);
         } else {
-            logger.error("saveResource: Failed to save resource."); // Error log if save fails
+            logger.error("saveResource: Failed to save resource.");
         }
         return isSaved;
     }
