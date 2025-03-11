@@ -3,15 +3,11 @@ package com.retriage.retriage.services;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.repositories.UserRepository;
-import jakarta.validation.Valid;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,132 +15,28 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
 @SpringBootTest
-@ExtendWith(MockitoExtension.class) // Enable Mockito for this test class
 class UserServiceImpTest {
-    @Mock // Create a mock instance of UserRepository
-    private UserRepository userRepository;
+    @Autowired
+    private UserServiceImp userServiceImp; // Service under test
 
-    @InjectMocks // Inject the mocked UserRepository into UserServiceImp
-    private UserServiceImp userServiceImp;
+    @MockitoBean
+    private UserRepository userRepository; // Repository is replaced with a mock
 
-    @BeforeEach
-    void setUp() {
-        userServiceImp = new UserServiceImp(userRepository); // Inject mock manually
-    }
-
-    // Helper method to create User objects for test setup
-    @Valid
-    private User createUser(Long id, String email, String firstname, String lastName, Role role) {
+    /**
+     * Helper method to create a User for test purposes.
+     */
+    private User createUser(Long id, String email, String firstName, String lastName, Role role) {
         User user = new User();
         user.setId(id);
         user.setEmail(email);
-        user.setFirstName(firstname);
+        user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setRole(role);
         return user;
     }
 
-    // Trigger Logging TESTS
-
-    /**
-     * Tests that deleting a non-existent user triggers an expected RuntimeException.
-     */
-    @Test
-    void triggerLogging_deleteUserNotFound() {
-        // Arrange
-        Long nonExistentUserId = 2L;
-        when(userRepository.existsById(nonExistentUserId)).thenReturn(false);
-
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> userServiceImp.deleteUserById(nonExistentUserId),
-                "Expected RuntimeException to be thrown when deleting non-existent user");
-    }
-
-    /**
-     * Tests that updating a non-existent user triggers the logging mechanism.
-     */
-    @Test
-    void triggerLogging_UpdateUserNotFound() {
-        // Arrange
-        Long nonExistentUserId = 999L;
-        User userToUpdate = new User();
-        userToUpdate.setFirstName("UpdatedFirstName");
-        when(userRepository.existsById(nonExistentUserId)).thenReturn(false);
-
-        // Act
-        userServiceImp.updateUser(nonExistentUserId, userToUpdate);
-    }
-
-    /**
-     * Tests that calling findAll() directly on the mock repository returns the expected list of users.
-     */
-    @Test
-    void testMockUserRepositoryFindAllDirectly() {
-        // Arrange
-        List<User> mockUsers = List.of(
-                createUser(1L, "user1@example.com", "User", "One", Role.Guest),
-                createUser(2L, "user2@example.com", "User", "Two", Role.Director)
-        );
-        when(userRepository.findAll()).thenReturn(mockUsers);
-
-        // Act
-        List<User> resultFromMock = userRepository.findAll();
-
-        // Assert
-        Assertions.assertNotNull(resultFromMock);
-        Assertions.assertEquals(2, resultFromMock.size());
-    }
-
-    // saveUser TESTS
-
-    /**
-     * Tests that saving a valid user returns the correctly saved user object.
-     */
-    @Test
-    void saveUser_ShouldReturnSavedUser() {
-        // Arrange
-        User userToSave = new User();
-        userToSave.setId(3L);
-        userToSave.setEmail("test@example.com");
-        userToSave.setFirstName("Bob");
-        userToSave.setLastName("Bobbert");
-        userToSave.setRole(Role.Guest);
-
-        User savedUser = new User();
-        savedUser.setId(1L);
-        savedUser.setEmail("test@example.com");
-        savedUser.setFirstName("Bob");
-        savedUser.setLastName("Bobbert");
-        savedUser.setRole(Role.Guest);
-
-        when(userRepository.save(userToSave)).thenReturn(savedUser);
-
-        // Act
-        User result = userServiceImp.saveUser(userToSave);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(savedUser.getId(), result.getId());
-    }
-
-    /**
-     * Tests that a user with a null role should not be saved.
-     */
-    @Test
-    void saveUser_NullRole_ShouldNotSaveUser() {
-        // Arrange
-        User invalidUser = createUser(4L, "test@example.com", "Test", "User", null);
-
-        // Act
-        userServiceImp.saveUser(invalidUser);
-
-        // Assert
-        assert !userRepository.existsById(invalidUser.getId());
-    }
-
-    // findAllUsers TESTS
+    // ==================== findAllUsers TESTS ====================
 
     /**
      * Tests that findAllUsers() returns a list of existing users.
@@ -162,12 +54,11 @@ class UserServiceImpTest {
         List<User> result = userServiceImp.findAllUsers();
 
         // Assert
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
+        assertNotNull(result, "The result should not be null");
+        assertEquals(2, result.size(), "The result list should contain 2 users");
         verify(userRepository, times(1)).findAll();
     }
-
-    // findUserById TESTS
+// ==================== findUserById TESTS ====================
 
     /**
      * Tests that findUserById() returns the correct user if the user exists.
@@ -183,8 +74,9 @@ class UserServiceImpTest {
         Optional<User> resultOptional = userServiceImp.findUserById(userId);
 
         // Assert
-        assertNotNull(resultOptional);
-        assertTrue(resultOptional.isPresent());
+        assertTrue(resultOptional.isPresent(), "Expected a user to be found");
+        assertEquals(userId, resultOptional.get().getId(), "The returned user ID should match");
+        verify(userRepository, times(1)).findById(userId);
     }
 
     /**
@@ -200,11 +92,48 @@ class UserServiceImpTest {
         Optional<User> resultOptional = userServiceImp.findUserById(userId);
 
         // Assert
-        assertNotNull(resultOptional);
-        assertTrue(resultOptional.isEmpty());
+        assertTrue(resultOptional.isEmpty(), "Expected no user to be found");
+        verify(userRepository, times(1)).findById(userId);
     }
 
-    // updateUser TESTS
+    // ==================== saveUser TESTS ====================
+
+    /**
+     * Tests that saving a valid user returns the correctly saved user object.
+     */
+    @Test
+    void saveUser_ShouldReturnSavedUser() {
+        // Arrange
+        User userToSave = createUser(3L, "test@example.com", "Bob", "Bobbert", Role.Guest);
+        User savedUser = createUser(3L, "test@example.com", "Bob", "Bobbert", Role.Guest);
+        when(userRepository.save(userToSave)).thenReturn(savedUser);
+
+        // Act
+        User result = userServiceImp.saveUser(userToSave);
+
+        // Assert
+        assertNotNull(result, "Saved user should not be null");
+        assertEquals(savedUser.getEmail(), result.getEmail(), "Emails should match");
+        verify(userRepository, times(1)).save(userToSave);
+    }
+
+    /**
+     * Tests that saving a user with a null role does not result in a repository save.
+     */
+    @Test
+    void saveUser_NullRole_ShouldNotSaveUser() {
+        // Arrange
+        User invalidUser = createUser(4L, "test@example.com", "Test", "User", null);
+
+        // Act
+        User result = userServiceImp.saveUser(invalidUser);
+
+        // Assert - depending on your service logic, you may expect a null result or a specific exception/behavior
+        assertNull(result, "Expected saveUser to return null when user has a null role");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    // ==================== updateUser TESTS ====================
 
     /**
      * Tests that updating an existing user with valid data returns the updated user.
@@ -213,7 +142,6 @@ class UserServiceImpTest {
     void updateUser_SuccessfulUpdate_ShouldReturnUpdatedUser() {
         // Arrange
         Long userId = 123L;
-        User existingUser = createUser(userId, "original.email@example.com", "Original", "User", Role.Guest);
         User updatedUser = createUser(userId, "updated.email@example.com", "Updated", "User", Role.Director);
         when(userRepository.existsById(userId)).thenReturn(true);
         when(userRepository.save(updatedUser)).thenReturn(updatedUser);
@@ -222,8 +150,10 @@ class UserServiceImpTest {
         User result = userServiceImp.updateUser(userId, updatedUser);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(updatedUser.getId(), result.getId());
+        assertNotNull(result, "Updated user should not be null");
+        assertEquals("updated.email@example.com", result.getEmail(), "Email should be updated");
+        verify(userRepository, times(1)).existsById(userId);
+        verify(userRepository, times(1)).save(updatedUser);
     }
 
     /**
@@ -240,9 +170,44 @@ class UserServiceImpTest {
         User result = userServiceImp.updateUser(userId, updatedUser);
 
         // Assert
-        assertNull(result);
+        assertNull(result, "Expected updateUser to return null for non-existent user");
+        verify(userRepository, times(1)).existsById(userId);
+        verify(userRepository, never()).save(any(User.class));
     }
 
-// deleteUser TESTS
+    // ==================== deleteUser TESTS ====================
+
+    /**
+     * Tests that deleting an existing user does not throw an exception.
+     */
+    @Test
+    void deleteUser_UserExists_ShouldSucceed() {
+        // Arrange
+        Long userId = 789L;
+        when(userRepository.existsById(userId)).thenReturn(true);
+        doNothing().when(userRepository).deleteById(userId);
+
+        // Act & Assert
+        assertDoesNotThrow(() -> userServiceImp.deleteUserById(userId),
+                "Deleting an existing user should not throw an exception");
+        verify(userRepository, times(1)).existsById(userId);
+        verify(userRepository, times(1)).deleteById(userId);
+    }
+
+    /**
+     * Tests that deleting a non-existent user throws a RuntimeException.
+     */
+    @Test
+    void deleteUser_UserNotFound_ShouldThrowException() {
+        // Arrange
+        Long nonExistentUserId = 101L;
+        when(userRepository.existsById(nonExistentUserId)).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> userServiceImp.deleteUserById(nonExistentUserId),
+                "Expected RuntimeException when deleting a non-existent user");
+        verify(userRepository, times(1)).existsById(nonExistentUserId);
+        verify(userRepository, never()).deleteById(anyLong());
+    }
 
 }

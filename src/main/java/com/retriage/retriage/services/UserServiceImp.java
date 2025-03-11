@@ -35,7 +35,7 @@ public class UserServiceImp implements UserService {
      * @param user The User to be saved
      * @return The saved User
      */
-    public User saveUser(@Valid User user) {
+    public User saveUser(User user) {
         //Create or Update the User
         logger.info("saveUser: User saved with ID: {}", user.getId()); // Log successful save
 
@@ -80,8 +80,7 @@ public class UserServiceImp implements UserService {
      * @param user User to update
      * @return Saving the newly updated User
      */
-    @Override
-    public User updateUser(Long id, @Valid User user) {
+    public User updateUser(Long id, User user) {
         if (!userRepository.existsById(id)) {
             logger.error("updateUser: User with id {} not found for update.", id);
             return null;
