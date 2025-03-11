@@ -37,10 +37,14 @@ public class UserServiceImp implements UserService {
      * @return The saved User
      */
     public User saveUser(User user) {
+        logger.info("** Starting to save new user **"); // Log entry into the method
+        logger.debug("saveUser: User details - {}", user); // Debug log to show user details
         validateUser(user);
+        logger.debug("saveUser: User validation passed."); // Debug log after validation
         //Save the user with a log message
-        logger.info("saveUser: User saved with ID: {}", user.getId()); // Log successful save
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        logger.info("saveUser: User saved successfully with ID: {}", savedUser.getId()); // Log successful save with ID
+        return savedUser;
     }
 
     /**
@@ -49,11 +53,12 @@ public class UserServiceImp implements UserService {
      * @return Every user account
      */
     public List<User> findAllUsers() {
+        logger.info("** Starting to retrieve all users. **"); // Log entry into the method
         logger.debug("findAllUsers: About to call userRepository.findAll()");
         List<User> users = userRepository.findAll();
-        logger.debug("findAllUsers: Retrieved {} users", users.size()); // Log the result
+        logger.debug("findAllUsers: Retrieved {} users", users.size()); // Log the result count in debug
+        logger.info("findAllUsers: Successfully retrieved {} users.", users.size()); // Log successful retrieval in info
         return users;
-
     }
 
     /**
@@ -63,13 +68,15 @@ public class UserServiceImp implements UserService {
      * @return The User object assigned to the passed in ID
      */
     public Optional<User> findUserById(Long id) {
-        logger.debug("findUserById: About to call userRepository.findById({})", id); // Corrected log message
+        logger.info("** Starting to find user by ID: {} **", id); // Log entry into the method
+        logger.debug("findUserById: About to call userRepository.findById({})", id); // Debug log before repository call
         Optional<User> user = userRepository.findById(id);
 
         if (user.isPresent()) {
-            logger.debug("findUserById: Found user with ID: {}", id);
+            logger.debug("findUserById: Found user with ID: {}", id); // Debug log when user is found
+            logger.info("findUserById: User found with ID: {}", id); // Info log when user is found
         } else {
-            logger.warn("findUserById: No user found with ID: {}", id);
+            logger.warn("findUserById: No user found with ID: {}", id); // Warn log when user is not found
         }
         return user;
     }
@@ -82,15 +89,20 @@ public class UserServiceImp implements UserService {
      * @return Saving the newly updated User
      */
     public User updateUser(Long id, User user) {
+        logger.info("** Starting to update user with ID: {} **", id); // Log entry into the update method
+        logger.debug("updateUser: User details for update - ID: {}, User: {}", id, user); // Debug log of user details
         if (!userRepository.existsById(id)) {
-            logger.error("updateUser: User with id {} not found for update.", id);
-            return null;
+            logger.error("updateUser: User with id {} not found for update.", id); // Error log if user not found
+            return null; // Consider throwing an exception instead of returning null, and logging a WARN before throwing
         }
+        logger.debug("updateUser: User with ID {} exists. Proceeding with update.", id); // Debug log if user exists
         validateUser(user);
+        logger.debug("updateUser: User validation passed for update."); // Debug log after validation
         user.setId(id);
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+        logger.info("updateUser: User updated successfully with ID: {}", updatedUser.getId()); // Log successful update
+        return updatedUser;
     }
-
 
     /**
      * Remove a User from saved list.
@@ -98,14 +110,17 @@ public class UserServiceImp implements UserService {
      * @param id The ID of the director to be deleted
      */
     public void deleteUserById(Long id) {
+        logger.info("** Starting to delete user with ID: {} **", id); // Log entry into delete method
         logger.debug("deleteUserById: Checking if user with ID {} exists", id);
 
         if (userRepository.existsById(id)) {
+            logger.debug("deleteUserById: User with ID {} exists. Proceeding with deletion.", id); // Debug log if user exists
             userRepository.deleteById(id);
             logger.info("deleteUserById: User deleted successfully with ID: {}", id); // Log successful deletion
         } else {
             String errorMessage = "User with ID " + id + " does not exist.";
-            logger.warn("deleteUserById: {}", errorMessage); // Use {} formatting
+            logger.warn("deleteUserById: {}", errorMessage); // Warn log when user not found for deletion
+            logger.debug("deleteUserById: Throwing RuntimeException - {}", errorMessage); // Debug log before throwing exception
             throw new RuntimeException(errorMessage); // Still throw the exception
         }
 
@@ -115,20 +130,27 @@ public class UserServiceImp implements UserService {
      * Validates a User object.
      */
     private void validateUser(User user) {
+        logger.debug("** Starting user validation **"); // Debug log at start of validation
         if (user == null) {
+            logger.warn("validateUser: User object is null."); // Warn log for null user
             throw new IllegalArgumentException("User object cannot be null.");
         }
         if (user.getEmail() == null || user.getEmail().trim().isEmpty() || !user.getEmail().contains("@")) {
+            logger.warn("validateUser: User email is invalid - {}", user.getEmail()); // Warn log for invalid email
             throw new IllegalArgumentException("User email must be a valid email address.");
         }
         if (user.getFirstName() == null || user.getFirstName().trim().isEmpty()) {
+            logger.warn("validateUser: User first name is null or empty."); // Warn log for empty first name
             throw new IllegalArgumentException("User first name cannot be null or empty.");
         }
         if (user.getLastName() == null || user.getLastName().trim().isEmpty()) {
+            logger.warn("validateUser: User last name is null or empty."); // Warn log for empty last name
             throw new IllegalArgumentException("User last name cannot be null or empty.");
         }
         if (user.getRole() == null || Objects.equals(user.getRole().toString(), " ")) {
+            logger.warn("validateUser: User role is null or default."); // Warn log for invalid role
             throw new IllegalArgumentException("User must have at least one role assigned.");
         }
+        logger.debug("User validation passed successfully."); // Debug log if validation passes
     }
 }
