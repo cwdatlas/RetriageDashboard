@@ -9,8 +9,9 @@ import java.util.List;
 @Table(name = "resources")
 public class Resource {
 
-    @Getter
     @Id
+    @Getter
+    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
