@@ -4,7 +4,6 @@ import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
