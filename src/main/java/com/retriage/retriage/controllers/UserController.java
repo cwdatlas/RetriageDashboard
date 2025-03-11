@@ -34,7 +34,7 @@ public class UserController {
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
     public String createUser(@Valid @RequestBody UserForm userForm) {
-        //Secondary Validation
+        //Secondary Validation done thru the GlobalException Handler
 
         User newUser = new User();
         newUser.setFirstName(userForm.getFirstName());
