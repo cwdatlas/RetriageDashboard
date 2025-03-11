@@ -1,5 +1,6 @@
 package com.retriage.retriage.services;
 
+import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.models.Patient;
 import com.retriage.retriage.repositories.PatientRepository;
 import org.slf4j.Logger;
@@ -25,7 +26,6 @@ public class PatientServiceImp implements PatientService {
     public PatientServiceImp(PatientRepository patientRepository) {
         this.patientRepository = patientRepository;
     }
-
 
     /**
      * Saves a patient
@@ -143,5 +143,10 @@ public class PatientServiceImp implements PatientService {
             logger.warn("Patient retriage nurse is null.");
             throw new IllegalArgumentException("Each patient must be assigned a retriage nurse.");
         }
+        if (patient.getRetriageNurse() != null && patient.getRetriageNurse().getRole() != Role.Nurse) {
+            logger.warn("Retriage nurse does not have the required Nurse role. Role: {}", patient.getRetriageNurse().getRole());
+            throw new IllegalArgumentException("Retriage nurse must have the role of Nurse.");
+        }
+        logger.info("Patient validation successful.");
     }
 }
