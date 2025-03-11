@@ -2,6 +2,8 @@ package com.retriage.retriage.services;
 
 import com.retriage.retriage.models.Resource;
 import com.retriage.retriage.repositories.ResourceRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.Optional;
 @Service
 public class ResourceServiceImp implements ResourceService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ResourceServiceImp.class);
     private final ResourceRepository resourceRepository;
 
     /**
@@ -29,8 +32,23 @@ public class ResourceServiceImp implements ResourceService {
      */
     @Override
     public boolean saveResource(Resource resource) {
-        // Save resource and return true if successful
-        return resourceRepository.save(resource) != null;
+        logger.info("** Starting to save/update resource **");
+        logger.debug("saveResource: Resource details - {}", resource);
+        if (resource == null) {
+            logger.warn("saveResource: Resource object is null, cannot save.");
+            return false; // Or consider throwing IllegalArgumentException if null resource is invalid
+        }
+        validateResource(resource); // Call the validation method here
+        logger.debug("saveResource: Resource validation passed.");
+        Resource savedResource = resourceRepository.save(resource);
+        boolean isSaved = savedResource != null;
+        if (isSaved) {
+            logger.info("saveResource: Resource saved successfully with ID: {}", savedResource.getId());
+            logger.debug("saveResource: Saved Resource details - {}", savedResource);
+        } else {
+            logger.error("saveResource: Failed to save resource."); // Error log if save fails
+        }
+        return isSaved;
     }
 
     /**
@@ -39,7 +57,12 @@ public class ResourceServiceImp implements ResourceService {
      */
     @Override
     public List<Resource> findAllResources() {
-        return resourceRepository.findAll();
+        logger.info("** Starting to retrieve all resources **");
+        logger.debug("findAllResources: About to call resourceRepository.findAll()");
+        List<Resource> resources = resourceRepository.findAll();
+        logger.debug("findAllResources: Retrieved {} resources", resources.size());
+        logger.info("findAllResources: Successfully retrieved {} resources.", resources.size());
+        return resources;
     }
 
     /**
@@ -49,7 +72,16 @@ public class ResourceServiceImp implements ResourceService {
      */
     @Override
     public Optional<Resource> findResourceById(Long id) {
-        return resourceRepository.findById(id);
+        logger.info("** Starting to find resource by ID: {} **", id);
+        logger.debug("findResourceById: About to call resourceRepository.findById({})", id);
+        Optional<Resource> resourceOptional = resourceRepository.findById(id);
+        if (resourceOptional.isPresent()) {
+            logger.debug("findResourceById: Resource found with ID: {}", id);
+            logger.info("findResourceById: Resource found with ID: {}", id);
+        } else {
+            logger.warn("findResourceById: No resource found with ID: {}", id);
+        }
+        return resourceOptional;
     }
 
     /**
@@ -58,11 +90,39 @@ public class ResourceServiceImp implements ResourceService {
      */
     @Override
     public void deleteResourceById(Long id) {
+        logger.info("** Starting to delete resource with ID: {} **", id);
+        logger.debug("deleteResourceById: Checking if resource with ID {} exists", id);
         if (resourceRepository.existsById(id)) {
+            logger.debug("deleteResourceById: Resource with ID {} exists. Proceeding with deletion.", id);
             resourceRepository.deleteById(id);
+            logger.info("deleteResourceById: Resource deleted successfully with ID: {}", id);
         } else {
-            throw new RuntimeException("Resource with id " + id + " does not exist.");
+            String errorMessage = "Resource with id " + id + " does not exist.";
+            logger.warn("deleteResourceById: {}", errorMessage);
+            logger.debug("deleteResourceById: Throwing RuntimeException - {}", errorMessage);
+            throw new RuntimeException(errorMessage);
         }
+    }
 
+    /**
+     * Validates a Resource object before saving.
+     * @param resource The Resource object to validate.
+     * @throws IllegalArgumentException if the resource is invalid.
+     */
+    private void validateResource(Resource resource) {
+        logger.debug("** Starting resource validation **");
+        if (resource == null) {
+            logger.warn("validateResource: Resource object is null.");
+            throw new IllegalArgumentException("Resource object cannot be null.");
+        }
+        if (resource.getName() == null || resource.getName().trim().isEmpty()) {
+            logger.warn("validateResource: Resource name is null or empty.");
+            throw new IllegalArgumentException("Resource name cannot be null or empty.");
+        }
+        if (resource.getProcessTime() <= 0) {
+            logger.warn("validateResource: Process time is not a positive number: {}", resource.getProcessTime());
+            throw new IllegalArgumentException("Process time must be a positive number.");
+        }
+        logger.debug("validateResource: Resource validation passed successfully.");
     }
 }
