@@ -125,11 +125,10 @@ class UserServiceImpTest {
         // Arrange
         User invalidUser = createUser(4L, "test@example.com", "Test", "User", null);
 
-        // Act
-        User result = userServiceImp.saveUser(invalidUser);
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> userServiceImp.saveUser(invalidUser));
 
-        // Assert - depending on your service logic, you may expect a null result or a specific exception/behavior
-        assertNull(result, "Expected saveUser to return null when user has a null role");
+        // Verify that save() was never called
         verify(userRepository, never()).save(any(User.class));
     }
 

@@ -36,9 +36,11 @@ public class UserServiceImp implements UserService {
      * @return The saved User
      */
     public User saveUser(User user) {
-        //Create or Update the User
+        if (user.getRole() == null) {
+            throw new IllegalArgumentException("User role cannot be null");
+        }
+        //Save the user with a log message
         logger.info("saveUser: User saved with ID: {}", user.getId()); // Log successful save
-
         return userRepository.save(user);
     }
 
