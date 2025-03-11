@@ -102,8 +102,8 @@ public class PatientServiceImp implements PatientService {
         logger.info("Updating patient with ID: {}", id);
         logger.info("Checking if patient with ID: {} exists for update.", id);
         if (!patientRepository.existsById(id)) {
-            logger.warn("Attempt to update non-existent patient with ID: {}", id);
-            throw new IllegalArgumentException("Cannot update: Patient with ID " + id + " does not exist.");
+            logger.warn("updatePatient: Patient with id {} not found for update.", id);
+            return false; // Return false when patient not found, instead of null/exception
         }
         logger.info("Patient with ID: {} exists. Proceeding with update.", id);
         logger.info("Validating updated Patient data for ID: {}", id);
