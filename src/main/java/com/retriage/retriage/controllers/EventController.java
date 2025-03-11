@@ -54,7 +54,7 @@ public class EventController {
 
         //Saving the event
         boolean saved = eventService.saveEvent(newEvent);
-        String response = "Failed to save Event, Unknown Error";
+        String response = saved ? "Successfully saved event" : "Failed to save Event, Unknown Error";
         //Error handling (very basic)
         if (saved) {
             response = "Successfully saved event";
