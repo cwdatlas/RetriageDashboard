@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -36,9 +37,7 @@ public class UserServiceImp implements UserService {
      * @return The saved User
      */
     public User saveUser(User user) {
-        if (user.getRole() == null) {
-            throw new IllegalArgumentException("User role cannot be null");
-        }
+        validateUser(user);
         //Save the user with a log message
         logger.info("saveUser: User saved with ID: {}", user.getId()); // Log successful save
         return userRepository.save(user);
@@ -87,21 +86,7 @@ public class UserServiceImp implements UserService {
             logger.error("updateUser: User with id {} not found for update.", id);
             return null;
         }
-        // Manually enforce email validation
-        if (user.getEmail() == null || !user.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            logger.error("updateUser: Invalid email format '{}'", user.getEmail());
-            return null; // Return null if email is invalid
-        }
-        //Check if first name is blank/null
-        if (user.getFirstName() == null || user.getFirstName().trim().isEmpty()) {
-            logger.error("updateUser: First name cannot be blank.");
-            return null; // Reject update
-        }
-        //Check if Role is blank/null
-        if (user.getRole() == null) {
-            logger.error("updateUser: Role cannot be null.");
-            return null; // Reject update
-        }
+        validateUser(user);
         user.setId(id);
         return userRepository.save(user);
     }
@@ -124,5 +109,26 @@ public class UserServiceImp implements UserService {
             throw new RuntimeException(errorMessage); // Still throw the exception
         }
 
+    }
+
+    /**
+     * Validates a User object.
+     */
+    private void validateUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User object cannot be null.");
+        }
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty() || !user.getEmail().contains("@")) {
+            throw new IllegalArgumentException("User email must be a valid email address.");
+        }
+        if (user.getFirstName() == null || user.getFirstName().trim().isEmpty()) {
+            throw new IllegalArgumentException("User first name cannot be null or empty.");
+        }
+        if (user.getLastName() == null || user.getLastName().trim().isEmpty()) {
+            throw new IllegalArgumentException("User last name cannot be null or empty.");
+        }
+        if (user.getRole() == null || Objects.equals(user.getRole().toString(), " ")) {
+            throw new IllegalArgumentException("User must have at least one role assigned.");
+        }
     }
 }
