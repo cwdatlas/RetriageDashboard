@@ -4,6 +4,7 @@ import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.forms.UserForm;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class UserController {
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public String createUser(@RequestBody UserForm userForm) {
+    public String createUser(@Valid @RequestBody UserForm userForm) {
         //Secondary Validation
 
         User newUser = new User();
