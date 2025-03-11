@@ -6,7 +6,6 @@ import com.retriage.retriage.services.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -33,15 +32,9 @@ public class EventController {
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> createEvent(@Valid @RequestBody EventForm eventform, BindingResult result) {
+    public ResponseEntity<?> createEvent(@Valid @RequestBody EventForm eventform) {
         //Secondary validation...
-        if (result.hasErrors()) {
-            List<String> errors = result.getAllErrors()
-                    .stream()
-                    .map(error -> error.getDefaultMessage())
-                    .toList();
-            return ResponseEntity.badRequest().body(errors);
-        }
+
         //Creating the event
         Event newEvent = new Event();
         newEvent.setName(eventform.getName());
@@ -97,7 +90,7 @@ public class EventController {
      * PUT /events/{id}
      */
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event event) {
+    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody Event event) {
         Event updatedEvent = eventService.UpdateEvent(id, event);
         if (updatedEvent == null) {
             return ResponseEntity.notFound().build();
