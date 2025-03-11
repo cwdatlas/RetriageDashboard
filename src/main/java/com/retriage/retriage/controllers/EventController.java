@@ -6,6 +6,7 @@ import com.retriage.retriage.services.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -32,9 +33,15 @@ public class EventController {
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> createEvent(@Valid @RequestBody EventForm eventform) {
+    public ResponseEntity<?> createEvent(@Valid @RequestBody EventForm eventform, BindingResult result) {
         //Secondary validation...
-
+        if (result.hasErrors()) {
+            List<String> errors = result.getAllErrors()
+                    .stream()
+                    .map(error -> error.getDefaultMessage())
+                    .toList();
+            return ResponseEntity.badRequest().body(errors);
+        }
         //Creating the event
         Event newEvent = new Event();
         newEvent.setName(eventform.getName());
