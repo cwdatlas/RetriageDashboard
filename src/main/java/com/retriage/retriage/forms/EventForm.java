@@ -5,6 +5,7 @@ import com.retriage.retriage.models.Resource;
 import com.retriage.retriage.models.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,31 +21,25 @@ public class EventForm {
 
     @Getter
     @Setter
-    @NotBlank(message = "Director is required")
+    @NotNull(message = "Must contain at least one Director")
     private User director;
 
     @Getter
     @Setter
-    @NotNull(message = "Must contain at least one nurse")
+    @NotNull(message = "Must contain at least one Nurse")
+    @Size(min = 1, message = "Must contain at least one nurse")
     private List<User> nurses;
 
     @Getter
     @Setter
     @NotNull(message = "Must contain at least one Resource")
+    @Size(min = 1, message = "Must contain at least one Resource")
     private List<Resource> resources;
 
     @Getter
     @Setter
     @NotBlank(message = "Status is required")
     private Status status;
-
-//    @NotNull(message = "Start time is required")
-//    @FutureOrPresent(message = "Start time must be in the present or future")
-//    private LocalDateTime startTime;
-//
-//    @NotNull(message = "End time is required")
-//    @FutureOrPresent(message = "End time must be in the present or future")
-//    private LocalDateTime endTime;
 
     @Getter
     @Setter
@@ -60,3 +55,11 @@ public class EventForm {
     }
 
 }
+//      In case we decide to use actual time instead of just an Int
+//    @NotNull(message = "Start time is required")
+//    @FutureOrPresent(message = "Start time must be in the present or future")
+//    private LocalDateTime startTime;
+//
+//    @NotNull(message = "End time is required")
+//    @FutureOrPresent(message = "End time must be in the present or future")
+//    private LocalDateTime endTime;
