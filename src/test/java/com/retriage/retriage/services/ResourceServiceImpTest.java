@@ -144,6 +144,48 @@ public class ResourceServiceImpTest {
         verify(resourceRepository, never()).save(any(Resource.class)); // Verify save was never called
     }
 
+    /**
+     * Edge Case Test: Tests saving a resource that already has an ID set.
+     * Behavior: Should still attempt to save (potentially update if ID exists in DB, or insert) without error.
+     */
+    @Test
+    void saveResource_ResourceWithExistingId_ShouldSaveWithoutError() {
+        // Arrange
+        Resource resourceToSave = createResource(10L, "ExistingIDResource", 60, true, true); // Resource with ID 10 already set
+        Resource savedResource = createResource(10L, "ExistingIDResource", 60, true, true); // Mock saved resource
+
+        when(resourceRepository.save(resourceToSave)).thenReturn(savedResource); // Mock repository save
+
+        // Act
+        boolean result = resourceServiceImp.saveResource(resourceToSave);
+
+        // Assert
+        assertTrue(result, "saveResource should return true when saving with existing ID");
+        verify(resourceRepository, times(1)).save(resourceToSave); // Verify repository save was called
+    }
+
+    /**
+     * Edge Case Test: Tests saving a resource where active and useable are false.
+     * Behavior: Should save the resource correctly with these flags set to false.
+     */
+    @Test
+    void saveResource_ActiveAndUseableFalse_ShouldSaveSuccessfully() {
+        // Arrange
+        Resource resourceToSave = createResource(null, "Inactive Resource", 45, false, false);
+        Resource savedResource = createResource(11L, "Inactive Resource", 45, false, false);
+
+        when(resourceRepository.save(resourceToSave)).thenReturn(savedResource);
+
+        // Act
+        boolean result = resourceServiceImp.saveResource(resourceToSave);
+
+        // Assert
+        assertTrue(result, "saveResource should return true when active and useable are false");
+        assertFalse(savedResource.isActive(), "Saved resource should have active as false");
+        assertFalse(savedResource.isUseable(), "Saved resource should have useable as false");
+        verify(resourceRepository, times(1)).save(resourceToSave);
+    }
+
 
     // ==================== findAllResources TESTS ====================
     /**
@@ -184,6 +226,42 @@ public class ResourceServiceImpTest {
         assertNotNull(result, "The result should not be null");
         assertTrue(result.isEmpty(), "The result list should be empty");
         verify(resourceRepository, times(1)).findAll(); // Verify findAll was called once
+    }
+
+    /**
+     * Edge Case Test: Tests findResourceById() with a zero ID.
+     * Behavior: Should return an empty Optional as no resource is expected with ID 0.
+     */
+    @Test
+    void findResourceById_ZeroId_ShouldReturnEmptyOptional() {
+        // Arrange
+        Long resourceId = 0L;
+        when(resourceRepository.findById(resourceId)).thenReturn(Optional.empty()); // Mock repository to return empty for ID 0
+
+        // Act
+        Optional<Resource> resultOptional = resourceServiceImp.findResourceById(resourceId);
+
+        // Assert
+        assertTrue(resultOptional.isEmpty(), "Expected no resource to be found for ID 0");
+        verify(resourceRepository, times(1)).findById(resourceId);
+    }
+
+    /**
+     * Edge Case Test: Tests findResourceById() with a negative ID.
+     * Behavior: Should return an empty Optional as no resource is expected with negative ID.
+     */
+    @Test
+    void findResourceById_NegativeId_ShouldReturnEmptyOptional() {
+        // Arrange
+        Long resourceId = -1L;
+        when(resourceRepository.findById(resourceId)).thenReturn(Optional.empty()); // Mock repository to return empty for ID -1
+
+        // Act
+        Optional<Resource> resultOptional = resourceServiceImp.findResourceById(resourceId);
+
+        // Assert
+        assertTrue(resultOptional.isEmpty(), "Expected no resource to be found for negative ID");
+        verify(resourceRepository, times(1)).findById(resourceId);
     }
 
 
