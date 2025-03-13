@@ -161,6 +161,10 @@ public class EventServiceImp implements EventService {
             logger.warn("validateEvent: Status is null.");
             throw new IllegalArgumentException("Status cannot be null.");
         }
+        if (event.getStartTime() >= event.getEndTime()) {
+            logger.warn("validateEvent: Start time is not before end time.");
+            throw new IllegalArgumentException("Start time must be before end time.");
+        }
         logger.debug("validateEvent: Event validation passed successfully.");
     }
 
