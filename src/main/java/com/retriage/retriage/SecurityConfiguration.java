@@ -85,7 +85,7 @@ public class SecurityConfiguration {
         Converter<ResponseToken, Saml2Authentication> delegate =
                 OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter();
 
-            // Return a lambda converter that enhances the default conversion
+        // Return a lambda converter that enhances the default conversion
         return (responseToken) -> {
             // Perform the default conversion to get basic Saml2Authentication
             Saml2Authentication authentication = delegate.convert(responseToken);
