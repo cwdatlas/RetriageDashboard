@@ -2,7 +2,7 @@ export const dynamic = 'force-static'
 import {Resource} from "./../models/resource";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-const endpoint = "/resources"
+const endpoint = "/api/resources"
 /**
  * Fetch all resources from the backend
  */
@@ -22,13 +22,13 @@ export async function getAllResources(): Promise<Resource[]> {
 /**
  * Create a new resource
  */
-export async function createResource(Resource: Omit<Resource, "id">): Promise<Resource> {
+export async function createResource(resource: { resource: Resource }): Promise<Resource> {
     const res = await fetch(`${API_BASE_URL}`+endpoint, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(Resource),
+        body: JSON.stringify(resource),
     });
 
     if (!res.ok) {

@@ -40,7 +40,7 @@ public class Event {
     //Not Owner
     @Getter
     @Setter
-    @OneToMany(mappedBy = "parentEvent")
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
     private List<Resource> resources;
 
     //Owner

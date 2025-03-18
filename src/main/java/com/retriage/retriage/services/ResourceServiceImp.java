@@ -24,6 +24,7 @@ public class ResourceServiceImp implements ResourceService {
 
     /**
      * Saves/updates any resource, after first checking if it's not null
+     *
      * @param resource the resource you're trying to save
      * @return True if the resource is not null
      */
@@ -35,6 +36,7 @@ public class ResourceServiceImp implements ResourceService {
 
     /**
      * Find and pull every resource
+     *
      * @return Every resource
      */
     @Override
@@ -44,6 +46,7 @@ public class ResourceServiceImp implements ResourceService {
 
     /**
      * Find a specific resource with a given ID
+     *
      * @param id The ID of the resource to look for
      * @return The resource you're looking for
      */
@@ -54,6 +57,7 @@ public class ResourceServiceImp implements ResourceService {
 
     /**
      * Deletes a specified resource
+     *
      * @param id The ID of the resource to be deleted
      */
     @Override

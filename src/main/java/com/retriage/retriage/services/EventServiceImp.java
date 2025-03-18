@@ -30,6 +30,7 @@ public class EventServiceImp implements EventService {
         eventRepository.save(event);
         return true;
     }
+
     /**
      * Retrieves an event by ID
      *

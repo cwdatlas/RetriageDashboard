@@ -26,7 +26,7 @@ public class UserServiceImp implements UserService {
      */
     public UserServiceImp(UserRepository userRepository) {
         this.userRepository = userRepository;
-        logger.debug("UserServiceImp constructor: userRepository instance = {}", userRepository); // Debug log
+        logger.debug("UserServiceImp constructor: userRepository instance = {}", userRepository); // Debug logger
     }
 
     /**
@@ -62,7 +62,7 @@ public class UserServiceImp implements UserService {
      * @return The User object assigned to the passed in ID
      */
     public Optional<User> findUserById(Long id) {
-        logger.debug("findUserById: About to call userRepository.findById({})", id); // Corrected log message
+        logger.debug("findUserById: About to call userRepository.findById({})", id); // Corrected logger message
         Optional<User> user = userRepository.findById(id);
 
         if (user.isPresent()) {
@@ -121,6 +121,24 @@ public class UserServiceImp implements UserService {
             logger.warn("deleteUserById: {}", errorMessage); // Use {} formatting
             throw new RuntimeException(errorMessage); // Still throw the exception
         }
+    }
 
+    @Override
+    public User getUserByEmail(String email) {
+        if (email != null) {
+            try {
+                List<User> users = userRepository.findByEmailIgnoreCase(email);
+                if (users.size() == 1) {
+                    return users.get(0);
+                } else if (users.size() > 1) {
+                    logger.warn("GetUserByName: More than one users found with email '{}'", email);
+                } else {
+                    logger.debug("GetUserByName: Zero user found with email '{}'", email);
+                }
+            } catch (Exception e) {
+                logger.info("getUserByName:", e);
+            }
+        }
+        return null;
     }
 }
