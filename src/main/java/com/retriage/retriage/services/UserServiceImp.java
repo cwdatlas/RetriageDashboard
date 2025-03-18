@@ -73,7 +73,6 @@ public class UserServiceImp implements UserService {
 
         if (user.isPresent()) {
             logger.debug("findUserById: Found user with ID: {}", id); // Debug log when user is found
-            logger.info("findUserById: User found with ID: {}", id); // Info log when user is found
         } else {
             logger.warn("findUserById: No user found with ID: {}", id); // Warn log when user is not found
         }
@@ -122,6 +121,7 @@ public class UserServiceImp implements UserService {
             logger.debug("deleteUserById: Throwing RuntimeException - {}", errorMessage); // Debug log before throwing exception
             throw new RuntimeException(errorMessage); // Still throw the exception
         }
+    }
 
     @Override
     public User getUserByEmail(String email) {
@@ -136,7 +136,7 @@ public class UserServiceImp implements UserService {
                     logger.debug("GetUserByName: Zero user found with email '{}'", email);
                 }
             } catch (Exception e) {
-                logger.info("getUserByName:", e);
+                logger.warn("getUserByName:", e);
             }
         }
         return null;
