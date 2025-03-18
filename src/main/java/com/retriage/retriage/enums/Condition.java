@@ -1,8 +1,9 @@
 package com.retriage.retriage.enums;
 
 public enum Condition {
-    Immediate,
-    Delayed,
-    Minor,
-    Expectant
+    Red,
+    Yellow,
+    Green,
+    Expectant,
+    Black
 }

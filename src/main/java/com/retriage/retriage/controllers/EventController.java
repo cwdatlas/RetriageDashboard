@@ -36,7 +36,7 @@ public class EventController {
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> createEvent(@Valid @RequestBody EventForm eventform) {
+    public ResponseEntity<?> createEvent(@Valid @RequestBody EventForm eventform) {
         //Secondary validation...
         String response = "Failed to save Event, Unknown Error";
         User director = userService.getUserByEmail(eventform.getDirector().getEmail());
