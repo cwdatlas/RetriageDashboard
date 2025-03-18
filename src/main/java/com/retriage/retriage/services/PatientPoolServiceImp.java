@@ -11,17 +11,17 @@ import java.util.Optional;
 
 
 @Service
-public class ResourceServiceImp implements ResourceService {
+public class PatientPoolServiceImp implements PatientPoolService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ResourceServiceImp.class);
+    private static final Logger logger = LoggerFactory.getLogger(PatientPoolServiceImp.class);
     private final PatientPoolRepo resourceRepository;
 
     /**
      * PatientPool Service constructor
      *
-     * @param resourceRepository Repository declared in ResourceServiceImp
+     * @param resourceRepository Repository declared in PatientPoolServiceImp
      */
-    public ResourceServiceImp(PatientPoolRepo resourceRepository) {
+    public PatientPoolServiceImp(PatientPoolRepo resourceRepository) {
         this.resourceRepository = resourceRepository;
     }
 

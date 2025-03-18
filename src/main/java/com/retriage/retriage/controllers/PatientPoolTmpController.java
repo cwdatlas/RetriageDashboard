@@ -2,7 +2,9 @@ package com.retriage.retriage.controllers;
 
 import com.retriage.retriage.forms.ResourceForm;
 import com.retriage.retriage.models.PatientPool;
-import com.retriage.retriage.services.ResourceService;
+import com.retriage.retriage.services.PatientPoolTmpService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,17 +13,18 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/resources")
-public class ResourceController {
+@RequestMapping("/api/resources/templates")
+public class PatientPoolTmpController {
+    private static final Logger log = LoggerFactory.getLogger(PatientPoolTmpController.class);
     /**
      *
      */
-    private final ResourceService resourceService;
+    private final PatientPoolTmpService resourceService;
 
     /**
      * Constructor injection of the service
      */
-    public ResourceController(ResourceService resourceService) {
+    public PatientPoolTmpController(PatientPoolTmpService resourceService) {
         this.resourceService = resourceService;
     }
 
@@ -40,10 +43,13 @@ public class ResourceController {
         newResource.setPatients(resourceForm.getPatients());
         newResource.setProcessTime(resourceForm.getProcessTime());
 
-        boolean saved = resourceService.saveResource(newResource);
+        boolean saved = resourceService.saveResourceTmp(newResource);
         String response = "Unable to save";
         if (saved) {
             response = "Saved Successfully";
+            log.debug("createResource: Saved new resource Template name '{}'", newResource.getName());
+        } else {
+            log.warn("createResource: Unable to save template name'{}'", newResource.getName());
         }
         return response;
     }
@@ -54,7 +60,10 @@ public class ResourceController {
      */
     @GetMapping(produces = "application/json")
     public List<PatientPool> getAllResources() {
-        return resourceService.findAllResources();
+        List<PatientPool> resources = resourceService.findAllResourcesTmp();
+        log.debug("Found {} resources", resources.size());
+        log.debug("Resources '{}' found", resources);
+        return resources;
     }
 
     /**
@@ -63,7 +72,7 @@ public class ResourceController {
      */
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<PatientPool> findResourceByID(@PathVariable Long id) {
-        Optional<PatientPool> optionalDirector = resourceService.findResourceById(id);
+        Optional<PatientPool> optionalDirector = resourceService.findResourceTmpById(id);
         return optionalDirector
                 .map(resource -> ResponseEntity.ok(resource))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -78,7 +87,7 @@ public class ResourceController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteResource(@PathVariable Long id) {
-        resourceService.deleteResourceById(id);
+        resourceService.deleteResourceTmpById(id);
         return ResponseEntity.noContent().build();
     }
 }

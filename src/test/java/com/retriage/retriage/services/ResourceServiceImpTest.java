@@ -22,7 +22,7 @@ public class ResourceServiceImpTest {
     private PatientPoolRepo resourceRepository;
 
     @Autowired
-    private ResourceServiceImp resourceServiceImp;
+    private PatientPoolServiceImp resourceServiceImp;
 
     /**
      * Helper method to create a PatientPool for test purposes.
