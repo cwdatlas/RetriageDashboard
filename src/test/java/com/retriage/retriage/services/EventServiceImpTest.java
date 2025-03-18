@@ -62,7 +62,7 @@ public class EventServiceImpTest {
         sampleEvent.setDirector(directorUser);
         sampleEvent.setNurses(List.of(nurseUser));
         sampleEvent.setResources(List.of(sampleResource));
-        sampleEvent.setStatus(Status.Setup);
+        sampleEvent.setStatus(Status.Paused);
         System.out.println("@BeforeEach - sampleEvent initialized: " + sampleEvent);
     }
 
@@ -78,7 +78,7 @@ public class EventServiceImpTest {
         event.setDirector(director);
         event.setNurses(nurses);
         event.setResources(resources);
-        event.setStatus(Status.Setup);
+        event.setStatus(Status.Paused);
         event.setStartTime(80); // Default start time
         event.setEndTime(95);   // Default end time
         return event;
@@ -131,14 +131,14 @@ public class EventServiceImpTest {
         eventWithNullName.setDirector(directorUser);
         eventWithNullName.setNurses(List.of(nurseUser));
         eventWithNullName.setResources(List.of(localSampleResource)); // Using local resource
-        eventWithNullName.setStatus(Status.Setup);
+        eventWithNullName.setStatus(Status.Paused);
 
         Event eventWithEmptyName = new Event();
         eventWithEmptyName.setName("");
         eventWithEmptyName.setDirector(directorUser);
         eventWithEmptyName.setNurses(List.of(nurseUser)); // Using local nurse
         eventWithEmptyName.setResources(List.of(localSampleResource)); // Using local resource
-        eventWithEmptyName.setStatus(Status.Setup);
+        eventWithEmptyName.setStatus(Status.Paused);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> eventServiceImp.saveEvent(eventWithNullName),
@@ -163,7 +163,7 @@ public class EventServiceImpTest {
         eventWithNullDirector.setName("Test Event");
         eventWithNullDirector.setNurses(List.of(nurseUser)); // Using local nurse
         eventWithNullDirector.setResources(List.of(localSampleResource)); // Using local resource
-        eventWithNullDirector.setStatus(Status.Setup);
+        eventWithNullDirector.setStatus(Status.Paused);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> eventServiceImp.saveEvent(eventWithNullDirector),
@@ -186,14 +186,14 @@ public class EventServiceImpTest {
         eventWithNullNurses.setName("Test Event");
         eventWithNullNurses.setDirector(directorUser);
         eventWithNullNurses.setResources(List.of(localSampleResource)); // Use local resource
-        eventWithNullNurses.setStatus(Status.Setup);
+        eventWithNullNurses.setStatus(Status.Paused);
 
         Event eventWithEmptyNurses = new Event();
         eventWithEmptyNurses.setName("Test Event");
         eventWithEmptyNurses.setDirector(directorUser);
         eventWithEmptyNurses.setNurses(List.of());
         eventWithEmptyNurses.setResources(List.of(localSampleResource)); // Use local resource
-        eventWithEmptyNurses.setStatus(Status.Setup);
+        eventWithEmptyNurses.setStatus(Status.Paused);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> eventServiceImp.saveEvent(eventWithNullNurses),
@@ -214,14 +214,14 @@ public class EventServiceImpTest {
         eventWithNullResources.setName("Test Event");
         eventWithNullResources.setDirector(directorUser);
         eventWithNullResources.setNurses(List.of(nurseUser));
-        eventWithNullResources.setStatus(Status.Setup);
+        eventWithNullResources.setStatus(Status.Paused);
 
         Event eventWithEmptyResources = new Event();
         eventWithEmptyResources.setName("Test Event");
         eventWithEmptyResources.setDirector(directorUser);
         eventWithEmptyResources.setNurses(List.of(nurseUser));
         eventWithEmptyResources.setResources(List.of());
-        eventWithEmptyResources.setStatus(Status.Setup);
+        eventWithEmptyResources.setStatus(Status.Paused);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> eventServiceImp.saveEvent(eventWithNullResources),
