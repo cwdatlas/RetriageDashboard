@@ -1,6 +1,6 @@
 package com.retriage.retriage.controllers;
 
-import com.retriage.retriage.forms.ResourceForm;
+import com.retriage.retriage.forms.PatientPoolForm;
 import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.services.PatientPoolTmpService;
 import org.slf4j.Logger;
@@ -13,19 +13,19 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/resources/templates")
+@RequestMapping("/api/pools/templates")
 public class PatientPoolTmpController {
     private static final Logger log = LoggerFactory.getLogger(PatientPoolTmpController.class);
     /**
      *
      */
-    private final PatientPoolTmpService resourceService;
+    private final PatientPoolTmpService poolService;
 
     /**
      * Constructor injection of the service
      */
-    public PatientPoolTmpController(PatientPoolTmpService resourceService) {
-        this.resourceService = resourceService;
+    public PatientPoolTmpController(PatientPoolTmpService poolService) {
+        this.poolService = poolService;
     }
 
     /**
@@ -33,23 +33,24 @@ public class PatientPoolTmpController {
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public String createResource(@RequestBody ResourceForm resourceForm) {
+    public String createPool(@RequestBody PatientPoolForm poolForm) {
         //secondary validation
 
-        PatientPool newResource = new PatientPool();
-        newResource.setName(resourceForm.getName());
-        newResource.setActive(resourceForm.isActive());
-        newResource.setUseable(resourceForm.isUseable());
-        newResource.setPatients(resourceForm.getPatients());
-        newResource.setProcessTime(resourceForm.getProcessTime());
+        PatientPool newPool = new PatientPool();
+        newPool.setName(poolForm.getName());
+        newPool.setActive(poolForm.isActive());
+        newPool.setUseable(poolForm.isUseable());
+        newPool.setPatients(poolForm.getPatients());
+        newPool.setProcessTime(poolForm.getProcessTime());
+        newPool.setPoolType(poolForm.getPoolType());
 
-        boolean saved = resourceService.saveResourceTmp(newResource);
+        boolean saved = poolService.savePoolTmp(newPool);
         String response = "Unable to save";
         if (saved) {
             response = "Saved Successfully";
-            log.debug("createResource: Saved new resource Template name '{}'", newResource.getName());
+            log.debug("createPool: Saved new pool Template name '{}'", newPool.getName());
         } else {
-            log.warn("createResource: Unable to save template name'{}'", newResource.getName());
+            log.warn("createPool: Unable to save template name'{}'", newPool.getName());
         }
         return response;
     }
@@ -59,11 +60,11 @@ public class PatientPoolTmpController {
      * GET /patients
      */
     @GetMapping(produces = "application/json")
-    public List<PatientPool> getAllResources() {
-        List<PatientPool> resources = resourceService.findAllResourcesTmp();
-        log.debug("Found {} resources", resources.size());
-        log.debug("Resources '{}' found", resources);
-        return resources;
+    public List<PatientPool> getAllPools() {
+        List<PatientPool> pools = poolService.findAllPoolTmp();
+        log.debug("Found {} pools", pools.size());
+        log.debug("Pools '{}' found", pools);
+        return pools;
     }
 
     /**
@@ -71,10 +72,10 @@ public class PatientPoolTmpController {
      * GET /patients/{id}
      */
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<PatientPool> findResourceByID(@PathVariable Long id) {
-        Optional<PatientPool> optionalDirector = resourceService.findResourceTmpById(id);
+    public ResponseEntity<PatientPool> findPoolByID(@PathVariable Long id) {
+        Optional<PatientPool> optionalDirector = poolService.findPoolTmpById(id);
         return optionalDirector
-                .map(resource -> ResponseEntity.ok(resource))
+                .map(pool -> ResponseEntity.ok(pool))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -86,8 +87,8 @@ public class PatientPoolTmpController {
      * DELETE /patients/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteResource(@PathVariable Long id) {
-        resourceService.deleteResourceTmpById(id);
+    public ResponseEntity<Void> deletePool(@PathVariable Long id) {
+        poolService.deletePoolTmpById(id);
         return ResponseEntity.noContent().build();
     }
 }

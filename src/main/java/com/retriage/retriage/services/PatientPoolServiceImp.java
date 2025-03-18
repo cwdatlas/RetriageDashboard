@@ -14,93 +14,93 @@ import java.util.Optional;
 public class PatientPoolServiceImp implements PatientPoolService {
 
     private static final Logger logger = LoggerFactory.getLogger(PatientPoolServiceImp.class);
-    private final PatientPoolRepo resourceRepository;
+    private final PatientPoolRepo poolRepository;
 
     /**
      * PatientPool Service constructor
      *
-     * @param resourceRepository Repository declared in PatientPoolServiceImp
+     * @param poolRepository Repository declared in PatientPoolServiceImp
      */
-    public PatientPoolServiceImp(PatientPoolRepo resourceRepository) {
-        this.resourceRepository = resourceRepository;
+    public PatientPoolServiceImp(PatientPoolRepo poolRepository) {
+        this.poolRepository = poolRepository;
     }
 
     /**
-     * Saves/updates any resource, after first checking if it's not null
+     * Saves/updates any pool, after first checking if it's not null
      *
-     * @param resource the resource you're trying to save
-     * @return True if the resource is not null
+     * @param pool the pool you're trying to save
+     * @return True if the pool is not null
      */
     @Override
-    public boolean saveResource(PatientPool resource) {
-        logger.info("** Starting to save/update resource **");
-        logger.debug("saveResource: PatientPool details - {}", resource);
-        validateResource(resource); // Call validateResource here, it will throw exception if invalid
-        logger.debug("saveResource: PatientPool validation passed."); // Log only if validation passes
+    public boolean savePool(PatientPool pool) {
+        logger.info("** Starting to save/update pool **");
+        logger.debug("savePool: PatientPool details - {}", pool);
+        validatePool(pool); // Call validatePool here, it will throw exception if invalid
+        logger.debug("savePool: PatientPool validation passed."); // Log only if validation passes
 
-        PatientPool savedResource = resourceRepository.save(resource);
-        boolean isSaved = savedResource != null;
+        PatientPool savedPool = poolRepository.save(pool);
+        boolean isSaved = savedPool != null;
         if (isSaved) {
-            logger.info("saveResource: PatientPool saved successfully with ID: {}", savedResource.getId());
-            logger.debug("saveResource: Saved PatientPool details - {}", savedResource);
+            logger.info("savePool: PatientPool saved successfully with ID: {}", savedPool.getId());
+            logger.debug("savePool: Saved PatientPool details - {}", savedPool);
         } else {
-            logger.error("saveResource: Failed to save resource.");
+            logger.error("savePool: Failed to save pool.");
         }
         return isSaved;
     }
 
     /**
-     * Find and pull every resource
+     * Find and pull every pool
      *
-     * @return Every resource
+     * @return Every pool
      */
     @Override
-    public List<PatientPool> findAllResources() {
-        logger.info("** Starting to retrieve all resources **");
-        logger.debug("findAllResources: About to call resourceRepository.findAll()");
-        List<PatientPool> resources = resourceRepository.findAll();
-        logger.debug("findAllResources: Retrieved {} resources", resources.size());
-        logger.info("findAllResources: Successfully retrieved {} resources.", resources.size());
-        return resources;
+    public List<PatientPool> findAllPool() {
+        logger.info("** Starting to retrieve all pools **");
+        logger.debug("findAllPools: About to call poolRepository.findAll()");
+        List<PatientPool> pools = poolRepository.findAll();
+        logger.debug("findAllPools: Retrieved {} pools", pools.size());
+        logger.info("findAllPools: Successfully retrieved {} pools.", pools.size());
+        return pools;
     }
 
     /**
-     * Find a specific resource with a given ID
+     * Find a specific pool with a given ID
      *
-     * @param id The ID of the resource to look for
-     * @return The resource you're looking for
+     * @param id The ID of the pool to look for
+     * @return The pool you're looking for
      */
     @Override
-    public Optional<PatientPool> findResourceById(Long id) {
-        logger.info("** Starting to find resource by ID: {} **", id);
-        logger.debug("findResourceById: About to call resourceRepository.findById({})", id);
-        Optional<PatientPool> resourceOptional = resourceRepository.findById(id);
-        if (resourceOptional.isPresent()) {
-            logger.debug("findResourceById: PatientPool found with ID: {}", id);
-            logger.info("findResourceById: PatientPool found with ID: {}", id);
+    public Optional<PatientPool> findPoolById(Long id) {
+        logger.info("** Starting to find pool by ID: {} **", id);
+        logger.debug("findPoolById: About to call poolRepository.findById({})", id);
+        Optional<PatientPool> poolOptional = poolRepository.findById(id);
+        if (poolOptional.isPresent()) {
+            logger.debug("findPoolById: PatientPool found with ID: {}", id);
+            logger.info("findPoolById: PatientPool found with ID: {}", id);
         } else {
-            logger.warn("findResourceById: No resource found with ID: {}", id);
+            logger.warn("findPoolById: No pool found with ID: {}", id);
         }
-        return resourceOptional;
+        return poolOptional;
     }
 
     /**
-     * Deletes a specified resource
+     * Deletes a specified pool
      *
-     * @param id The ID of the resource to be deleted
+     * @param id The ID of the pool to be deleted
      */
     @Override
-    public void deleteResourceById(Long id) {
-        logger.info("** Starting to delete resource with ID: {} **", id);
-        logger.debug("deleteResourceById: Checking if resource with ID {} exists", id);
-        if (resourceRepository.existsById(id)) {
-            logger.debug("deleteResourceById: PatientPool with ID {} exists. Proceeding with deletion.", id);
-            resourceRepository.deleteById(id);
-            logger.info("deleteResourceById: PatientPool deleted successfully with ID: {}", id);
+    public void deletePoolById(Long id) {
+        logger.info("** Starting to delete pool with ID: {} **", id);
+        logger.debug("deletePoolById: Checking if pool with ID {} exists", id);
+        if (poolRepository.existsById(id)) {
+            logger.debug("deletePoolById: PatientPool with ID {} exists. Proceeding with deletion.", id);
+            poolRepository.deleteById(id);
+            logger.info("deletePoolById: PatientPool deleted successfully with ID: {}", id);
         } else {
             String errorMessage = "PatientPool with id " + id + " does not exist.";
-            logger.warn("deleteResourceById: {}", errorMessage);
-            logger.debug("deleteResourceById: Throwing RuntimeException - {}", errorMessage);
+            logger.warn("deletePoolById: {}", errorMessage);
+            logger.debug("deletePoolById: Throwing RuntimeException - {}", errorMessage);
             throw new RuntimeException(errorMessage);
         }
     }
@@ -108,23 +108,23 @@ public class PatientPoolServiceImp implements PatientPoolService {
     /**
      * Validates a PatientPool object before saving.
      *
-     * @param resource The PatientPool object to validate.
-     * @throws IllegalArgumentException if the resource is invalid.
+     * @param pool The PatientPool object to validate.
+     * @throws IllegalArgumentException if the pool is invalid.
      */
-    private void validateResource(PatientPool resource) {
-        logger.debug("** Starting resource validation **");
-        if (resource == null) {
-            logger.warn("validateResource: PatientPool object is null.");
+    private void validatePool(PatientPool pool) {
+        logger.debug("** Starting pool validation **");
+        if (pool == null) {
+            logger.warn("validatePool: PatientPool object is null.");
             throw new IllegalArgumentException("PatientPool object cannot be null.");
         }
-        if (resource.getName() == null || resource.getName().trim().isEmpty()) {
-            logger.warn("validateResource: PatientPool name is null or empty.");
+        if (pool.getName() == null || pool.getName().trim().isEmpty()) {
+            logger.warn("validatePool: PatientPool name is null or empty.");
             throw new IllegalArgumentException("PatientPool name cannot be null or empty.");
         }
-        if (resource.getProcessTime() <= 0) {
-            logger.warn("validateResource: Process time is not a positive number: {}", resource.getProcessTime());
+        if (pool.getProcessTime() <= 0) {
+            logger.warn("validatePool: Process time is not a positive number: {}", pool.getProcessTime());
             throw new IllegalArgumentException("Process time must be a positive number.");
         }
-        logger.debug("validateResource: PatientPool validation passed successfully.");
+        logger.debug("validatePool: PatientPool validation passed successfully.");
     }
 }

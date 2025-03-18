@@ -50,7 +50,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.save(resourceToSave)).thenReturn(savedResource); // Mock repository save behavior
 
         // Act
-        boolean result = resourceServiceImp.saveResource(resourceToSave);
+        boolean result = resourceServiceImp.savePool(resourceToSave);
 
         // Assert
         assertTrue(result, "saveResource should return true on successful save");
@@ -66,7 +66,7 @@ public class ResourceServiceImpTest {
         PatientPool nullResource = null;
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(nullResource),
+        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.savePool(nullResource),
                 "Expected IllegalArgumentException for null PatientPool");
 
         verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
@@ -84,7 +84,7 @@ public class ResourceServiceImpTest {
                 60, true, true); // PatientPool with null name
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(invalidResource),
+        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.savePool(invalidResource),
                 "Expected IllegalArgumentException for null PatientPool name");
 
         verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
@@ -102,7 +102,7 @@ public class ResourceServiceImpTest {
                 60, true, true); // PatientPool with empty name
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(invalidResource),
+        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.savePool(invalidResource),
                 "Expected IllegalArgumentException for empty PatientPool name");
 
         verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
@@ -120,7 +120,7 @@ public class ResourceServiceImpTest {
                 0, true, true); // PatientPool with zero processTime
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(invalidResource),
+        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.savePool(invalidResource),
                 "Expected IllegalArgumentException for zero process time");
 
         verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
@@ -138,7 +138,7 @@ public class ResourceServiceImpTest {
                 -10, true, true); // PatientPool with negative processTime
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(invalidResource),
+        assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.savePool(invalidResource),
                 "Expected IllegalArgumentException for negative process time");
 
         verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
@@ -157,7 +157,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.save(resourceToSave)).thenReturn(savedResource); // Mock repository save
 
         // Act
-        boolean result = resourceServiceImp.saveResource(resourceToSave);
+        boolean result = resourceServiceImp.savePool(resourceToSave);
 
         // Assert
         assertTrue(result, "saveResource should return true when saving with existing ID");
@@ -177,7 +177,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.save(resourceToSave)).thenReturn(savedResource);
 
         // Act
-        boolean result = resourceServiceImp.saveResource(resourceToSave);
+        boolean result = resourceServiceImp.savePool(resourceToSave);
 
         // Assert
         assertTrue(result, "saveResource should return true when active and useable are false");
@@ -201,7 +201,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findAll()).thenReturn(mockResources); // Mock findAll to return mockResources
 
         // Act
-        List<PatientPool> result = resourceServiceImp.findAllResources();
+        List<PatientPool> result = resourceServiceImp.findAllPool();
 
         // Assert
         assertNotNull(result, "The result should not be null");
@@ -220,7 +220,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findAll()).thenReturn(Collections.emptyList()); // Mock findAll to return empty list
 
         // Act
-        List<PatientPool> result = resourceServiceImp.findAllResources();
+        List<PatientPool> result = resourceServiceImp.findAllPool();
 
         // Assert
         assertNotNull(result, "The result should not be null");
@@ -239,7 +239,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findById(resourceId)).thenReturn(Optional.empty()); // Mock repository to return empty for ID 0
 
         // Act
-        Optional<PatientPool> resultOptional = resourceServiceImp.findResourceById(resourceId);
+        Optional<PatientPool> resultOptional = resourceServiceImp.findPoolById(resourceId);
 
         // Assert
         assertTrue(resultOptional.isEmpty(), "Expected no resource to be found for ID 0");
@@ -257,7 +257,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findById(resourceId)).thenReturn(Optional.empty()); // Mock repository to return empty for ID -1
 
         // Act
-        Optional<PatientPool> resultOptional = resourceServiceImp.findResourceById(resourceId);
+        Optional<PatientPool> resultOptional = resourceServiceImp.findPoolById(resourceId);
 
         // Assert
         assertTrue(resultOptional.isEmpty(), "Expected no resource to be found for negative ID");
@@ -278,7 +278,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findById(resourceId)).thenReturn(Optional.of(mockResource)); // Mock findById to return mockResource
 
         // Act
-        Optional<PatientPool> resultOptional = resourceServiceImp.findResourceById(resourceId);
+        Optional<PatientPool> resultOptional = resourceServiceImp.findPoolById(resourceId);
 
         // Assert
         assertTrue(resultOptional.isPresent(), "Expected a resource to be found");
@@ -297,7 +297,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findById(resourceId)).thenReturn(Optional.empty()); // Mock findById to return empty Optional
 
         // Act
-        Optional<PatientPool> resultOptional = resourceServiceImp.findResourceById(resourceId);
+        Optional<PatientPool> resultOptional = resourceServiceImp.findPoolById(resourceId);
 
         // Assert
         assertTrue(resultOptional.isEmpty(), "Expected no resource to be found");
@@ -316,7 +316,7 @@ public class ResourceServiceImpTest {
         doNothing().when(resourceRepository).deleteById(resourceId); // Mock deleteById to do nothing (void method)
 
         // Act & Assert
-        assertDoesNotThrow(() -> resourceServiceImp.deleteResourceById(resourceId), // Execute deleteResourceById and assert no exception
+        assertDoesNotThrow(() -> resourceServiceImp.deletePoolById(resourceId), // Execute deleteResourceById and assert no exception
                 "Deleting an existing resource should not throw an exception");
 
         verify(resourceRepository, times(1)).existsById(resourceId); // Verify existsById was called once
@@ -333,7 +333,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.existsById(nonExistentResourceId)).thenReturn(false); // Mock existsById to return false (resource not found)
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> resourceServiceImp.deleteResourceById(nonExistentResourceId), // Execute deleteResourceById and assert exception
+        assertThrows(RuntimeException.class, () -> resourceServiceImp.deletePoolById(nonExistentResourceId), // Execute deleteResourceById and assert exception
                 "Expected RuntimeException when deleting a non-existent resource");
 
         verify(resourceRepository, times(1)).existsById(nonExistentResourceId); // Verify existsById was called once

@@ -10,11 +10,11 @@ import java.util.Optional;
  */
 //TODO add all CRUD functions. Create Read Update and Delete. Some are already here, but more needs to be done
 public interface PatientPoolTmpService {
-    boolean saveResourceTmp(PatientPool resource);
+    boolean savePoolTmp(PatientPool resource);
 
-    List<PatientPool> findAllResourcesTmp();
+    List<PatientPool> findAllPoolTmp();
 
-    Optional<PatientPool> findResourceTmpById(Long id);
+    Optional<PatientPool> findPoolTmpById(Long id);
 
-    void deleteResourceTmpById(Long id);
+    void deletePoolTmpById(Long id);
 }
