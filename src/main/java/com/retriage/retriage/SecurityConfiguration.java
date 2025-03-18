@@ -29,7 +29,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  *  This class defines the security filter chain and customizes the SAML authentication provider
  *  to handle user group/role mapping from SAML attributes to Spring Security authorities.
  * @Author: John Botonakis
- * @Resource: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
+ * @PatientPool: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
  */
 @Configuration
 public class SecurityConfiguration {

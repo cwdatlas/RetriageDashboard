@@ -1,5 +1,5 @@
 import {User} from "@/app/models/user";
-import {Resource} from "@/app/models/resource";
+import {PatientPool} from "@/app/models/patientPool";
 import {Status} from "@/app/enumerations/status";
 
 export interface Event{
@@ -9,5 +9,5 @@ export interface Event{
     startTime: number;
     endTime: number;
     status: Status;
-    resources: Resource[];
+    resources: PatientPool[];
 }

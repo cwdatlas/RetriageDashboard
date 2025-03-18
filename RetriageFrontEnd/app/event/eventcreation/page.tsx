@@ -10,7 +10,7 @@ import Footer from "@/app/components/footer";
 import {createResourceTemplate, getAllResourceTemplates} from "@/app/api/resourceTemplateApi";
 import { createEvent } from "@/app/api/eventApi";
 
-import { Resource } from "@/app/models/resource";
+import { PatientPool } from "@/app/models/patientPool";
 import { User } from "@/app/models/user";
 import { Event } from "@/app/models/event";
 import { Status } from "@/app/enumerations/status";
@@ -25,7 +25,7 @@ export default function EventCreation() {
     const [endTime, setEndTime] = useState("");
     const [error, setError] = useState<string | null>(null);
 
-    // Resource Saving Handles
+    // PatientPool Saving Handles
     const [resourceName, setResourceName] = useState("");
     const [patientProcessTime, setPatientProcessTime] = useState("");
 
@@ -38,10 +38,10 @@ export default function EventCreation() {
     };
 
     // 2) State to hold *all* resource templates from your API
-    const [allTemplates, setAllTemplates] = useState<Resource[]>([]);
+    const [allTemplates, setAllTemplates] = useState<PatientPool[]>([]);
 
     // 3) State for the user-selected Resources (the ones actually going into the event)
-    const [selectedResources, setSelectedResources] = useState<Resource[]>([]);
+    const [selectedResources, setSelectedResources] = useState<PatientPool[]>([]);
 
     // 4) Fetch *all* resource templates on mount
         useEffect(() => {
@@ -102,7 +102,7 @@ export default function EventCreation() {
     // ------ EVENT FORM SUBMISSION ------
     async function handleSubmitResource(e: React.FormEvent) {
         e.preventDefault();
-        const newResource: Resource = {
+        const newResource: PatientPool = {
             active: true,
             patientQueue: [],
             processTime: parseInt(patientProcessTime),

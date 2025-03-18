@@ -1,9 +1,9 @@
 //What properties are required to create a patient
     //Internal ID vs local ID (Database vs Reused patient ID)
 //Patient properties (Condition, ID, Bed Assignment, Queue Assignment)
-//Patient x Resource development
+//Patient x PatientPool development
 //Deleting a Patient verbose explanation
-//Resource scheduler (Automatic or manual?) 
+//PatientPool scheduler (Automatic or manual?) 
     //What happens when A patient is removed before the operation is completed atomically
 
 
@@ -56,7 +56,7 @@ the accounts they are associated with and length of time the event will last.
     - Medical resources are chosen by selecting the resource from a dropdown then clicking a plus symbol to select from
       the dropdown again
     - "Create New" will open a form that includes "Name", "Patient Process Time", "Max Number of Patients in Queue",
-      and "Is Reusable Resource"
+      and "Is Reusable PatientPool"
 2. When the event creation page is filled out the Director can click the create event button at the bottom of the page
     - In the header of the Directors event page there will be a button to stop and start the event
     - A timer runs on the backend which is started and stopped and is checked against to end the event when time is up.

@@ -22,7 +22,7 @@ import java.util.List;
  * {@link Saml2AuthenticatedPrincipal} after the user has been authenticated via SAML.
  *
  * @Author: John Botonakis
- * @Resource: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
+ * @PatientPool: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
  */
 @Controller
 @CrossOrigin

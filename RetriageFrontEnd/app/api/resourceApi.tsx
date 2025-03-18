@@ -1,12 +1,12 @@
 export const dynamic = 'force-static'
-import {Resource} from "./../models/resource";
+import {PatientPool} from "../models/patientPool";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 const endpoint = "/api/resources"
 /**
  * Fetch all resources from the backend
  */
-export async function getAllResources(): Promise<Resource[]> {
+export async function getAllResources(): Promise<PatientPool[]> {
     const res = await fetch(`${API_BASE_URL}`+endpoint, {
         method: "GET",
         headers: {
@@ -22,7 +22,7 @@ export async function getAllResources(): Promise<Resource[]> {
 /**
  * Create a new resource
  */
-export async function createResource(resource: { resource: Resource }): Promise<Resource> {
+export async function createResource(resource: { resource: PatientPool }): Promise<PatientPool> {
     const res = await fetch(`${API_BASE_URL}`+endpoint, {
         method: "POST",
         headers: {
@@ -40,7 +40,7 @@ export async function createResource(resource: { resource: Resource }): Promise<
 /**
  * Optionally, get a single resource by ID
  */
-export async function getResourceById(id: number): Promise<Resource> {
+export async function getResourceById(id: number): Promise<PatientPool> {
     const res = await fetch(`${API_BASE_URL}`+endpoint+`${id}`, {
         method: "GET",
         headers: {
