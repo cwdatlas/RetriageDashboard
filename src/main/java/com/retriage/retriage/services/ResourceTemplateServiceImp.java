@@ -1,7 +1,7 @@
 package com.retriage.retriage.services;
 
 import com.retriage.retriage.models.Resource;
-import com.retriage.retriage.repositories.ResourceTemplateRepository;
+import com.retriage.retriage.repositories.ResourceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,19 +11,20 @@ import java.util.Optional;
 @Service
 public class ResourceTemplateServiceImp implements ResourceTemplateService {
 
-    private final ResourceTemplateRepository resourceRepository;
+    private final ResourceRepository resourceRepository;
 
     /**
      * Resource Service constructor
      *
      * @param resourceRepository Repository declared in ResourceServiceImp
      */
-    public ResourceTemplateServiceImp(ResourceTemplateRepository resourceRepository) {
+    public ResourceTemplateServiceImp(ResourceRepository resourceRepository) {
         this.resourceRepository = resourceRepository;
     }
 
     /**
      * Saves/updates any resource, after first checking if it's not null
+     *
      * @param resource the resource you're trying to save
      * @return True if the resource is not null
      */
@@ -35,6 +36,7 @@ public class ResourceTemplateServiceImp implements ResourceTemplateService {
 
     /**
      * Find and pull every resource
+     *
      * @return Every resource
      */
     @Override
@@ -44,6 +46,7 @@ public class ResourceTemplateServiceImp implements ResourceTemplateService {
 
     /**
      * Find a specific resource with a given ID
+     *
      * @param id The ID of the resource to look for
      * @return The resource you're looking for
      */
@@ -54,6 +57,7 @@ public class ResourceTemplateServiceImp implements ResourceTemplateService {
 
     /**
      * Deletes a specified resource
+     *
      * @param id The ID of the resource to be deleted
      */
     @Override
