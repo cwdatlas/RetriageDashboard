@@ -1,7 +1,7 @@
 package com.retriage.retriage.services;
 
 import com.retriage.retriage.models.PatientPool;
-import com.retriage.retriage.repositories.ResourceTemplateRepository;
+import com.retriage.retriage.repositories.PatientPoolTmpRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,14 +14,14 @@ import java.util.Optional;
 public class ResourceTemplateServiceImp implements ResourceTemplateService {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceServiceImp.class);
-    private final ResourceTemplateRepository resourceTemplateRepository;
+    private final PatientPoolTmpRepo resourceTemplateRepository;
 
     /**
      * PatientPool Service constructor
      *
      * @param resourceTemplateRepository Repository declared in ResourceServiceImp
      */
-    public ResourceTemplateServiceImp(ResourceTemplateRepository resourceTemplateRepository) {
+    public ResourceTemplateServiceImp(PatientPoolTmpRepo resourceTemplateRepository) {
         this.resourceTemplateRepository = resourceTemplateRepository;
     }
 

@@ -5,7 +5,7 @@ import com.retriage.retriage.models.Event;
 import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.enums.Role;
-import com.retriage.retriage.repositories.EventRepository;
+import com.retriage.retriage.repositories.EventRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class EventServiceImpTest {
     private EventServiceImp eventServiceImp;
 
     @MockitoBean
-    private EventRepository eventRepository;
+    private EventRepo eventRepository;
 
     private Event sampleEvent;
     private User directorUser;

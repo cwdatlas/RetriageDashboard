@@ -4,7 +4,7 @@ import com.retriage.retriage.enums.Condition;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.models.Patient;
 import com.retriage.retriage.models.User;
-import com.retriage.retriage.repositories.PatientRepository;
+import com.retriage.retriage.repositories.PatientRepo;
 import org.junit.jupiter.api.Test; // Import Test annotation
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*; // Static imports for Mockito
 @SpringBootTest
 public class PatientServiceImpTest {
     @MockitoBean
-    private PatientRepository patientRepository;
+    private PatientRepo patientRepository;
     @Autowired
     private PatientServiceImp patientServiceImp;
 

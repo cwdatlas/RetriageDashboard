@@ -1,7 +1,7 @@
 package com.retriage.retriage.services;
 
 import com.retriage.retriage.models.User;
-import com.retriage.retriage.repositories.UserRepository;
+import com.retriage.retriage.repositories.UserRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,14 +17,14 @@ public class UserServiceImp implements UserService {
 
     // Add Logger for keeping track of any errors
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImp.class);
-    private final UserRepository userRepository;
+    private final UserRepo userRepository;
 
     /**
      * User Service constructor
      *
      * @param userRepository Repository declared in UserServiceImp
      */
-    public UserServiceImp(UserRepository userRepository) {
+    public UserServiceImp(UserRepo userRepository) {
         this.userRepository = userRepository;
         logger.debug("UserServiceImp constructor: userRepository instance = {}", userRepository); // Debug logger
     }

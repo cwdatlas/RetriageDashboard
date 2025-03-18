@@ -1,7 +1,7 @@
 package com.retriage.retriage.services;
 
 import com.retriage.retriage.models.PatientPool;
-import com.retriage.retriage.repositories.ResourceRepository;
+import com.retriage.retriage.repositories.PatientPoolRepo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*; // Static import for Mockito
 public class ResourceServiceImpTest {
 
     @MockitoBean
-    private ResourceRepository resourceRepository;
+    private PatientPoolRepo resourceRepository;
 
     @Autowired
     private ResourceServiceImp resourceServiceImp;

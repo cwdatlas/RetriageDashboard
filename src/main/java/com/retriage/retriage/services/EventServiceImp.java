@@ -1,7 +1,7 @@
 package com.retriage.retriage.services;
 
 import com.retriage.retriage.models.Event;
-import com.retriage.retriage.repositories.EventRepository;
+import com.retriage.retriage.repositories.EventRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,9 +14,9 @@ import java.util.Optional;
 public class EventServiceImp implements EventService {
 
     private static final Logger logger = LoggerFactory.getLogger(EventServiceImp.class);
-    private final EventRepository eventRepository;
+    private final EventRepo eventRepository;
 
-    public EventServiceImp(EventRepository eventRepository) {
+    public EventServiceImp(EventRepo eventRepository) {
         this.eventRepository = eventRepository;
         logger.debug("EventServiceImp constructor: eventRepository instance = {}", eventRepository);
     }

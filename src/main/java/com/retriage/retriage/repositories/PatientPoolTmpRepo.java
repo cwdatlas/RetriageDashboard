@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public interface ResourceRepository extends JpaRepository<PatientPool, Long> {
+public interface PatientPoolTmpRepo extends JpaRepository<PatientPool, Long> {
     //This is empty, intentionally
 
 }

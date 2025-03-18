@@ -2,7 +2,7 @@ package com.retriage.retriage.services;
 
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.models.User;
-import com.retriage.retriage.repositories.UserRepository;
+import com.retriage.retriage.repositories.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +20,7 @@ class UserServiceImpTest {
     private UserServiceImp userServiceImp; // Service under test
 
     @MockitoBean
-    private UserRepository userRepository; // Repository is replaced with a mock
+    private UserRepo userRepository; // Repository is replaced with a mock
 
     /**
      * Helper method to create a User for test purposes.

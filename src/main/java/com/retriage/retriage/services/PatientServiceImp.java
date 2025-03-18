@@ -2,7 +2,7 @@ package com.retriage.retriage.services;
 
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.models.Patient;
-import com.retriage.retriage.repositories.PatientRepository;
+import com.retriage.retriage.repositories.PatientRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -16,14 +16,14 @@ public class PatientServiceImp implements PatientService {
 
     // Add Logger for keeping track of any errors
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImp.class);
-    private final PatientRepository patientRepository;
+    private final PatientRepo patientRepository;
 
     /**
      * Patient Service constructor
      *
      * @param patientRepository Repository declared in PatientServiceImp
      */
-    public PatientServiceImp(PatientRepository patientRepository) {
+    public PatientServiceImp(PatientRepo patientRepository) {
         this.patientRepository = patientRepository;
     }
 

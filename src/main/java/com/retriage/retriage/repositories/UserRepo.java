@@ -10,7 +10,7 @@ import java.util.List;
  *
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepo extends JpaRepository<User, Long> {
     List<User> findByEmailIgnoreCase(String email);
     //This is empty, intentionally
 
