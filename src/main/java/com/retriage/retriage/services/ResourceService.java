@@ -1,6 +1,6 @@
 package com.retriage.retriage.services;
 
-import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.models.PatientPool;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,11 +10,11 @@ import java.util.Optional;
  */
 //TODO add all CRUD functions. Create Read Update and Delete. Some are already here, but more needs to be done
 public interface ResourceService {
-    boolean saveResource(Resource resource);
+    boolean saveResource(PatientPool resource);
 
-    List<Resource> findAllResources();
+    List<PatientPool> findAllResources();
 
-    Optional<Resource> findResourceById(Long id);
+    Optional<PatientPool> findResourceById(Long id);
 
     void deleteResourceById(Long id);
 }

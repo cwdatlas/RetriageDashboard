@@ -1,7 +1,7 @@
 package com.retriage.retriage.forms;
 
 import com.retriage.retriage.enums.Condition;
-import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.models.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +33,7 @@ public class PatientForm {
 
     @Getter
     @Setter
-    private List<Resource> resourceList;
+    private List<PatientPool> resourceList;
 
     @Getter
     @Setter

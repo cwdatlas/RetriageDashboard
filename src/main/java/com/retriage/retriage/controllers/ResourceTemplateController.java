@@ -1,13 +1,13 @@
 package com.retriage.retriage.controllers;
 
 import com.retriage.retriage.forms.ResourceForm;
-import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.services.ResourceTemplateService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,14 +29,14 @@ public class ResourceTemplateController {
     }
 
     /**
-     * 1) Create a new Resource
+     * 1) Create a new PatientPool
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
     public String createResource(@RequestBody ResourceForm resourceForm) {
         //secondary validation
 
-        Resource newResource = new Resource();
+        PatientPool newResource = new PatientPool();
         newResource.setName(resourceForm.getName());
         newResource.setActive(resourceForm.isActive());
         newResource.setUseable(resourceForm.isUseable());
@@ -48,7 +48,7 @@ public class ResourceTemplateController {
         if (saved) {
             response = "Saved Successfully";
             log.debug("createResource: Saved new resource Template name '{}'", newResource.getName());
-        }else{
+        } else {
             log.warn("createResource: Unable to save template name'{}'", newResource.getName());
         }
         return response;
@@ -59,8 +59,8 @@ public class ResourceTemplateController {
      * GET /patients
      */
     @GetMapping(produces = "application/json")
-    public List<Resource> getAllResources() {
-        List<Resource> resources = resourceService.findAllResourcesTmp();
+    public List<PatientPool> getAllResources() {
+        List<PatientPool> resources = resourceService.findAllResourcesTmp();
         log.debug("Found {} resources", resources.size());
         log.debug("Resources '{}' found", resources);
         return resources;
@@ -71,8 +71,8 @@ public class ResourceTemplateController {
      * GET /patients/{id}
      */
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<Resource> findResourceByID(@PathVariable Long id) {
-        Optional<Resource> optionalDirector = resourceService.findResourceTmpById(id);
+    public ResponseEntity<PatientPool> findResourceByID(@PathVariable Long id) {
+        Optional<PatientPool> optionalDirector = resourceService.findResourceTmpById(id);
         return optionalDirector
                 .map(resource -> ResponseEntity.ok(resource))
                 .orElseGet(() -> ResponseEntity.notFound().build());

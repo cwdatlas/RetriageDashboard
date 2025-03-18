@@ -3,14 +3,13 @@ package com.retriage.retriage.models;
 import com.retriage.retriage.enums.PoolType;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+
 import java.util.List;
 
 @Entity
 @Data
 @Table(name = "resources")
-public class Resource {
+public class PatientPool {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +28,6 @@ public class Resource {
 
     private PoolType poolType;
 
-    public Resource() {
+    public PatientPool() {
     }
 }

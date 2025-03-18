@@ -1,7 +1,7 @@
 package com.retriage.retriage.controllers;
 
 import com.retriage.retriage.forms.ResourceForm;
-import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.services.ResourceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +26,14 @@ public class ResourceController {
     }
 
     /**
-     * 1) Create a new Resource
+     * 1) Create a new PatientPool
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
     public String createResource(@RequestBody ResourceForm resourceForm) {
         //secondary validation
 
-        Resource newResource = new Resource();
+        PatientPool newResource = new PatientPool();
         newResource.setName(resourceForm.getName());
         newResource.setActive(resourceForm.isActive());
         newResource.setUseable(resourceForm.isUseable());
@@ -53,7 +53,7 @@ public class ResourceController {
      * GET /patients
      */
     @GetMapping(produces = "application/json")
-    public List<Resource> getAllResources() {
+    public List<PatientPool> getAllResources() {
         return resourceService.findAllResources();
     }
 
@@ -62,8 +62,8 @@ public class ResourceController {
      * GET /patients/{id}
      */
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<Resource> findResourceByID(@PathVariable Long id) {
-        Optional<Resource> optionalDirector = resourceService.findResourceById(id);
+    public ResponseEntity<PatientPool> findResourceByID(@PathVariable Long id) {
+        Optional<PatientPool> optionalDirector = resourceService.findResourceById(id);
         return optionalDirector
                 .map(resource -> ResponseEntity.ok(resource))
                 .orElseGet(() -> ResponseEntity.notFound().build());

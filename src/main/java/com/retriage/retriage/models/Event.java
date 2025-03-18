@@ -4,6 +4,7 @@ import com.retriage.retriage.enums.Status;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.List;
 
 @Entity
@@ -41,7 +42,7 @@ public class Event {
     @Getter
     @Setter
     @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
-    private List<Resource> resources;
+    private List<PatientPool> resources;
 
     //Owner
     @Getter

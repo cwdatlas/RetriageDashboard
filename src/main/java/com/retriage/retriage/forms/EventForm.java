@@ -1,7 +1,7 @@
 package com.retriage.retriage.forms;
 
 import com.retriage.retriage.enums.Status;
-import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.models.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,9 +32,9 @@ public class EventForm {
 
     @Getter
     @Setter
-    @NotNull(message = "Must contain at least one Resource")
-    @Size(min = 1, message = "Must contain at least one Resource")
-    private List<Resource> resources;
+    @NotNull(message = "Must contain at least one PatientPool")
+    @Size(min = 1, message = "Must contain at least one PatientPool")
+    private List<PatientPool> resources;
 
     @Getter
     @Setter

@@ -1,6 +1,6 @@
 package com.retriage.retriage.repositories;
 
-import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.models.PatientPool;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public interface ResourceTemplateRepository extends JpaRepository<Resource, Long> {
+public interface ResourceTemplateRepository extends JpaRepository<PatientPool, Long> {
     //This is empty, intentionally
 
 }

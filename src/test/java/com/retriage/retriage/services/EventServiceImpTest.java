@@ -2,11 +2,10 @@ package com.retriage.retriage.services;
 
 import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.models.Event;
-import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.repositories.EventRepository;
-import com.retriage.retriage.services.EventServiceImp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +48,8 @@ public class EventServiceImpTest {
         nurseUser.setRole(Role.Nurse);
         System.out.println("@BeforeEach - nurseUser initialized: " + nurseUser);
 
-        // Create a sample Resource
-        Resource sampleResource = new Resource();
+        // Create a sample PatientPool
+        PatientPool sampleResource = new PatientPool();
         sampleResource.setId(3L);
         sampleResource.setName("X-Ray Machine");
         System.out.println("@BeforeEach - sampleResource initialized: " + sampleResource);
@@ -71,7 +70,7 @@ public class EventServiceImpTest {
         User director = new User();
         director.setId(4L);
         List<User> nurses = List.of(new User());
-        List<Resource> resources = List.of(new Resource());
+        List<PatientPool> resources = List.of(new PatientPool());
         Event event = new Event();
         event.setId(id);
         event.setName(name);
@@ -123,7 +122,7 @@ public class EventServiceImpTest {
     @Test
     void saveEvent_ShouldThrowException_WhenInvalidName() {
         // Arrange
-        Resource localSampleResource = new Resource();
+        PatientPool localSampleResource = new PatientPool();
         localSampleResource.setId(3L);
         localSampleResource.setName("X-Ray Machine");
 
@@ -155,7 +154,7 @@ public class EventServiceImpTest {
     @Test
     void saveEvent_ShouldThrowException_WhenNullDirector() {
         // Arrange
-        Resource localSampleResource = new Resource();
+        PatientPool localSampleResource = new PatientPool();
         localSampleResource.setId(3L);
         localSampleResource.setName("X-Ray Machine");
 
@@ -178,7 +177,7 @@ public class EventServiceImpTest {
     @Test
     void saveEvent_ShouldThrowException_WhenInvalidNurses() {
         // Arrange
-        Resource localSampleResource = new Resource();
+        PatientPool localSampleResource = new PatientPool();
         localSampleResource.setId(3L);
         localSampleResource.setName("X-Ray Machine");
 
@@ -238,7 +237,7 @@ public class EventServiceImpTest {
     @Test
     void saveEvent_ShouldThrowException_WhenNullStatus() {
         // Arrange
-        Resource localSampleResource = new Resource();
+        PatientPool localSampleResource = new PatientPool();
         localSampleResource.setId(3L);
         localSampleResource.setName("X-Ray Machine");
 

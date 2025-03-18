@@ -1,6 +1,5 @@
 package com.retriage.retriage.forms;
 
-import com.retriage.retriage.models.Event;
 import com.retriage.retriage.models.Patient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -12,7 +11,7 @@ import java.util.List;
 public class ResourceForm {
     @Getter
     @Setter
-    @NotBlank(message = "Resource name is required")
+    @NotBlank(message = "PatientPool name is required")
     private String name;
     @Getter
     @Setter

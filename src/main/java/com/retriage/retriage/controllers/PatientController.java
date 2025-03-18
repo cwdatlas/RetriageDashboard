@@ -3,7 +3,7 @@ package com.retriage.retriage.controllers;
 import com.retriage.retriage.enums.Condition;
 import com.retriage.retriage.forms.PatientForm;
 import com.retriage.retriage.models.Patient;
-import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.PatientService;
 import jakarta.validation.Valid;
@@ -134,7 +134,7 @@ public class PatientController {
                     existingPatient.setCondition(Condition.valueOf((String) value));
                     break;
                 case "resourceList":
-                    existingPatient.setResourceList((List<Resource>) value);
+                    existingPatient.setResourceList((List<PatientPool>) value);
                     break;
                 case "retriageNurse":
                     existingPatient.setRetriageNurse((User) value);

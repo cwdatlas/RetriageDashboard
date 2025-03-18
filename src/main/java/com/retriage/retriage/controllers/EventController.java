@@ -40,9 +40,9 @@ public class EventController {
         //Secondary validation...
         String response = "Failed to save Event, Unknown Error";
         User director = userService.getUserByEmail(eventform.getDirector().getEmail());
-        if(director==null){
+        if (director == null) {
             response = "Failed to save Event, User not found";
-        }else {
+        } else {
 
             //Creating the event
             Event newEvent = new Event();
@@ -85,6 +85,7 @@ public class EventController {
 
     /**
      * 4) Delete an Event
+     *
      * @param id
      * @return
      */

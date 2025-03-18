@@ -1,6 +1,6 @@
 package com.retriage.retriage.services;
 
-import com.retriage.retriage.models.Resource;
+import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.repositories.ResourceRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +25,10 @@ public class ResourceServiceImpTest {
     private ResourceServiceImp resourceServiceImp;
 
     /**
-     * Helper method to create a Resource for test purposes.
+     * Helper method to create a PatientPool for test purposes.
      */
-    private Resource createResource(Long id, String name, int processTime, boolean active, boolean useable) {
-        Resource resource = new Resource();
+    private PatientPool createResource(Long id, String name, int processTime, boolean active, boolean useable) {
+        PatientPool resource = new PatientPool();
         resource.setId(id);
         resource.setName(name);
         resource.setProcessTime(processTime);
@@ -44,8 +44,8 @@ public class ResourceServiceImpTest {
     @Test
     void saveResource_ShouldReturnTrueWhenSaveSuccessful() {
         // Arrange
-        Resource resourceToSave = createResource(null, "Test Resource", 60, true, true); // ID is null for new resource
-        Resource savedResource = createResource(1L, "Test Resource", 60, true, true); // ID is now 1L, as if assigned by DB
+        PatientPool resourceToSave = createResource(null, "Test PatientPool", 60, true, true); // ID is null for new resource
+        PatientPool savedResource = createResource(1L, "Test PatientPool", 60, true, true); // ID is now 1L, as if assigned by DB
 
         when(resourceRepository.save(resourceToSave)).thenReturn(savedResource); // Mock repository save behavior
 
@@ -58,54 +58,54 @@ public class ResourceServiceImpTest {
     }
 
     /**
-     * Tests that saveResource() throws IllegalArgumentException when a null Resource is provided.
+     * Tests that saveResource() throws IllegalArgumentException when a null PatientPool is provided.
      */
     @Test
     void saveResource_NullResource_ShouldThrowException() {
         // Arrange
-        Resource nullResource = null;
+        PatientPool nullResource = null;
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(nullResource),
-                "Expected IllegalArgumentException for null Resource");
+                "Expected IllegalArgumentException for null PatientPool");
 
-        verify(resourceRepository, never()).save(any(Resource.class)); // Verify save was never called
+        verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
     }
 
     /**
-     * Tests that saveResource() throws IllegalArgumentException when Resource name is null.
+     * Tests that saveResource() throws IllegalArgumentException when PatientPool name is null.
      */
     @Test
     void saveResource_NullResourceName_ShouldThrowException() {
         // Arrange
-        Resource invalidResource = createResource(
+        PatientPool invalidResource = createResource(
                 null,
                 null,
-                60, true, true); // Resource with null name
+                60, true, true); // PatientPool with null name
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(invalidResource),
-                "Expected IllegalArgumentException for null Resource name");
+                "Expected IllegalArgumentException for null PatientPool name");
 
-        verify(resourceRepository, never()).save(any(Resource.class)); // Verify save was never called
+        verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
     }
 
     /**
-     * Tests that saveResource() throws IllegalArgumentException when Resource name is empty.
+     * Tests that saveResource() throws IllegalArgumentException when PatientPool name is empty.
      */
     @Test
     void saveResource_EmptyResourceName_ShouldThrowException() {
         // Arrange
-        Resource invalidResource = createResource(
+        PatientPool invalidResource = createResource(
                 null,
                 "",
-                60, true, true); // Resource with empty name
+                60, true, true); // PatientPool with empty name
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(invalidResource),
-                "Expected IllegalArgumentException for empty Resource name");
+                "Expected IllegalArgumentException for empty PatientPool name");
 
-        verify(resourceRepository, never()).save(any(Resource.class)); // Verify save was never called
+        verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
     }
 
     /**
@@ -114,16 +114,16 @@ public class ResourceServiceImpTest {
     @Test
     void saveResource_ZeroProcessTime_ShouldThrowException() {
         // Arrange
-        Resource invalidResource = createResource(
+        PatientPool invalidResource = createResource(
                 null,
-                "Test Resource",
-                0, true, true); // Resource with zero processTime
+                "Test PatientPool",
+                0, true, true); // PatientPool with zero processTime
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(invalidResource),
                 "Expected IllegalArgumentException for zero process time");
 
-        verify(resourceRepository, never()).save(any(Resource.class)); // Verify save was never called
+        verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
     }
 
     /**
@@ -132,16 +132,16 @@ public class ResourceServiceImpTest {
     @Test
     void saveResource_NegativeProcessTime_ShouldThrowException() {
         // Arrange
-        Resource invalidResource = createResource(
+        PatientPool invalidResource = createResource(
                 null,
-                "Test Resource",
-                -10, true, true); // Resource with negative processTime
+                "Test PatientPool",
+                -10, true, true); // PatientPool with negative processTime
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> resourceServiceImp.saveResource(invalidResource),
                 "Expected IllegalArgumentException for negative process time");
 
-        verify(resourceRepository, never()).save(any(Resource.class)); // Verify save was never called
+        verify(resourceRepository, never()).save(any(PatientPool.class)); // Verify save was never called
     }
 
     /**
@@ -151,8 +151,8 @@ public class ResourceServiceImpTest {
     @Test
     void saveResource_ResourceWithExistingId_ShouldSaveWithoutError() {
         // Arrange
-        Resource resourceToSave = createResource(10L, "ExistingIDResource", 60, true, true); // Resource with ID 10 already set
-        Resource savedResource = createResource(10L, "ExistingIDResource", 60, true, true); // Mock saved resource
+        PatientPool resourceToSave = createResource(10L, "ExistingIDResource", 60, true, true); // PatientPool with ID 10 already set
+        PatientPool savedResource = createResource(10L, "ExistingIDResource", 60, true, true); // Mock saved resource
 
         when(resourceRepository.save(resourceToSave)).thenReturn(savedResource); // Mock repository save
 
@@ -171,8 +171,8 @@ public class ResourceServiceImpTest {
     @Test
     void saveResource_ActiveAndUseableFalse_ShouldSaveSuccessfully() {
         // Arrange
-        Resource resourceToSave = createResource(null, "Inactive Resource", 45, false, false);
-        Resource savedResource = createResource(11L, "Inactive Resource", 45, false, false);
+        PatientPool resourceToSave = createResource(null, "Inactive PatientPool", 45, false, false);
+        PatientPool savedResource = createResource(11L, "Inactive PatientPool", 45, false, false);
 
         when(resourceRepository.save(resourceToSave)).thenReturn(savedResource);
 
@@ -194,14 +194,14 @@ public class ResourceServiceImpTest {
     @Test
     void findAllResources_ShouldReturnListOfResources() {
         // Arrange
-        List<Resource> mockResources = List.of(
-                createResource(1L, "Resource One", 30, true, true),
-                createResource(2L, "Resource Two", 45, false, true)
+        List<PatientPool> mockResources = List.of(
+                createResource(1L, "PatientPool One", 30, true, true),
+                createResource(2L, "PatientPool Two", 45, false, true)
         );
         when(resourceRepository.findAll()).thenReturn(mockResources); // Mock findAll to return mockResources
 
         // Act
-        List<Resource> result = resourceServiceImp.findAllResources();
+        List<PatientPool> result = resourceServiceImp.findAllResources();
 
         // Assert
         assertNotNull(result, "The result should not be null");
@@ -220,7 +220,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findAll()).thenReturn(Collections.emptyList()); // Mock findAll to return empty list
 
         // Act
-        List<Resource> result = resourceServiceImp.findAllResources();
+        List<PatientPool> result = resourceServiceImp.findAllResources();
 
         // Assert
         assertNotNull(result, "The result should not be null");
@@ -239,7 +239,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findById(resourceId)).thenReturn(Optional.empty()); // Mock repository to return empty for ID 0
 
         // Act
-        Optional<Resource> resultOptional = resourceServiceImp.findResourceById(resourceId);
+        Optional<PatientPool> resultOptional = resourceServiceImp.findResourceById(resourceId);
 
         // Assert
         assertTrue(resultOptional.isEmpty(), "Expected no resource to be found for ID 0");
@@ -257,7 +257,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findById(resourceId)).thenReturn(Optional.empty()); // Mock repository to return empty for ID -1
 
         // Act
-        Optional<Resource> resultOptional = resourceServiceImp.findResourceById(resourceId);
+        Optional<PatientPool> resultOptional = resourceServiceImp.findResourceById(resourceId);
 
         // Assert
         assertTrue(resultOptional.isEmpty(), "Expected no resource to be found for negative ID");
@@ -274,11 +274,11 @@ public class ResourceServiceImpTest {
     void findResourceById_ResourceExists_ShouldReturnResourceOptional() {
         // Arrange
         Long resourceId = 123L;
-        Resource mockResource = createResource(resourceId, "Existing Resource", 30, true, true);
+        PatientPool mockResource = createResource(resourceId, "Existing PatientPool", 30, true, true);
         when(resourceRepository.findById(resourceId)).thenReturn(Optional.of(mockResource)); // Mock findById to return mockResource
 
         // Act
-        Optional<Resource> resultOptional = resourceServiceImp.findResourceById(resourceId);
+        Optional<PatientPool> resultOptional = resourceServiceImp.findResourceById(resourceId);
 
         // Assert
         assertTrue(resultOptional.isPresent(), "Expected a resource to be found");
@@ -297,7 +297,7 @@ public class ResourceServiceImpTest {
         when(resourceRepository.findById(resourceId)).thenReturn(Optional.empty()); // Mock findById to return empty Optional
 
         // Act
-        Optional<Resource> resultOptional = resourceServiceImp.findResourceById(resourceId);
+        Optional<PatientPool> resultOptional = resourceServiceImp.findResourceById(resourceId);
 
         // Assert
         assertTrue(resultOptional.isEmpty(), "Expected no resource to be found");

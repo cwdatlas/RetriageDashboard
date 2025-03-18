@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.List;
 
 @Entity
@@ -48,7 +49,7 @@ public class Patient {
     @Getter
     @Setter
     @ManyToMany(mappedBy = "patients")
-    private List<Resource> resourceList;
+    private List<PatientPool> resourceList;
 
     // Owner
     @Getter
