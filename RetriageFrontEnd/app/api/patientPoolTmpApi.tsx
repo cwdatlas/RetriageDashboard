@@ -2,11 +2,11 @@ export const dynamic = 'force-static'
 import {PatientPool} from "../models/patientPool";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-const endpoint = "/api/resources/templates"
+const endpoint = "/api/pools/templates"
 /**
- * Fetch all resources from the backend
+ * Fetch all pools from the backend
  */
-export async function getAllResourceTemplates(): Promise<PatientPool[]> {
+export async function getAllPoolTemplates(): Promise<PatientPool[]> {
     const res = await fetch(`${API_BASE_URL}`+endpoint, {
         method: "GET",
         headers: {
@@ -14,26 +14,26 @@ export async function getAllResourceTemplates(): Promise<PatientPool[]> {
         },
     });
     if (!res.ok) {
-        throw new Error(`Failed to fetch resources: ${res.statusText}`);
+        throw new Error(`Failed to fetch pools: ${res.statusText}`);
     }
     console.log(res);
     return res.json();
 }
 
 /**
- * Create a new resource
+ * Create a new pool
  */
-export async function createResourceTemplate(resource: PatientPool): Promise<PatientPool> {
+export async function createPoolTemplate(pool: PatientPool): Promise<PatientPool> {
     const res = await fetch(`${API_BASE_URL}`+endpoint, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(resource),
+        body: JSON.stringify(pool),
     });
 
     if (!res.ok) {
-        throw new Error(`Failed to create resource: ${res.statusText}`);
+        throw new Error(`Failed to create pool: ${res.statusText}`);
     }
     console.log(res);
     return res.json();

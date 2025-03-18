@@ -8,5 +8,5 @@ export interface Patient {
     lastName: string;
     condition: Condition;
     nurse: User;
-    resources: PatientPool[];
+    pools: PatientPool[];
 }

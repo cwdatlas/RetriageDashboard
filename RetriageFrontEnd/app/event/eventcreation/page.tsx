@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 
-// 1) Import your resource-template function
-import {createResourceTemplate, getAllResourceTemplates} from "@/app/api/resourceTemplateApi";
+// 1) Import your pool-template function
+import {createPoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpApi";
 import { createEvent } from "@/app/api/eventApi";
 
 import { PatientPool } from "@/app/models/patientPool";
@@ -16,6 +16,7 @@ import { Event } from "@/app/models/event";
 import { Status } from "@/app/enumerations/status";
 import {getCookies} from "@/app/api/cookieApi"
 import {Role} from "@/app/enumerations/role";
+import {PoolType} from "@/app/enumerations/poolType";
 
 export default function EventCreation() {
     const router = useRouter();
@@ -26,10 +27,11 @@ export default function EventCreation() {
     const [error, setError] = useState<string | null>(null);
 
     // PatientPool Saving Handles
-    const [resourceName, setResourceName] = useState("");
+    const [poolName, setPoolName] = useState("");
+    const [poolType, setPoolType] = useState(PoolType.MedService);
     const [patientProcessTime, setPatientProcessTime] = useState("");
 
-    // Director + Resources for this new event
+    // Director + Pools for this new event
     const director: User = {
         firstName: getCookies("firstName"),
         lastName: getCookies("lastName"),
@@ -37,17 +39,17 @@ export default function EventCreation() {
         role: getCookies("role") as Role,
     };
 
-    // 2) State to hold *all* resource templates from your API
+    // 2) State to hold *all* pool templates from your API
     const [allTemplates, setAllTemplates] = useState<PatientPool[]>([]);
 
-    // 3) State for the user-selected Resources (the ones actually going into the event)
-    const [selectedResources, setSelectedResources] = useState<PatientPool[]>([]);
+    // 3) State for the user-selected Pools (the ones actually going into the event)
+    const [selectedPools, setSelectedPools] = useState<PatientPool[]>([]);
 
-    // 4) Fetch *all* resource templates on mount
+    // 4) Fetch *all* pool templates on mount
         useEffect(() => {
             async function fetchTemplates() {
                 try {
-                    const data = await getAllResourceTemplates(); // your API call
+                    const data = await getAllPoolTemplates(); // your API call
                     setAllTemplates(data);
                 } catch (err: unknown) {
                     if (err instanceof Error) {
@@ -74,14 +76,14 @@ export default function EventCreation() {
         const endTimeNumeric = 1000;
         const eventStatus = Status.Paused;
 
-        for(const checkResource of selectedResources) {
-            checkResource.id = undefined;
+        for(const checkPool of selectedPools) {
+            checkPool.id = undefined;
         }
 
         const newEvent: Event = {
             name: name,
             director: director,
-            resources: selectedResources,
+            pools: selectedPools,
             startTime: startTime,
             endTime: endTimeNumeric,
             status: eventStatus,
@@ -100,18 +102,19 @@ export default function EventCreation() {
     }
 
     // ------ EVENT FORM SUBMISSION ------
-    async function handleSubmitResource(e: React.FormEvent) {
+    async function handleSubmitPool(e: React.FormEvent) {
         e.preventDefault();
-        const newResource: PatientPool = {
+        const newPool: PatientPool = {
+            poolType: poolType,
             active: true,
             patientQueue: [],
             processTime: parseInt(patientProcessTime),
             usable: true,
-            name: resourceName
+            name: poolName
         };
 
         try {
-            await createResourceTemplate(newResource);
+            await createPoolTemplate(newPool);
             router.push("/");
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -120,7 +123,7 @@ export default function EventCreation() {
                 setError("An unknown error occurred");
             }
         }
-        const data = await getAllResourceTemplates();
+        const data = await getAllPoolTemplates();
         setAllTemplates(data);
     }
 
@@ -156,7 +159,7 @@ export default function EventCreation() {
 
                 {/* ========== LIST OF ALL RESOURCE TEMPLATES ========== */}
                 <div style={{ marginBottom: "1rem" }}>
-                    <h3>All Resource Templates:</h3>
+                    <h3>All Pool Templates:</h3>
                     {allTemplates.length === 0 ? (
                         <p>Loading or none found...</p>
                     ) : (
@@ -164,16 +167,17 @@ export default function EventCreation() {
                             {allTemplates.map((template, idx) => (
                                 <li key={template.id ?? idx}>
                                     Name: {template.name}
+                                    Type: {template.poolType}
                                     <input
                                         type="checkbox"
-                                        checked={selectedResources.some((res) => res.id === template.id)}
+                                        checked={selectedPools.some((res) => res.id === template.id)}
                                         onChange={(e) => {
                                             if (e.target.checked) {
-                                                // If box is now checked, add the resource to selectedResources
-                                                setSelectedResources((prev) => [...prev, template]);
+                                                // If box is now checked, add the pool to selectedPools
+                                                setSelectedPools((prev) => [...prev, template]);
                                             } else {
-                                                // If box is unchecked, remove the resource from selectedResources
-                                                setSelectedResources((prev) =>
+                                                // If box is unchecked, remove the pool from selectedPools
+                                                setSelectedPools((prev) =>
                                                     prev.filter((res) => res.id !== template.id)
                                                 );
                                             }
@@ -190,20 +194,41 @@ export default function EventCreation() {
                     Create Event
                 </button>
             </form>
-            <form onSubmit={handleSubmitResource}>
-                {/* ========== CREATE MEDICAL RESOURCES ========== */}
+            <form onSubmit={handleSubmitPool}>
+                {/* ========== CREATE Patient Pool ========== */}
                 <div style={{ marginBottom: "1rem" }}>
-                    <h3>Create Medical Resource:</h3>
+                    <h3>Create Patient Pool:</h3>
                     <div style={{ marginBottom: "1rem" }}>
-                        <label htmlFor="resourceName">Name: </label>
+                        <label htmlFor="poolName">Name: </label>
                         <input
-                            id="resourceName"
+                            id="poolName"
                             type="text"
-                            value={resourceName}
-                            onChange={(e) => setResourceName(e.target.value)}
+                            value={poolName}
+                            onChange={(e) => setPoolName(e.target.value)}
                             required
                         />
                     </div>
+                    <label>
+                        <input
+                            type="radio"
+                            name="pools"
+                            value={PoolType.Bay}
+                            checked={poolType === PoolType.Bay}
+                            onChange={() => setPoolType(PoolType.Bay)}
+                        />
+                        Bay
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="pools"
+                            value={PoolType.MedService}
+                            checked={poolType === PoolType.MedService}
+                            onChange={() => setPoolType(PoolType.MedService)}
+                        />
+                        Medical Service
+                    </label>
                     <div style={{ marginBottom: "1rem" }}>
                         <label htmlFor="patientProcessTime">Patient Process Time: </label>
                         <input
@@ -216,7 +241,7 @@ export default function EventCreation() {
                     </div>
                 </div>
                 <button type="submit" style={{ marginBottom: "2rem" }}>
-                    Create Resource
+                    Create Pool
                 </button>
             </form>
 

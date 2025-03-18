@@ -9,5 +9,5 @@ export interface Event{
     startTime: number;
     endTime: number;
     status: Status;
-    resources: PatientPool[];
+    pools: PatientPool[];
 }

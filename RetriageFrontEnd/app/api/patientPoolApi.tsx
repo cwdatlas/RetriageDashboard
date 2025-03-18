@@ -2,11 +2,11 @@ export const dynamic = 'force-static'
 import {PatientPool} from "../models/patientPool";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-const endpoint = "/api/resources"
+const endpoint = "/api/pools"
 /**
- * Fetch all resources from the backend
+ * Fetch all pools from the backend
  */
-export async function getAllResources(): Promise<PatientPool[]> {
+export async function getAllPools(): Promise<PatientPool[]> {
     const res = await fetch(`${API_BASE_URL}`+endpoint, {
         method: "GET",
         headers: {
@@ -14,33 +14,33 @@ export async function getAllResources(): Promise<PatientPool[]> {
         },
     });
     if (!res.ok) {
-        throw new Error(`Failed to fetch resources: ${res.statusText}`);
+        throw new Error(`Failed to fetch pools: ${res.statusText}`);
     }
     return res.json();
 }
 
 /**
- * Create a new resource
+ * Create a new pool
  */
-export async function createResource(resource: { resource: PatientPool }): Promise<PatientPool> {
+export async function createPool(pool: { pool: PatientPool }): Promise<PatientPool> {
     const res = await fetch(`${API_BASE_URL}`+endpoint, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(resource),
+        body: JSON.stringify(pool),
     });
 
     if (!res.ok) {
-        throw new Error(`Failed to create resource: ${res.statusText}`);
+        throw new Error(`Failed to create pool: ${res.statusText}`);
     }
     return res.json();
 }
 
 /**
- * Optionally, get a single resource by ID
+ * Optionally, get a single pool by ID
  */
-export async function getResourceById(id: number): Promise<PatientPool> {
+export async function getPoolById(id: number): Promise<PatientPool> {
     const res = await fetch(`${API_BASE_URL}`+endpoint+`${id}`, {
         method: "GET",
         headers: {
@@ -48,20 +48,20 @@ export async function getResourceById(id: number): Promise<PatientPool> {
         },
     });
     if (!res.ok) {
-        throw new Error(`Failed to fetch resource with ID ${id}`);
+        throw new Error(`Failed to fetch pool with ID ${id}`);
     }
     return res.json();
 }
 
 /**
- * Optionally, delete a resource
+ * Optionally, delete a pool
  */
-export async function deleteResource(id: number): Promise<void> {
+export async function deletePool(id: number): Promise<void> {
     const res = await fetch(`${API_BASE_URL}`+endpoint+`${id}`, {
         method: "DELETE",
     });
     if (!res.ok) {
-        throw new Error(`Failed to delete resource with ID ${id}`);
+        throw new Error(`Failed to delete pool with ID ${id}`);
     }
 }
 
