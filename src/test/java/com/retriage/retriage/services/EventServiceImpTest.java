@@ -79,7 +79,7 @@ public class EventServiceImpTest {
         event.setResources(resources);
         event.setStatus(Status.Paused);
         event.setStartTime(80); // Default start time
-        event.setEndTime(95);   // Default end time
+        event.setDuration(95);   // Default end time
         return event;
     }
 
@@ -283,7 +283,7 @@ public class EventServiceImpTest {
         // Arrange
         Event invalidTimeEvent = createSampleEvent(null, "Invalid Time Event");
         invalidTimeEvent.setStartTime(100);
-        invalidTimeEvent.setEndTime(90);
+        invalidTimeEvent.setDuration(90);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> eventServiceImp.saveEvent(invalidTimeEvent),
@@ -444,7 +444,7 @@ public class EventServiceImpTest {
         Long eventIdToUpdate = 20L;
         Event invalidTimeEvent = createSampleEvent(eventIdToUpdate, "Updated Event with Invalid Time");
         invalidTimeEvent.setStartTime(150);
-        invalidTimeEvent.setEndTime(120);
+        invalidTimeEvent.setDuration(120);
 
         when(eventRepository.existsById(eventIdToUpdate)).thenReturn(true);
 
