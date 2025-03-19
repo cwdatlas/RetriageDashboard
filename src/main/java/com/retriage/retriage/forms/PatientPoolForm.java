@@ -17,7 +17,7 @@ public class PatientPoolForm {
     private String name;
 
     @Positive(message = "Process time must be a positive number")
-    private int processTime;
+    private Long processTime;
 
     private boolean active;
 

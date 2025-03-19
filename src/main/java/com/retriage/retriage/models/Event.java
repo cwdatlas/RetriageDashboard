@@ -1,6 +1,5 @@
 package com.retriage.retriage.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.retriage.retriage.enums.Status;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,9 +21,9 @@ public class Event {
     @ManyToOne
     private User director;
 
-    private int startTime;
+    private Long startTime;
 
-    private int endTime;
+    private Long duration;
 
     private Status status;
 

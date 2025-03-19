@@ -17,7 +17,7 @@ public class PatientPoolTmp {
     @Unique
     private String name;
 
-    private int processTime;
+    private Long processTime;
 
     private boolean useable;
 

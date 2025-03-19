@@ -1,12 +1,10 @@
 package com.retriage.retriage.forms;
 
 import com.retriage.retriage.enums.PoolType;
-import com.retriage.retriage.models.Patient;
-import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class PatientPoolTmpForm {
@@ -15,7 +13,7 @@ public class PatientPoolTmpForm {
     private String name;
 
     @NotNull
-    private int processTime;
+    private Long processTime;
 
     @NotNull(message = "Must include true or false for useable attribute")
     private boolean useable;

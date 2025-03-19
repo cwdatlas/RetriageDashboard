@@ -33,10 +33,10 @@ public class EventForm {
     private Status status;
 
     @NotNull(message = "Start time is required")
-    private int startTime;
+    private Long startTime;
 
     @NotNull(message = "End time is required")
-    private int endTime;
+    private Long duration;
 
     public EventForm() {
     }

@@ -1,6 +1,5 @@
 package com.retriage.retriage.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.retriage.retriage.enums.PoolType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,7 +17,7 @@ public class PatientPool {
 
     private String name;
 
-    private int processTime;
+    private Long processTime;
 
     private boolean active;
 

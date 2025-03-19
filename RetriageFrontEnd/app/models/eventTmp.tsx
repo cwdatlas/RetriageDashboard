@@ -4,6 +4,6 @@ import {PatientPoolTmp} from "@/app/models/patientPoolTmp";
 export interface EventTmp{
     name: string;
     director: User;
-    endTime: number;
+    duration: number;
     poolTmps: PatientPoolTmp[];
 }

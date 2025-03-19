@@ -1,7 +1,5 @@
 package com.retriage.retriage.forms;
 
-import com.retriage.retriage.enums.Status;
-import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.models.PatientPoolTmp;
 import com.retriage.retriage.models.User;
 import jakarta.validation.constraints.NotBlank;
@@ -21,7 +19,7 @@ public class EventTmpForm {
     private User director;
 
     @NotNull(message = "End time is required")
-    private int endTime;
+    private Long duration;
 
     @NotNull(message = "Must contain at least one PatientPool")
     @Size(min = 1, message = "Must contain at least one PatientPool")

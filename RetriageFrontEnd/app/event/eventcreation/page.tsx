@@ -70,13 +70,13 @@ export default function EventCreation() {
             setError("Director not loaded yet. Please wait or refresh.");
             return;
         }
-        const endTimeNumeric = 1000;
+        const endTimeNumeric = Date.now();
 
         const newEvent: EventTmp = {
             name: name,
             director: director,
             poolTmps: selectedPools,
-            endTime: endTimeNumeric,
+            duration: endTimeNumeric,
         };
 
         try {

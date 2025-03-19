@@ -7,7 +7,7 @@ export interface Event{
     name: string;
     director: User;
     startTime: number;
-    endTime: number;
+    duration: number;
     status: Status;
     pools: PatientPool[];
     nurses: User[];

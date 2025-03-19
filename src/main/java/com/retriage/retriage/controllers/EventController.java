@@ -49,32 +49,32 @@ public class EventController {
             errorList.add("Submitted director lacking email address");
         } else {
             User director = userService.getUserByEmail(eventform.getDirector().getEmail());
-            if (director == null){
+            if (director == null) {
                 errorList.add("Director does not exist, not authorized to create an event");
-            } else if(director.getRole() != Role.Director) {
+            } else if (director.getRole() != Role.Director) {
                 errorList.add("User " + director.getEmail() + " is not a director, they are a " + director.getRole());
             }
         }
         // Patient Pool Template validation
         List<PatientPool> pools = new ArrayList<>();
-        if(eventform.getPoolTmps().isEmpty()){
+        if (eventform.getPoolTmps().isEmpty()) {
             errorList.add("Must add at least 1 Pool Template");
-        }else{
+        } else {
             PatientPoolTmp[] templates = eventform.getPoolTmps().toArray(new PatientPoolTmp[eventform.getPoolTmps().size()]);
-            for(PatientPoolTmp poolTmp : templates){
-                for(int i = 1; i <= poolTmp.getPoolNumber(); i++){
+            for (PatientPoolTmp poolTmp : templates) {
+                for (int i = 1; i <= poolTmp.getPoolNumber(); i++) {
                     PatientPool patientPool = new PatientPool();
                     patientPool.setPoolType(poolTmp.getPoolType());
                     patientPool.setUseable(poolTmp.isUseable());
-                    if(poolTmp.getPoolType() == PoolType.Bay){
-                        patientPool.setProcessTime(eventform.getEndTime()); //TODO Keep process time and end time in the same type of time
-                    }else{
+                    if (poolTmp.getPoolType() == PoolType.Bay) {
+                        patientPool.setProcessTime(eventform.getDuration()); //TODO Keep process time and end time in the same type of time
+                    } else {
                         patientPool.setProcessTime(poolTmp.getProcessTime());
                     }
                     // Create new name based on template name
-                    if(poolTmp.getPoolNumber() == 1){
+                    if (poolTmp.getPoolNumber() == 1) {
                         patientPool.setName(poolTmp.getName());
-                    }else{
+                    } else {
                         patientPool.setName(poolTmp.getName() + " " + i);
                     }
                     patientPool.setPatients(new ArrayList<Patient>());
@@ -84,9 +84,9 @@ public class EventController {
             }
         }
         // validation for event
-        if(pools.isEmpty()) {
+        if (pools.isEmpty()) {
             errorList.add("Must add at least 1 Pool Template"); //TODO use dry practices to exclude this piece of code
-        }else if (errorList.isEmpty()) {
+        } else if (errorList.isEmpty()) {
             Event newEvent = new Event();
             newEvent.setName(eventform.getName());
             User director = userService.getUserByEmail(eventform.getDirector().getEmail());
@@ -94,15 +94,15 @@ public class EventController {
             newEvent.setNurses(new ArrayList<User>());
             newEvent.setPools(pools);
             newEvent.setStatus(Status.Paused);
-            newEvent.setStartTime(0);
-            newEvent.setEndTime(eventform.getEndTime());
+            newEvent.setStartTime(System.currentTimeMillis());
+            newEvent.setDuration(eventform.getDuration());
 
             //Saving the event
             boolean saved = eventService.saveEvent(newEvent);
             //Error handling (very basic)
             if (saved) {
                 errorList.add("Successfully saved event");
-            }else{
+            } else {
                 errorList.add("Unknown error saving event");
             }
 
