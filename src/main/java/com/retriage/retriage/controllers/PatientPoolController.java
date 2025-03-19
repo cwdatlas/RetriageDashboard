@@ -34,6 +34,7 @@ public class PatientPoolController {
         //secondary validation
 
         PatientPool newPool = new PatientPool();
+        newPool.setId(poolForm.getId());
         newPool.setName(poolForm.getName());
         newPool.setActive(poolForm.isActive());
         newPool.setUseable(poolForm.isUseable());

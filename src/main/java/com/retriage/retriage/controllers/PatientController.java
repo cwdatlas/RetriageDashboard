@@ -41,6 +41,7 @@ public class PatientController {
 
         //Setting patient values with validated values from the form
         Patient patient = new Patient();
+        patient.setId(patientForm.getId());
         patient.setCardId(patientForm.getCardId());
         patient.setFirstName(patientForm.getFirstName());
         patient.setLastName(patientForm.getLastName());

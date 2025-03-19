@@ -13,6 +13,8 @@ import java.util.List;
 @Data
 public class EventForm {
 
+    private Long id;
+
     @NotBlank(message = "Event name is required")
     private String name;
 

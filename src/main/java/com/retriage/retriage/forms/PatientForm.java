@@ -12,6 +12,8 @@ import java.util.List;
 @Data
 public class PatientForm {
 
+    private Long id;
+
     @NotBlank(message = "Card ID is required")
     private String cardId;
 

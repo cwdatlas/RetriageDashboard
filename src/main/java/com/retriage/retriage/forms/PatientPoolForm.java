@@ -11,6 +11,8 @@ import java.util.List;
 @Data
 public class PatientPoolForm {
 
+    private Long id;
+
     @NotBlank(message = "PatientPool name is required")
     private String name;
 

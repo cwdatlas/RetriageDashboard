@@ -46,6 +46,7 @@ public class EventController {
 
             //Creating the event
             Event newEvent = new Event();
+            newEvent.setId(eventform.getId());
             newEvent.setName(eventform.getName());
             newEvent.setDirector(director);
             newEvent.setNurses(eventform.getNurses());
