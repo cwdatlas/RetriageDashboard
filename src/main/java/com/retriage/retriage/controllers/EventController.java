@@ -1,5 +1,6 @@
 package com.retriage.retriage.controllers;
 
+import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.models.Event;
 import com.retriage.retriage.models.User;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -38,18 +40,44 @@ public class EventController {
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventForm eventform) {
         //Secondary validation...
-        String response = "Failed to save Event, Unknown Error";
-        User director = userService.getUserByEmail(eventform.getDirector().getEmail());
-        if (director == null) {
-            response = "Failed to save Event, User not found";
+        List<String> errorList = new ArrayList<>();
+        // Validate Director
+        if (eventform.getDirector() == null) {
+            errorList.add("Director must  be added to event");
+        } else if (eventform.getDirector().getEmail() == null) {
+            errorList.add("Submitted director lacking email address");
         } else {
+            User director = userService.getUserByEmail(eventform.getDirector().getEmail());
+            if (director.getRole() != Role.Director) {
+                errorList.add("User " + director.getEmail() + " is not a director, they are a " + director.getRole());
+            }
+        }
+        // Validate Nurses
+        List<User> nurses = new ArrayList<>();
+        for (User nurse : eventform.getNurses()) {
+            if (nurse.getEmail() == null) {
+                errorList.add("User " + nurse.getFirstName() + " does not have an email");
+            } else {
+                User savedNurse = userService.getUserByEmail(nurse.getEmail());
+                if (savedNurse == null) {
+                    errorList.add("User " + nurse.getEmail() + " could not be found. They must have logged in at least once.");
+                } else if (savedNurse.getRole() == null || savedNurse.getRole() == Role.Guest) { //TODO make this inclusive so it can scale with additional roles
+                    errorList.add("User " + nurse.getEmail() + " is not a nurse or a director");
+                } else {
+                    nurses.add(savedNurse);
+                }
+            }
+        }
 
-            //Creating the event
+
+        //Creating the event
+        if (errorList.isEmpty()) {
             Event newEvent = new Event();
             newEvent.setId(eventform.getId());
             newEvent.setName(eventform.getName());
+            User director = userService.getUserByEmail(eventform.getDirector().getEmail());
             newEvent.setDirector(director);
-            newEvent.setNurses(eventform.getNurses());
+            newEvent.setNurses(nurses);
             newEvent.setPools(eventform.getPools());
             newEvent.setStatus(eventform.getStatus());
             newEvent.setStartTime(eventform.getStartTime());
@@ -59,12 +87,15 @@ public class EventController {
             boolean saved = eventService.saveEvent(newEvent);
             //Error handling (very basic)
             if (saved) {
-                response = "Successfully saved event";
+                errorList.add("Successfully saved event");
+            }else{
+                errorList.add("Unknown error saving event");
             }
+
         }
         return ResponseEntity.
                 created(URI.create("/events/"))
-                .body(response);
+                .body(errorList);
     }
 
     /**
