@@ -52,7 +52,7 @@ public class EventController {
             newEvent.setResources(eventform.getResources());
             newEvent.setStatus(eventform.getStatus());
             newEvent.setStartTime(eventform.getStartTime());
-            newEvent.setEndTime(eventform.getEndTime());
+            newEvent.setDuration(eventform.getEndTime());
 
             //Saving the event
             boolean saved = eventService.saveEvent(newEvent);

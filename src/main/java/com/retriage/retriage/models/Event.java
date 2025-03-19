@@ -32,7 +32,7 @@ public class Event {
 
     @Getter
     @Setter
-    private int endTime;
+    private int duration;
 
     @Getter
     @Setter
