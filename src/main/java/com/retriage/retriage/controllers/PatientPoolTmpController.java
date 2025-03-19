@@ -1,7 +1,8 @@
 package com.retriage.retriage.controllers;
 
 import com.retriage.retriage.forms.PatientPoolForm;
-import com.retriage.retriage.models.PatientPool;
+import com.retriage.retriage.forms.PatientPoolTmpForm;
+import com.retriage.retriage.models.PatientPoolTmp;
 import com.retriage.retriage.services.PatientPoolTmpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +34,12 @@ public class PatientPoolTmpController {
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public String createPool(@RequestBody PatientPoolForm poolForm) {
+    public String createPool(@RequestBody PatientPoolTmpForm poolForm) {
         //secondary validation
 
-        PatientPool newPool = new PatientPool();
-        newPool.setId(poolForm.getId());
+        PatientPoolTmp newPool = new PatientPoolTmp();
         newPool.setName(poolForm.getName());
-        newPool.setActive(poolForm.isActive());
         newPool.setUseable(poolForm.isUseable());
-        newPool.setPatients(poolForm.getPatients());
         newPool.setProcessTime(poolForm.getProcessTime());
         newPool.setPoolType(poolForm.getPoolType());
 
@@ -61,8 +59,8 @@ public class PatientPoolTmpController {
      * GET /patients
      */
     @GetMapping(produces = "application/json")
-    public List<PatientPool> getAllPools() {
-        List<PatientPool> pools = poolService.findAllPoolTmp();
+    public List<PatientPoolTmp> getAllPools() {
+        List<PatientPoolTmp> pools = poolService.findAllPoolTmp();
         log.debug("Found {} pools", pools.size());
         log.debug("Pools '{}' found", pools);
         return pools;
@@ -73,8 +71,8 @@ public class PatientPoolTmpController {
      * GET /patients/{id}
      */
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<PatientPool> findPoolByID(@PathVariable Long id) {
-        Optional<PatientPool> optionalDirector = poolService.findPoolTmpById(id);
+    public ResponseEntity<PatientPoolTmp> findPoolByID(@PathVariable Long id) {
+        Optional<PatientPoolTmp> optionalDirector = poolService.findPoolTmpById(id);
         return optionalDirector
                 .map(pool -> ResponseEntity.ok(pool))
                 .orElseGet(() -> ResponseEntity.notFound().build());

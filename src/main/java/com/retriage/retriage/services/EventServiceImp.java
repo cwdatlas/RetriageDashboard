@@ -149,9 +149,9 @@ public class EventServiceImp implements EventService {
             logger.warn("validateEvent: Director is null.");
             throw new IllegalArgumentException("Director cannot be null.");
         }
-        if (event.getNurses() == null || event.getNurses().isEmpty()) {
-            logger.warn("validateEvent: Nurses list is null or empty.");
-            throw new IllegalArgumentException("Event must have at least one nurse.");
+        if (event.getNurses() == null) {
+            logger.warn("validateEvent: Nurses list is null");
+            throw new IllegalArgumentException("Event must be initialized");
         }
         if (event.getPools() == null || event.getPools().isEmpty()) {
             logger.warn("validateEvent: Resources list is null or empty.");

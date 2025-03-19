@@ -1,5 +1,6 @@
 package com.retriage.retriage.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.retriage.retriage.enums.Status;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -28,7 +29,8 @@ public class Event {
     private Status status;
 
     //Not Owner
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<PatientPool> pools;
 
     //Owner

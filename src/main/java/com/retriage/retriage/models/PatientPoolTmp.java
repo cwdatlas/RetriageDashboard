@@ -1,39 +1,30 @@
 package com.retriage.retriage.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.retriage.retriage.enums.PoolType;
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.List;
+import org.checkerframework.common.aliasing.qual.Unique;
 
 @Entity
 @Data
-@Table(name = "patient_pool")
-public class PatientPool {
+@Table(name = "patient_pool_templates")
+public class PatientPoolTmp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Unique
     private String name;
 
     private int processTime;
 
-    private boolean active;
-
     private boolean useable;
-    //Owner
-    @ManyToMany
-    private List<Patient> patients;
 
     private PoolType poolType;
 
-    // PatientPool.java
-    @ManyToOne
-    @JsonBackReference
-    private Event event;
+    private int poolNumber;
 
-    public PatientPool() {
+    public PatientPoolTmp() {
     }
 }

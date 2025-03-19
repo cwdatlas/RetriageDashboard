@@ -10,13 +10,12 @@ import Footer from "@/app/components/footer";
 import {createPoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpApi";
 import { createEvent } from "@/app/api/eventApi";
 
-import { PatientPool } from "@/app/models/patientPool";
 import { User } from "@/app/models/user";
-import { Event } from "@/app/models/event";
-import { Status } from "@/app/enumerations/status";
 import {getCookies} from "@/app/api/cookieApi"
 import {Role} from "@/app/enumerations/role";
 import {PoolType} from "@/app/enumerations/poolType";
+import {PatientPoolTmp} from "@/app/models/patientPoolTmp";
+import {EventTmp} from "@/app/models/eventTmp";
 
 export default function EventCreation() {
     const router = useRouter();
@@ -40,10 +39,10 @@ export default function EventCreation() {
     };
 
     // 2) State to hold *all* pool templates from your API
-    const [allTemplates, setAllTemplates] = useState<PatientPool[]>([]);
+    const [allTemplates, setAllTemplates] = useState<PatientPoolTmp[]>([]);
 
     // 3) State for the user-selected Pools (the ones actually going into the event)
-    const [selectedPools, setSelectedPools] = useState<PatientPool[]>([]);
+    const [selectedPools, setSelectedPools] = useState<PatientPoolTmp[]>([]);
 
     // 4) Fetch *all* pool templates on mount
         useEffect(() => {
@@ -71,23 +70,13 @@ export default function EventCreation() {
             setError("Director not loaded yet. Please wait or refresh.");
             return;
         }
-        // For the demo, just using Date.now(); you would likely use an actual timestamp
-        const startTime = 0;
         const endTimeNumeric = 1000;
-        const eventStatus = Status.Paused;
 
-        for(const checkPool of selectedPools) {
-            checkPool.id = undefined;
-        }
-
-        const newEvent: Event = {
-            nurses: [director],
+        const newEvent: EventTmp = {
             name: name,
             director: director,
-            pools: selectedPools,
-            startTime: startTime,
+            poolTmps: selectedPools,
             endTime: endTimeNumeric,
-            status: eventStatus
         };
 
         try {
@@ -105,13 +94,12 @@ export default function EventCreation() {
     // ------ EVENT FORM SUBMISSION ------
     async function handleSubmitPool(e: React.FormEvent) {
         e.preventDefault();
-        const newPool: PatientPool = {
+        const newPool: PatientPoolTmp = {
             poolType: poolType,
-            active: true,
-            patientQueue: [],
-            processTime: parseInt(patientProcessTime),
+            processTime: parseInt(patientProcessTime) || 1,
             usable: true,
-            name: poolName
+            name: poolName,
+            poolNumber: 1
         };
 
         try {
@@ -165,30 +153,65 @@ export default function EventCreation() {
                         <p>Loading or none found...</p>
                     ) : (
                         <ul>
-                            {allTemplates.map((template, idx) => (
-                                <li key={template.id ?? idx}>
-                                    Name: {template.name}
-                                    Type: {template.poolType}
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedPools.some((res) => res.id === template.id)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                // If box is now checked, add the pool to selectedPools
-                                                setSelectedPools((prev) => [...prev, template]);
-                                            } else {
-                                                // If box is unchecked, remove the pool from selectedPools
-                                                setSelectedPools((prev) =>
-                                                    prev.filter((res) => res.id !== template.id)
-                                                );
-                                            }
-                                        }}
-                                    />
-                                </li>
-                            ))}
+                            {allTemplates.map((template, idx) => {
+                                // Check if this template is currently in selectedPools
+                                // If so, grab its poolNumber; otherwise default to 0
+                                const existing = selectedPools.find((res) => res.name === template.name);
+                                const currentPoolNumber = existing?.poolNumber ?? 0;
+
+                                return (
+                                    <li key={template.name ?? idx}>
+                                        <div>
+                                            Name: {template.name} &nbsp; Type: {template.poolType}
+                                        </div>
+                                        <label>
+                                            Pool Number:{" "}
+                                            <select
+                                                value={currentPoolNumber}
+                                                onChange={(e) => {
+                                                    const newNumber = parseInt(e.target.value, 10);
+
+                                                    if (newNumber === 0) {
+                                                        // 0 means remove from selectedPools if it exists
+                                                        setSelectedPools((prev) =>
+                                                            prev.filter((res) => res.name !== template.name)
+                                                        );
+                                                    } else {
+                                                        // 1–5 means add (or update) with the chosen poolNumber
+                                                        setSelectedPools((prev) => {
+                                                            const existingIndex = prev.findIndex(
+                                                                (res) => res.name === template.name
+                                                            );
+                                                            const updatedTemplate = { ...template, poolNumber: newNumber };
+
+                                                            if (existingIndex === -1) {
+                                                                // Not in the array yet, add it
+                                                                return [...prev, updatedTemplate];
+                                                            } else {
+                                                                // Already in the array, just update the poolNumber
+                                                                const newArray = [...prev];
+                                                                newArray[existingIndex] = updatedTemplate;
+                                                                return newArray;
+                                                            }
+                                                        });
+                                                    }
+                                                }}
+                                            >
+                                                {/* Render dropdown options 0..5 */}
+                                                {[0, 1, 2, 3, 4, 5].map((num) => (
+                                                    <option key={num} value={num}>
+                                                        {num}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </label>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     )}
                 </div>
+
 
                 {/* ========== SUBMIT EVENT BUTTON ========== */}
                 <button type="submit" style={{ marginBottom: "2rem" }}>
@@ -196,9 +219,9 @@ export default function EventCreation() {
                 </button>
             </form>
             <form onSubmit={handleSubmitPool}>
-                {/* ========== CREATE Patient Pool ========== */}
+                {/* ========== CREATE Patient Pool Template========== */}
                 <div style={{ marginBottom: "1rem" }}>
-                    <h3>Create Patient Pool:</h3>
+                    <h3>Create Patient Pool Template:</h3>
                     <div style={{ marginBottom: "1rem" }}>
                         <label htmlFor="poolName">Name: </label>
                         <input
@@ -230,6 +253,7 @@ export default function EventCreation() {
                         />
                         Medical Service
                     </label>
+                    {poolType === PoolType.MedService && (
                     <div style={{ marginBottom: "1rem" }}>
                         <label htmlFor="patientProcessTime">Patient Process Time: </label>
                         <input
@@ -239,7 +263,8 @@ export default function EventCreation() {
                             onChange={(e) => setPatientProcessTime(e.target.value)}
                             required
                         />
-                    </div>
+                    </div>)}
+
                 </div>
                 <button type="submit" style={{ marginBottom: "2rem" }}>
                     Create Pool

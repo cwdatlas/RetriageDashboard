@@ -1,4 +1,5 @@
 import {Event} from "./../models/event";
+import {EventTmp} from "@/app/models/eventTmp";
 
 export const dynamic = 'force-static'
 
@@ -21,7 +22,7 @@ export async function getAllEvents(): Promise<Event[]> {
 /**
  * Create a new event
  */
-export async function createEvent(event: Event): Promise<Event> {
+export async function createEvent(event: EventTmp): Promise<EventTmp> {
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "POST",
         headers: {

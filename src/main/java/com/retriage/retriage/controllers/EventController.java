@@ -1,9 +1,10 @@
 package com.retriage.retriage.controllers;
 
+import com.retriage.retriage.enums.PoolType;
 import com.retriage.retriage.enums.Role;
-import com.retriage.retriage.forms.EventForm;
-import com.retriage.retriage.models.Event;
-import com.retriage.retriage.models.User;
+import com.retriage.retriage.enums.Status;
+import com.retriage.retriage.forms.EventTmpForm;
+import com.retriage.retriage.models.*;
 import com.retriage.retriage.services.EventService;
 import com.retriage.retriage.services.UserService;
 import jakarta.validation.Valid;
@@ -38,7 +39,7 @@ public class EventController {
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> createEvent(@Valid @RequestBody EventForm eventform) {
+    public ResponseEntity<?> createEvent(@Valid @RequestBody EventTmpForm eventform) {
         //Secondary validation...
         List<String> errorList = new ArrayList<>();
         // Validate Director
@@ -48,39 +49,52 @@ public class EventController {
             errorList.add("Submitted director lacking email address");
         } else {
             User director = userService.getUserByEmail(eventform.getDirector().getEmail());
-            if (director.getRole() != Role.Director) {
+            if (director == null){
+                errorList.add("Director does not exist, not authorized to create an event");
+            } else if(director.getRole() != Role.Director) {
                 errorList.add("User " + director.getEmail() + " is not a director, they are a " + director.getRole());
             }
         }
-        // Validate Nurses
-        List<User> nurses = new ArrayList<>();
-        for (User nurse : eventform.getNurses()) {
-            if (nurse.getEmail() == null) {
-                errorList.add("User " + nurse.getFirstName() + " does not have an email");
-            } else {
-                User savedNurse = userService.getUserByEmail(nurse.getEmail());
-                if (savedNurse == null) {
-                    errorList.add("User " + nurse.getEmail() + " could not be found. They must have logged in at least once.");
-                } else if (savedNurse.getRole() == null || savedNurse.getRole() == Role.Guest) { //TODO make this inclusive so it can scale with additional roles
-                    errorList.add("User " + nurse.getEmail() + " is not a nurse or a director");
-                } else {
-                    nurses.add(savedNurse);
+        // Patient Pool Template validation
+        List<PatientPool> pools = new ArrayList<>();
+        if(eventform.getPoolTmps().isEmpty()){
+            errorList.add("Must add at least 1 Pool Template");
+        }else{
+            PatientPoolTmp[] templates = eventform.getPoolTmps().toArray(new PatientPoolTmp[eventform.getPoolTmps().size()]);
+            for(PatientPoolTmp poolTmp : templates){
+                for(int i = 1; i <= poolTmp.getPoolNumber(); i++){
+                    PatientPool patientPool = new PatientPool();
+                    patientPool.setPoolType(poolTmp.getPoolType());
+                    patientPool.setUseable(poolTmp.isUseable());
+                    if(poolTmp.getPoolType() == PoolType.Bay){
+                        patientPool.setProcessTime(eventform.getEndTime()); //TODO Keep process time and end time in the same type of time
+                    }else{
+                        patientPool.setProcessTime(poolTmp.getProcessTime());
+                    }
+                    // Create new name based on template name
+                    if(poolTmp.getPoolNumber() == 1){
+                        patientPool.setName(poolTmp.getName());
+                    }else{
+                        patientPool.setName(poolTmp.getName() + " " + i);
+                    }
+                    patientPool.setPatients(new ArrayList<Patient>());
+                    patientPool.setActive(true);
+                    pools.add(patientPool);
                 }
             }
         }
-
-
-        //Creating the event
-        if (errorList.isEmpty()) {
+        // validation for event
+        if(pools.isEmpty()) {
+            errorList.add("Must add at least 1 Pool Template"); //TODO use dry practices to exclude this piece of code
+        }else if (errorList.isEmpty()) {
             Event newEvent = new Event();
-            newEvent.setId(eventform.getId());
             newEvent.setName(eventform.getName());
             User director = userService.getUserByEmail(eventform.getDirector().getEmail());
             newEvent.setDirector(director);
-            newEvent.setNurses(nurses);
-            newEvent.setPools(eventform.getPools());
-            newEvent.setStatus(eventform.getStatus());
-            newEvent.setStartTime(eventform.getStartTime());
+            newEvent.setNurses(new ArrayList<User>());
+            newEvent.setPools(pools);
+            newEvent.setStatus(Status.Paused);
+            newEvent.setStartTime(0);
             newEvent.setEndTime(eventform.getEndTime());
 
             //Saving the event
