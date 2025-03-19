@@ -29,8 +29,8 @@ public class Event {
     private Status status;
 
     //Not Owner
-    @JsonManagedReference
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "event_id")
     private List<PatientPool> pools;
 
     //Owner

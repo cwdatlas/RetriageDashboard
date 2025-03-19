@@ -29,11 +29,6 @@ public class PatientPool {
 
     private PoolType poolType;
 
-    // PatientPool.java
-    @ManyToOne
-    @JsonBackReference
-    private Event event;
-
     public PatientPool() {
     }
 }
