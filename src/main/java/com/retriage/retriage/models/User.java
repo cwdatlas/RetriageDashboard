@@ -37,10 +37,6 @@ public class User {
     @OneToMany(mappedBy = "retriageNurse")
     private List<Patient> createdPatients;
 
-    //Not Owner
-    @OneToMany(mappedBy = "director")
-    private List<Event> createdEvents;
-
     public User() {
     }
 }
