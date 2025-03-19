@@ -49,7 +49,7 @@ public class EventController {
             newEvent.setName(eventform.getName());
             newEvent.setDirector(director);
             newEvent.setNurses(eventform.getNurses());
-            newEvent.setResources(eventform.getResources());
+            newEvent.setPools(eventform.getPools());
             newEvent.setStatus(eventform.getStatus());
             newEvent.setStartTime(eventform.getStartTime());
             newEvent.setEndTime(eventform.getEndTime());

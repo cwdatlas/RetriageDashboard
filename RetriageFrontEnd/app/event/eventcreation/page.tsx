@@ -81,12 +81,13 @@ export default function EventCreation() {
         }
 
         const newEvent: Event = {
+            nurses: [director],
             name: name,
             director: director,
             pools: selectedPools,
             startTime: startTime,
             endTime: endTimeNumeric,
-            status: eventStatus,
+            status: eventStatus
         };
 
         try {

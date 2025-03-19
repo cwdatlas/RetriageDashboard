@@ -153,7 +153,7 @@ public class EventServiceImp implements EventService {
             logger.warn("validateEvent: Nurses list is null or empty.");
             throw new IllegalArgumentException("Event must have at least one nurse.");
         }
-        if (event.getResources() == null || event.getResources().isEmpty()) {
+        if (event.getPools() == null || event.getPools().isEmpty()) {
             logger.warn("validateEvent: Resources list is null or empty.");
             throw new IllegalArgumentException("Event must have at least one resource.");
         }

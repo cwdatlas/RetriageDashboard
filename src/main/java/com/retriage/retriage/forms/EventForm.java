@@ -19,8 +19,8 @@ public class EventForm {
     @NotNull(message = "Must contain at least one Director")
     private User director;
 
-    //    @NotNull(message = "Must contain at least one Nurse")
-//    @Size(min = 1, message = "Must contain at least one nurse")
+    @NotNull(message = "Must contain at least one Nurse")
+    @Size(min = 1, message = "Must contain at least one nurse")
     private List<User> nurses;
 
     @NotNull(message = "Must contain at least one PatientPool")

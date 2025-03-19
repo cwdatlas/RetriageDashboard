@@ -45,7 +45,7 @@ public class PatientController {
         patient.setFirstName(patientForm.getFirstName());
         patient.setLastName(patientForm.getLastName());
         patient.setCondition(patientForm.getCondition());
-        patient.setResourceList(patientForm.getResourceList());
+        patient.setPoolList(patientForm.getPoolList());
         patient.setRetriageNurse(patientForm.getRetriageNurse());
         Patient saved = patientService.savePatient(patient);
         // Return 201 Created with Location header to point to the new resource
@@ -134,7 +134,7 @@ public class PatientController {
                     existingPatient.setCondition(Condition.valueOf((String) value));
                     break;
                 case "resourceList":
-                    existingPatient.setResourceList((List<PatientPool>) value);
+                    existingPatient.setPoolList((List<PatientPool>) value);
                     break;
                 case "retriageNurse":
                     existingPatient.setRetriageNurse((User) value);

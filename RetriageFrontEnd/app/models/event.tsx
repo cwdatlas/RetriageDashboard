@@ -10,4 +10,5 @@ export interface Event{
     endTime: number;
     status: Status;
     pools: PatientPool[];
+    nurses: User[];
 }

@@ -65,9 +65,11 @@ public class HomeController {
         }
         String firstName = principal.getFirstAttribute("firstname");
         String lastName = principal.getFirstAttribute("lastname");
-        String username = principal.getName();
-        if (firstName != null && lastName != null) {
-            username = firstName + lastName;
+        if (firstName == null){
+            firstName = "Guest";
+        }
+        if (lastName == null) {
+            lastName = "Guest";
         }
 
         String email = principal.getFirstAttribute("email");
@@ -86,12 +88,18 @@ public class HomeController {
             userService.saveUser(newUser);
         }
 
-        Cookie nameCookie = new Cookie("username", username);
-        nameCookie.setPath("/");
-        nameCookie.setDomain("localhost");
-        nameCookie.setHttpOnly(false);
-        nameCookie.setSecure(false);
-        response.addCookie(nameCookie);
+        Cookie fNameCookie = new Cookie("firstName", firstName);
+        fNameCookie.setPath("/");
+        fNameCookie.setDomain("localhost");
+        fNameCookie.setHttpOnly(false);
+        fNameCookie.setSecure(false);
+        response.addCookie(fNameCookie);
+        Cookie lNameCookie = new Cookie("lastName", lastName);
+        lNameCookie.setPath("/");
+        lNameCookie.setDomain("localhost");
+        lNameCookie.setHttpOnly(false);
+        lNameCookie.setSecure(false);
+        response.addCookie(lNameCookie);
         Cookie roleCookie = new Cookie("role", userRole.toString());
         roleCookie.setPath("/");
         roleCookie.setDomain("localhost");
