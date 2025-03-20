@@ -29,11 +29,3 @@ public class EventTmpForm {
     }
 
 }
-//      In case we decide to use actual time instead of just an Int
-//    @NotNull(message = "Start time is required")
-//    @FutureOrPresent(message = "Start time must be in the present or future")
-//    private LocalDateTime startTime;
-//
-//    @NotNull(message = "End time is required")
-//    @FutureOrPresent(message = "End time must be in the present or future")
-//    private LocalDateTime endTime;
