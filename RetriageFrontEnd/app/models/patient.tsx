@@ -1,6 +1,5 @@
 import {Condition} from "@/app/enumerations/condition"
 import {User} from "@/app/models/user";
-import {PatientPool} from "@/app/models/patientPool";
 
 export interface Patient {
     id?: number,
@@ -8,5 +7,4 @@ export interface Patient {
     lastName: string;
     condition: Condition;
     nurse: User;
-    pools: PatientPool[];
 }
