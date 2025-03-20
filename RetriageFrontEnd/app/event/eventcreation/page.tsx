@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 
 // 1) Import your pool-template function
 import {createPoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpApi";
-import { createEvent } from "@/app/api/eventApi";
+import {createEvent} from "@/app/api/eventApi";
 
-import { User } from "@/app/models/user";
+import {User} from "@/app/models/user";
 import {getCookies} from "@/app/api/cookieApi"
 import {Role} from "@/app/enumerations/role";
 import {PoolType} from "@/app/enumerations/poolType";
@@ -22,7 +22,7 @@ export default function EventCreation() {
 
     // ---------- Main Event Form Fields ----------
     const [name, setName] = useState("");
-    const [endTime, setEndTime] = useState("");
+    const [duration, setDuration] = useState("");
     const [error, setError] = useState<string | null>(null);
 
     // PatientPool Saving Handles
@@ -70,13 +70,12 @@ export default function EventCreation() {
             setError("Director not loaded yet. Please wait or refresh.");
             return;
         }
-        const endTimeNumeric = Date.now();
 
         const newEvent: EventTmp = {
             name: name,
             director: director,
             poolTmps: selectedPools,
-            duration: endTimeNumeric,
+            duration: parseInt(duration) * 60000,
         };
 
         try {
@@ -136,12 +135,12 @@ export default function EventCreation() {
                     />
                 </div>
                 <div style={{ marginBottom: "1rem" }}>
-                    <label htmlFor="eventEndTime">End Time: </label>
+                    <label htmlFor="eventDuration">End Time: </label>
                     <input
-                        id="eventEndTime"
+                        id="eventDuration"
                         type="text"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
                         required
                     />
                 </div>
