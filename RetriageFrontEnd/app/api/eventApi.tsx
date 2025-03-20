@@ -64,6 +64,19 @@ export async function deleteEvent(id: number): Promise<void> {
         throw new Error(`Failed to delete event`);
     }
 }
+//TODO fix update event to actually work
+export async function updateEvent(id: number, newEvent: Event): Promise<void> {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + `${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newEvent),
+    });
+    if (!res.ok) {
+        throw new Error(`Failed to update event`);
+    }
+}
 
 
 
