@@ -3,6 +3,7 @@ package com.retriage.retriage.controllers;
 import com.retriage.retriage.enums.PoolType;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.enums.Status;
+import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.forms.EventTmpForm;
 import com.retriage.retriage.models.*;
 import com.retriage.retriage.services.EventService;
@@ -145,13 +146,29 @@ public class EventController {
      * 5) Update an existing Event
      * PUT /events/{id}
      */
-    @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event event) {
-        Event updatedEvent = eventService.UpdateEvent(id, event);
-        if (updatedEvent == null) {
-            return ResponseEntity.notFound().build();
+    @PutMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<String> updateEvent(@Valid @RequestBody EventForm eventForm) {
+        //secondary validation
+
+        Event updatedEvent = new Event();
+        updatedEvent.setName(eventForm.getName());
+        updatedEvent.setId(eventForm.getId());
+        updatedEvent.setDuration(eventForm.getDuration());
+        updatedEvent.setPools(eventForm.getPools());
+        updatedEvent.setStatus(eventForm.getStatus());
+        updatedEvent.setNurses(eventForm.getNurses());
+        updatedEvent.setDirector(eventForm.getDirector());
+        updatedEvent.setStartTime(eventForm.getStartTime());
+
+        Event response = eventService.UpdateEvent(eventForm.getId(), updatedEvent);
+        if (response == null) {
+            return ResponseEntity.
+                    created(URI.create("/events/"))
+                    .body("Unable to update event");
         }
-        return ResponseEntity.ok(updatedEvent);
+        return ResponseEntity.
+                created(URI.create("/events/"))
+                .body("Updated event successfully");
     }
 
 }

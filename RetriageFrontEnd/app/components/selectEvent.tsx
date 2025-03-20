@@ -7,7 +7,7 @@ import {getAllEvents} from "@/app/api/eventApi";
 import ToggleEvent from "@/app/components/eventToggleButton";
 import {updateEvent} from "@/app/api/eventApi";
 
-export default function SelectEvent() {
+export default function SelectEvent({eventViewToggle} : {eventViewToggle: () => void}) {
     const [allEvents, setAllEvents] = useState<Event[]>([]);
     const [error, setError] = useState<string | null>(null);
 
@@ -29,12 +29,13 @@ export default function SelectEvent() {
         fetchEvents();
     }, []);
 
-    function onStatusChange(eventId: number, event: Event) {
-        updateEvent(eventId, event)
+    function onStatusChange(event: Event) {
+        updateEvent(event)
             .catch((err) => {
             console.error("Failed to update event status:", err);
             // Possibly show an error message in the UI
         });
+        eventViewToggle();
     }
 
     return (

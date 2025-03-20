@@ -65,8 +65,8 @@ export async function deleteEvent(id: number): Promise<void> {
     }
 }
 //TODO fix update event to actually work
-export async function updateEvent(id: number, newEvent: Event): Promise<void> {
-    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + `${id}`, {
+export async function updateEvent(newEvent: Event): Promise<void> {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

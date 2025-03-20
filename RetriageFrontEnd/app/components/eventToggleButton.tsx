@@ -14,7 +14,7 @@ export default function ToggleEvent({
                                         onStatusChange,
                                     }: {
     event: Event;
-    onStatusChange?: (eventId: number, UpdatedEvent: Event) => void;
+    onStatusChange?: (UpdatedEvent: Event) => void;
 }) {
     // Keep track of the status in local state
     const [localStatus, setLocalStatus] = useState(event.status);
@@ -34,7 +34,7 @@ export default function ToggleEvent({
         //    This passes the event ID + new status back upstream
         if (onStatusChange && event.id != null) {
             event.status = newStatus;
-            onStatusChange(event.id, event);
+            onStatusChange(event);
         }
     }
 
