@@ -5,7 +5,7 @@ import Footer from "@/app/components/footer";
 
 export default function Home() {
     const handleLogout = () => {
-        window.location.href = 'https://dev-32534403.okta.com/logout';
+        window.location.href = 'http://localhost:8080/logout/saml2/slo';
     };
 
     // @ts-ignore
@@ -14,7 +14,7 @@ export default function Home() {
             <Header/>
 
             <h2>Upload an Image</h2>
-            <form action="http://localhost:8080/uploadImage" method="post" enctype="multipart/form-data">
+            <form action="http://localhost:8080/uploadImage" method="post" encType="multipart/form-data">
                 <div>
                     <label htmlFor="image">Choose an image to upload:</label>
                     <input type="file" id="image" name="image" required />
