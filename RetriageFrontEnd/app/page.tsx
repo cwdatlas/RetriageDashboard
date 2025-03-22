@@ -4,6 +4,11 @@ import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 
 export default function Home() {
+    const handleLogout = () => {
+        // Replace 'YOUR_OKTA_LOGOUT_URL' with your actual Okta logout URL
+        window.location.href = 'YOUR_OKTA_LOGOUT_URL';
+    };
+
     return (
         <main>
             <Header/>
@@ -17,6 +22,9 @@ export default function Home() {
                 <br />
                 <button type="submit">Upload</button>
             </form>
+
+            <br />
+            <button onClick={handleLogout}>Logout</button>
 
             <Footer/>
         </main>
