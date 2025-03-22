@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,6 +34,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 @Configuration
 public class SecurityConfiguration {
+
     /**
      * configure
      * <br></br>
@@ -61,6 +63,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/pools/templates").permitAll()
+                        // Allow POST requests to /uploadImage for authenticated users
+                        .requestMatchers(org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/uploadImage")).authenticated()
                         .anyRequest().authenticated()) // Require authentication for any request to this application
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider))) // Use the custom SAML authentication provider
