@@ -31,7 +31,7 @@ public class ResourceServiceImpTest {
         PatientPool resource = new PatientPool();
         resource.setId(id);
         resource.setName(name);
-        resource.setProcessTime(processTime);
+//        resource.setProcessTime(processTime);
         resource.setActive(active);
         resource.setUseable(useable);
         return resource;
