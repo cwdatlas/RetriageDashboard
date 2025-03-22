@@ -17,10 +17,45 @@
     <dd th:text="${userAttribute.value}"></dd>
 </dl>
 
+<hr/> <h2>Upload an Image</h2>
+<form action="/uploadImage" method="post" enctype="multipart/form-data">
+    <div>
+        <label for="image">Choose an image to upload:</label>
+        <input type="file" id="image" name="image" required>
+    </div>
+    <br>
+    <button type="submit">Upload</button>
+</form>
+
+<div id="uploadResult"></div>
+
 <form method="post" th:action="@{/logout}">
     <button id="logout" type="submit">Logout</button>
 </form>
 
+<script th:inline="javascript">
+    const form = document.querySelector('form[action="/uploadImage"]'); // Target the upload form
+    const uploadResultDiv = document.getElementById('uploadResult');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch('/uploadImage', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.text();
+            uploadResultDiv.textContent = result;
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            uploadResultDiv.textContent = 'An error occurred during upload.';
+        }
+    });
+</script>
+
 </body>
 </html>
-
