@@ -7,8 +7,11 @@ import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.forms.EventTmpForm;
 import com.retriage.retriage.models.*;
 import com.retriage.retriage.services.EventService;
+import com.retriage.retriage.services.EventServiceImp;
 import com.retriage.retriage.services.UserService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,7 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("/api/events")
 public class EventController {
+    private static final Logger logger = LoggerFactory.getLogger(EventServiceImp.class);
     /**
      *
      */
@@ -31,8 +35,11 @@ public class EventController {
      * Constructor injection of the service
      */
     public EventController(EventService eventService, UserService userService) {
+        logger.info("Beginning event controller");
         this.eventService = eventService;
+        logger.info("Event Service created");
         this.userService = userService;
+        logger.info("User Service created");
     }
 
     /**
@@ -44,6 +51,7 @@ public class EventController {
         //Secondary validation...
         List<String> errorList = new ArrayList<>();
         // Validate Director
+        logger.info("Validating Director...");
         if (eventform.getDirector() == null) {
             errorList.add("Director must  be added to event");
         } else if (eventform.getDirector().getEmail() == null) {
@@ -56,8 +64,11 @@ public class EventController {
                 errorList.add("User " + director.getEmail() + " is not a director, they are a " + director.getRole());
             }
         }
+        logger.info("Director Validated!");
+
         // Patient Pool Template validation
         List<PatientPool> pools = new ArrayList<>();
+        logger.info("Validating Patient Pools...");
         if (eventform.getPoolTmps().isEmpty()) {
             errorList.add("Must add at least 1 Pool Template");
         } else {
@@ -84,6 +95,7 @@ public class EventController {
                 }
             }
         }
+        logger.info("Patient Pool Validated!");
         // validation for event
         if (pools.isEmpty()) {
             errorList.add("Must add at least 1 Pool Template"); //TODO use dry practices to exclude this piece of code
