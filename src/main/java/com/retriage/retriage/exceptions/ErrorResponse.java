@@ -1,4 +1,4 @@
-package com.retriage.retriage.exceptions; // Or a suitable package
+package com.retriage.retriage.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
