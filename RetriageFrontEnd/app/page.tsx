@@ -5,10 +5,10 @@ import Footer from "@/app/components/footer";
 
 export default function Home() {
     const handleLogout = () => {
-        // Replace 'YOUR_OKTA_LOGOUT_URL' with your actual Okta logout URL
-        window.location.href = 'YOUR_OKTA_LOGOUT_URL';
+        window.location.href = 'https://dev-32534403.okta.com/logout';
     };
 
+    // @ts-ignore
     return (
         <main>
             <Header/>
