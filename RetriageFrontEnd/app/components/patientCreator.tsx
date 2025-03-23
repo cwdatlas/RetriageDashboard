@@ -5,11 +5,7 @@ import { Patient } from "@/app/models/patient";
 import { Condition } from "@/app/enumerations/condition";
 import { PoolType } from "@/app/enumerations/poolType";
 import { PatientPool } from "@/app/models/patientPool";
-import {User} from "@/app/models/user";
-import {getCookies} from "@/app/api/cookieApi";
-import {Role} from "@/app/enumerations/role";
 import {updateEvent} from "@/app/api/eventApi";
-import SelectEvent from "@/app/components/selectEvent";
 
 /**
  * We'll define a temporary type that extends Event to include a "patients" field.
@@ -21,8 +17,8 @@ export default function CreatePatient({event} : { event : Event }) {
     const [showModal, setShowModal] = useState(false);
 
     // Form fields
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [cardId, setCardId] = useState(0);
     const [condition, setCondition] = useState<Condition>(Condition.Minor);
     const [selectedBayPoolId, setSelectedBayPoolId] = useState<number | null>(null);
 
@@ -32,26 +28,28 @@ export default function CreatePatient({event} : { event : Event }) {
     async function handleAddPatient(e: React.FormEvent) {
         e.preventDefault();
 
-        const currentUser: User = {
-            email: getCookies("email"),
-            firstName: getCookies("firstName"),
-            lastName: getCookies("lastName"),
-            role: getCookies("role") as Role
-
-        }
         // 1) Construct new Patient with nurse=null (instead of {} as any)
         const newPatient: Patient = {
-            firstName,
-            lastName,
+            cardId,
             condition,
-            nurse: currentUser,   // if your Patient interface expects `User | null`
         };
 
         // 2) If user selected a Bay pool, attach it
         if (selectedBayPoolId) {
-            const chosenPool = event.pools.at(0);
+            console.log("Selected pool is ID of: " + selectedBayPoolId);
+            const chosenPool = event.pools.find(pool => pool.id === selectedBayPoolId);
             if (chosenPool) {
-                chosenPool.patientQueue.push(newPatient);
+                if(chosenPool.patients == null){
+                    const newPatientArray :  Patient[] = new Array(1);
+                    newPatientArray[0] = newPatient;
+                    chosenPool.patients = newPatientArray;
+                }else{
+                    chosenPool.patients.push(newPatient);
+                    console.log("Chosen Pool: " + chosenPool.name);
+                }
+
+            }else{
+                setError("Selected Patient Pool not found.")
             }
         }
 
@@ -60,14 +58,15 @@ export default function CreatePatient({event} : { event : Event }) {
         // 4) Persist via the parent-provided function
         try {
             await updateEvent(event);
+            console.log("Patient added to Patient Pool");
         } catch (err) {
+            setError("Failed to add patient");
             console.error("Failed to update event with new patient:", err);
         }
 
         // 5) Close modal + reset fields
         setShowModal(false);
-        setFirstName("");
-        setLastName("");
+        setCardId(0);
         setCondition(Condition.Immediate);
         setSelectedBayPoolId(null);
     }
@@ -82,21 +81,11 @@ export default function CreatePatient({event} : { event : Event }) {
                         <h2>Add a New Patient</h2>
                         <form onSubmit={handleAddPatient}>
                             <div>
-                                <label>First Name: </label>
+                                <label>Card ID: </label>
                                 <input
-                                    type="text"
-                                    value={firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label>Last Name: </label>
-                                <input
-                                    type="text"
-                                    value={lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
+                                    type="number"
+                                    value={cardId}
+                                    onChange={(e) => setCardId(parseInt(e.target.value))}
                                     required
                                 />
                             </div>
@@ -116,6 +105,7 @@ export default function CreatePatient({event} : { event : Event }) {
 
                             <div>
                                 <label>Assign to Bay Pool: </label>
+                                {error && <p style={{ color: "red" }}>{error}</p>}
                                 <select
                                     value={selectedBayPoolId ?? ""}
                                     onChange={(e) => setSelectedBayPoolId(Number(e.target.value))}

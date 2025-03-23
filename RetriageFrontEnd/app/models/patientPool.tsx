@@ -5,7 +5,7 @@ export interface PatientPool {
     id?: number;
     name: string;
     processTime: number;
-    patientQueue: Patient[]; /*This needs to be a queue, but there is not a native typescript queue*/
+    patients: Patient[];
     active: boolean;
     usable: boolean;
     poolType: PoolType;

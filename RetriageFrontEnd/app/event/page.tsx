@@ -12,11 +12,13 @@ import ToggleButton from "@/app/components/toggleButton";
 import CreatePatient from "@/app/components/patientCreator";
 import {Status} from "@/app/enumerations/status";
 import {Event} from "@/app/models/event";
+import {getEventById} from "@/app/api/eventApi";
 
 export default function EventViewer() {
     const role = getCookies("role") as Role;
 
     const [viewEvents, setViewEvents] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const defaultEvent: Event = {
         nurses: [],
@@ -38,10 +40,20 @@ export default function EventViewer() {
         setViewEvents(!viewEvents);
     }
 
+    async function updateActiveEvent(){
+        if(activeEvent.id == null){
+            setError("Active Event not set")
+        }else{
+            setActiveEvent(await getEventById(activeEvent.id));
+            console.log("Event Updated")
+        }
+    }
+
 
     return (
         <main>
             <Header/>
+            {error && <p style={{ color: "red" }}>{error}</p>}
             {role === Role.Director && (
                 <div>
                     <ToggleButton onToggle={toggleEventView} label={"Toggle Event Selection"}/>
