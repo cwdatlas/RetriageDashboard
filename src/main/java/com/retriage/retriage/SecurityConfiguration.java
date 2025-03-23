@@ -66,8 +66,11 @@ public class SecurityConfiguration {
                 // Allow POST requests to /uploadImage for authenticated users
                 .requestMatchers(org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/uploadImage")).authenticated()
                 .anyRequest().authenticated()) // Require authentication for any request to this application
+                //Login Settings
                 .saml2Login(saml2 -> saml2
-                .authenticationManager(new ProviderManager(authenticationProvider))) // Use the custom SAML authentication provider
+                .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom SAML authentication provider
+                        .defaultSuccessUrl("/", true)) // <- Forces redirect to home after successful login)
+                //Logout Settings
                 .saml2Logout(withDefaults())
                 .logout(logout -> logout
                         .logoutUrl("/logout") // This is where Spring Security listens for logout requests
