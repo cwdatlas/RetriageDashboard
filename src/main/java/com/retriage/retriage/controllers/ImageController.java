@@ -27,7 +27,10 @@ public class ImageController {
 
     @PostMapping("/uploadImage")
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) {
+        logger.info("Entering uploadImage with file: {}", file.getOriginalFilename());
+
         if (file.isEmpty()) {
+            logger.warn("uploadImage - Received empty file for upload.");
             return new ResponseEntity<>("Please select a file to upload!", HttpStatus.BAD_REQUEST);
         }
 
@@ -39,25 +42,30 @@ public class ImageController {
                 fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
             String uniqueFilename = UUID.randomUUID() + fileExtension;
+            logger.debug("uploadImage - Generated unique filename: {}", uniqueFilename);
 
             // Resolve the upload directory path
             Path uploadPath = Paths.get(uploadDir);
+            logger.debug("uploadImage - Resolved upload directory path: {}", uploadPath);
 
             // Create the directory if it doesn't exist
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
-                logger.info("Created upload directory: {}", uploadPath);
+                logger.info("uploadImage - Created upload directory: {}", uploadPath);
             }
 
             // Save the image
             Path filePath = uploadPath.resolve(uniqueFilename);
+            logger.debug("uploadImage - Resolved file path for saving: {}", filePath);
             Files.copy(file.getInputStream(), filePath);
-
+            logger.info("uploadImage - Image uploaded successfully. Filename: {}", uniqueFilename);
             return new ResponseEntity<>("Image uploaded successfully. Filename: " + uniqueFilename, HttpStatus.OK);
 
         } catch (IOException e) {
-            logger.error("Error saving image:", e);
+            logger.error("uploadImage - Error saving image:", e);
             return new ResponseEntity<>("Failed to upload image!", HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            logger.info("Exiting uploadImage");
         }
     }
 }
