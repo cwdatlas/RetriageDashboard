@@ -49,6 +49,8 @@ dependencies {
 	// JUnit Platform Launcher for running JUnit Platform tests (runtime dependency for tests)
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	// Websocket dependency
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
 
 
 	// Okta Dependencies below:
