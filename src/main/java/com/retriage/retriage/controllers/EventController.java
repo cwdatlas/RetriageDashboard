@@ -118,8 +118,8 @@ public class EventController {
      * GET /patients/{id}
      */
 
-    @GetMapping(value = "/usr/{id}", produces = "application/json")
-    public ResponseEntity<Event> findUserByID(@PathVariable Long id) {
+    @GetMapping(value = "/api/events/{id}", produces = "application/json")
+    public ResponseEntity<Event> findEventByID(@PathVariable Long id) {
         Event event = eventService.findEventById(id);
         return ResponseEntity.created(URI.create("/events/" + id)).body(event);
     }

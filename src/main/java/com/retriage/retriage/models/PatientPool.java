@@ -23,7 +23,8 @@ public class PatientPool {
 
     private boolean useable;
     //Owner
-    @ManyToMany
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "pool_id")
     private List<Patient> patients;
 
     private PoolType poolType;

@@ -127,25 +127,9 @@ public class PatientServiceImp implements PatientService {
             logger.warn("Patient card ID is null or empty.");
             throw new IllegalArgumentException("Patient card ID cannot be null or empty.");
         }
-        if (patient.getFirstName() == null || patient.getFirstName().trim().isEmpty()) {
-            logger.warn("Patient first name is null or empty.");
-            throw new IllegalArgumentException("Patient first name cannot be null or empty.");
-        }
-        if (patient.getLastName() == null || patient.getLastName().trim().isEmpty()) {
-            logger.warn("Patient last name is null or empty.");
-            throw new IllegalArgumentException("Patient last name cannot be null or empty.");
-        }
         if (patient.getCondition() == null) {
             logger.warn("Patient condition is null.");
             throw new IllegalArgumentException("Patient condition cannot be null.");
-        }
-        if (patient.getRetriageNurse() == null) {
-            logger.warn("Patient retriage nurse is null.");
-            throw new IllegalArgumentException("Each patient must be assigned a retriage nurse.");
-        }
-        if (patient.getRetriageNurse() != null && patient.getRetriageNurse().getRole() != Role.Nurse) {
-            logger.warn("Retriage nurse does not have the required Nurse role. Role: {}", patient.getRetriageNurse().getRole());
-            throw new IllegalArgumentException("Retriage nurse must have the role of Nurse.");
         }
         logger.info("Patient validation successful.");
     }

@@ -17,19 +17,8 @@ public class PatientForm {
     @NotBlank(message = "Card ID is required")
     private String cardId;
 
-    @NotBlank(message = "First name is required")
-    private String firstName;
-
-    @NotBlank(message = "Last name is required")
-    private String lastName;
-
     @NotNull(message = "Condition is required")
     private Condition condition;
-
-    private List<PatientPool> poolList;
-
-    @NotNull(message = "Retriage nurse is required")
-    private User retriageNurse;
 
     public PatientForm() {
     }

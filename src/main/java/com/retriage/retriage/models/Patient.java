@@ -22,28 +22,11 @@ public class Patient {
     @Column(unique = true, nullable = false)
     private String cardId;
 
-    @NotBlank(message = "First name cannot be blank")
-    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
-    private String firstName;
-
-    @NotBlank(message = "Last name cannot be blank")
-    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
-    private String lastName;
-
     // Use a safer column name instead of 'condition'
     @NotNull(message = "Condition is required")
     @Enumerated(EnumType.STRING)
     @Column(name = "patient_condition")
     private Condition Condition;
-
-    //Not Owner
-    @ManyToMany(mappedBy = "patients")
-    private List<PatientPool> poolList;
-
-    // Owner
-    @NotNull(message = "A retriage nurse must be assigned")
-    @ManyToOne
-    private User retriageNurse;
 
     public Patient() {
     }

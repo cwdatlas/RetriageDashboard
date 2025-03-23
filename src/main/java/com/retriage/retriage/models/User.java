@@ -34,7 +34,8 @@ public class User {
     private Role role;
 
     //Not Owner
-    @OneToMany(mappedBy = "retriageNurse")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
     private List<Patient> createdPatients;
 
     public User() {

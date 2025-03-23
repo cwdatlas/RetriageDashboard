@@ -43,11 +43,7 @@ public class PatientController {
         Patient patient = new Patient();
         patient.setId(patientForm.getId());
         patient.setCardId(patientForm.getCardId());
-        patient.setFirstName(patientForm.getFirstName());
-        patient.setLastName(patientForm.getLastName());
         patient.setCondition(patientForm.getCondition());
-        patient.setPoolList(patientForm.getPoolList());
-        patient.setRetriageNurse(patientForm.getRetriageNurse());
         Patient saved = patientService.savePatient(patient);
         // Return 201 Created with Location header to point to the new resource
         return ResponseEntity
@@ -125,20 +121,8 @@ public class PatientController {
                 case "cardId":
                     existingPatient.setCardId((String) value);
                     break;
-                case "firstName":
-                    existingPatient.setFirstName((String) value);
-                    break;
-                case "lastName":
-                    existingPatient.setLastName((String) value);
-                    break;
                 case "condition":
                     existingPatient.setCondition(Condition.valueOf((String) value));
-                    break;
-                case "resourceList":
-                    existingPatient.setPoolList((List<PatientPool>) value);
-                    break;
-                case "retriageNurse":
-                    existingPatient.setRetriageNurse((User) value);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid field: " + key);
