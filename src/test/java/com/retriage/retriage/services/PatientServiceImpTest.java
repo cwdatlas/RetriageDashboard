@@ -46,8 +46,8 @@ public class PatientServiceImpTest {
     void savePatient_ShouldReturnSavedPatient() {
         // Arrange
         User mockNurse = new User(); // Mock User, details don't matter for this test
-        Patient patientToSave = createPatient(null, "12345", "Test", "Patient", Condition.Green, mockNurse); // ID is null for new patient
-        Patient savedPatient = createPatient(1L, "12345", "Test", "Patient", Condition.Green, mockNurse); // ID is now 1L, as if assigned by DB
+        Patient patientToSave = createPatient(null, "12345", "Test", "Patient", Condition.Immediate, mockNurse); // ID is null for new patient
+        Patient savedPatient = createPatient(1L, "12345", "Test", "Patient", Condition.Immediate, mockNurse); // ID is now 1L, as if assigned by DB
 
         when(patientRepository.save(patientToSave)).thenReturn(savedPatient); // Mock repository save behavior
 
@@ -71,7 +71,7 @@ public class PatientServiceImpTest {
         // Arrange
         User nonNurseUser = new User(); // User with default role (which is not Nurse)
         nonNurseUser.setRole(Role.Guest); // Explicitly set to Guest role for clarity
-        Patient patientToSave = createPatient(null, "12345", "Test", "Patient", Condition.Green, nonNurseUser);
+        Patient patientToSave = createPatient(null, "12345", "Test", "Patient", Condition.Immediate, nonNurseUser);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> patientServiceImp.savePatient(patientToSave),
@@ -116,12 +116,12 @@ public class PatientServiceImpTest {
                 10L,
                 "ExistingIDCard",
                 "ExistingID", "Patient",
-                Condition.Red, mockNurse); // Patient with ID 10 already set
+                Condition.Minor, mockNurse); // Patient with ID 10 already set
         Patient savedPatient = createPatient(
                 10L,
                 "ExistingIDCard",
                 "ExistingID", "Patient",
-                Condition.Red, mockNurse); // Mock saved patient
+                Condition.Minor, mockNurse); // Mock saved patient
 
         when(patientRepository.save(patientToSave)).thenReturn(savedPatient); // Mock repository save
 
@@ -147,13 +147,13 @@ public class PatientServiceImpTest {
                 null,
                 "NullResourceCard",
                 "NullResource", "Patient",
-                Condition.Green, mockNurse);
+                Condition.Immediate, mockNurse);
         patientToSave.setResourceList(null); // Set resourceList to null
         Patient savedPatient = createPatient(
                 11L,
                 "NullResourceCard",
                 "NullResource", "Patient",
-                Condition.Green, mockNurse);
+                Condition.Immediate, mockNurse);
         savedPatient.setResourceList(null);
 
         when(patientRepository.save(patientToSave)).thenReturn(savedPatient);
@@ -180,13 +180,13 @@ public class PatientServiceImpTest {
                 null,
                 "EmptyResourceCard",
                 "EmptyResource", "Patient",
-                Condition.Green, mockNurse);
+                Condition.Immediate, mockNurse);
         patientToSave.setResourceList(Collections.emptyList()); // Set resourceList to empty list
         Patient savedPatient = createPatient(
                 12L,
                 "EmptyResourceCard",
                 "EmptyResource", "Patient",
-                Condition.Green, mockNurse);
+                Condition.Immediate, mockNurse);
         savedPatient.setResourceList(Collections.emptyList());
 
         when(patientRepository.save(patientToSave)).thenReturn(savedPatient);
@@ -209,8 +209,8 @@ public class PatientServiceImpTest {
         // Arrange
         User mockNurse = new User();
         List<Patient> mockPatients = List.of(
-                createPatient(1L, "111", "Patient", "One", Condition.Red, mockNurse),
-                createPatient(2L, "222", "Patient", "Two", Condition.Green, mockNurse)
+                createPatient(1L, "111", "Patient", "One", Condition.Minor, mockNurse),
+                createPatient(2L, "222", "Patient", "Two", Condition.Immediate, mockNurse)
         );
         when(patientRepository.findAll()).thenReturn(mockPatients); // Mock findAll to return mockPatients
 
@@ -364,8 +364,8 @@ public class PatientServiceImpTest {
         Long patientId = 123L;
         User mockNurse = new User();
         mockNurse.setRole(Role.Nurse);
-        Patient existingPatient = createPatient(patientId, "P123", "Original", "Patient", Condition.Red, mockNurse);
-        Patient updatedPatientData = createPatient(null, "P456", "Updated", "PatientName", Condition.Red, mockNurse); // ID is null as it's update data
+        Patient existingPatient = createPatient(patientId, "P123", "Original", "Patient", Condition.Minor, mockNurse);
+        Patient updatedPatientData = createPatient(null, "P456", "Updated", "PatientName", Condition.Minor, mockNurse); // ID is null as it's update data
 
         when(patientRepository.existsById(patientId)).thenReturn(true); // Mock existsById to return true (patient exists)
         when(patientRepository.save(any(Patient.class))).thenReturn(updatedPatientData); // Mock save to return updatedPatientData
@@ -387,7 +387,7 @@ public class PatientServiceImpTest {
         // Arrange
         Long patientId = 456L;
         User mockNurse = new User();
-        Patient updatedPatientData = createPatient(patientId, "P456", "Updated", "PatientName", Condition.Red, mockNurse); // ID set for clarity
+        Patient updatedPatientData = createPatient(patientId, "P456", "Updated", "PatientName", Condition.Minor, mockNurse); // ID set for clarity
         when(patientRepository.existsById(patientId)).thenReturn(false); // Mock existsById to return false (patient not found)
 
         // Act
@@ -408,7 +408,7 @@ public class PatientServiceImpTest {
         Long patientId = 789L;
         User mockNurse = new User();
         // Creating invalid patient data - e.g., missing first name
-        Patient invalidPatientData = createPatient(null, "P789", null, "PatientName", Condition.Green, mockNurse);
+        Patient invalidPatientData = createPatient(null, "P789", null, "PatientName", Condition.Immediate, mockNurse);
         when(patientRepository.existsById(patientId)).thenReturn(true); // Mock existsById to return true (patient exists)
 
         // Act & Assert
@@ -432,7 +432,7 @@ public class PatientServiceImpTest {
                 patientId,
                 "P123",
                 "Original", "Patient",
-                Condition.Green, mockNurse);
+                Condition.Immediate, mockNurse);
 
         when(patientRepository.existsById(patientId)).thenReturn(true);
         when(patientRepository.save(existingPatient)).thenReturn(existingPatient); // Mock save to return the same existingPatient
