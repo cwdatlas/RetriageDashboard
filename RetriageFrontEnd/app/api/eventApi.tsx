@@ -40,8 +40,8 @@ export async function createEvent(event: EventTmp): Promise<EventTmp> {
 /**
  * Optionally, get a single event by ID
  */
-export async function getEventById(): Promise<Event> {
-    const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
+export async function getEventById(id : number): Promise<Event> {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT +"/" +  `${id}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
