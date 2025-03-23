@@ -5,7 +5,7 @@ import Footer from "@/app/components/footer";
 
 export default function Home() {
     const handleLogout = () => {
-        document.getElementById("logoutForm")?.submit();
+        document.getElementById("logoutForm")?.submit(); //Says `submit` doesn't exist, but it works?
     };
 
     return (
