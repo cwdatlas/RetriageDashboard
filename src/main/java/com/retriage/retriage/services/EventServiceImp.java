@@ -68,7 +68,6 @@ public class EventServiceImp implements EventService {
         }
     }
 
-
     /**
      * Updates an existing event
      *
@@ -94,7 +93,6 @@ public class EventServiceImp implements EventService {
         logger.debug("UpdateEvent: Updated Event details - {}", updatedEvent);
         return updatedEvent;
     }
-
 
     /**
      * Retrieves all events
@@ -163,5 +161,4 @@ public class EventServiceImp implements EventService {
         }
         logger.debug("validateEvent: Event validation passed successfully.");
     }
-
 }
