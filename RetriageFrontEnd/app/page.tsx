@@ -5,10 +5,9 @@ import Footer from "@/app/components/footer";
 
 export default function Home() {
     const handleLogout = () => {
-        window.location.href = 'http://localhost:8080/logout/saml2/slo';
+        document.getElementById("logoutForm")?.submit();
     };
 
-    // @ts-ignore
     return (
         <main>
             <Header/>
@@ -24,9 +23,15 @@ export default function Home() {
             </form>
 
             <br />
+
+            {/* Hidden logout form */}
+            <form id="logoutForm" method="post" action="http://localhost:8080/logout">
+                {/* No content needed, just a form to be submitted */}
+            </form>
+
             <button onClick={handleLogout}>Logout</button>
 
             <Footer/>
         </main>
-    )
+    );
 }
