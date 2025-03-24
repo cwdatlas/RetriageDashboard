@@ -144,7 +144,7 @@ public class EventController {
     /**
      * findEventByID
      */
-    @GetMapping(value = "/find/{id}", produces = "application/json")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Event> findEventByID(@PathVariable Long id) {
         logger.info("Entering findEventByID with id: {}", id);
         Event event = eventService.findEventById(id);
@@ -155,7 +155,7 @@ public class EventController {
     /**
      * getAllEvents
      * Returns every previously created Event
-     * @return
+     * @return The list of every event
      */
     @GetMapping(produces = "application/json")
     public List<Event> getAllEvents() {
@@ -168,8 +168,8 @@ public class EventController {
     /**
      * deleteEvent
      * Deletes a specified Event by first finding the passed ID, then deleting it
-     * @param id
-     * @return
+     * @param id The ID associated to the event you are looking for
+     * @return Returns a confirmation that the event was deleted
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
