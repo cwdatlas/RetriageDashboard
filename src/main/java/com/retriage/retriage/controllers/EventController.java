@@ -160,7 +160,7 @@ public class EventController {
         updatedEvent.setDirector(eventForm.getDirector());
         updatedEvent.setStartTime(eventForm.getStartTime());
 
-        Event response = eventService.UpdateEvent(eventForm.getId(), updatedEvent);
+        Event response = eventService.updateEvent(eventForm.getId(), updatedEvent);
         if (response == null) {
             return ResponseEntity.
                     created(URI.create("/events/"))
