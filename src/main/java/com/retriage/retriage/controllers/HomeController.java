@@ -10,6 +10,7 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class HomeController {
      *                  This is injected by Spring Security based on the current authentication context.
      * @param response  The Spring {@link Model} object used to add attributes for rendering in the view.
      * @return The name of the view to be rendered, which is "home" in this case.
-     * This corresponds to the `home.html` (or similar) template file.
+     * This corresponds to the `testview.html` (or similar) template file.
      */
     @RequestMapping("/")
     public String oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal, HttpServletResponse response) {
@@ -114,5 +115,10 @@ public class HomeController {
         response.addCookie(emailCookie);
 
         return "redirect:http://localhost:3000/";
+    }
+
+    @GetMapping("/test")
+    public String testView() {
+        return "testview"; // This will look for testview.html in src/main/resources/templates
     }
 }

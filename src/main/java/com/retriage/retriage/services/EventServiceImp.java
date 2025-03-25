@@ -18,8 +18,9 @@ public class EventServiceImp implements EventService {
     private final EventRepo eventRepository;
 
     public EventServiceImp(EventRepo eventRepository) {
+        logger.info("Entering EventServiceImp constructor with eventRepository: {}", eventRepository);
         this.eventRepository = eventRepository;
-        logger.debug("EventServiceImp constructor: eventRepository instance = {}", eventRepository);
+        logger.info("Exiting EventServiceImp constructor");
     }
 
     /**
@@ -30,22 +31,27 @@ public class EventServiceImp implements EventService {
      */
     @Override
     public boolean saveEvent(Event event) {
-        logger.info("** Starting to save event **");
-        logger.debug("saveEvent: Event details - {}", event);
+        logger.info("Entering saveEvent with event: {}", event);
 
         if (event == null) {
-            logger.warn("saveEvent: Event object is null, cannot save.");
+            logger.warn("saveEvent - Event object is null, cannot save.");
             return false;
         }
 
-        validateEvent(event); // Call the validation method
-        logger.debug("saveEvent: Event validation passed.");
-
-        Event savedEvent = eventRepository.save(event);
-        boolean isSaved = true;
-        logger.info("saveEvent: Event saved successfully with ID: {}", savedEvent.getId());
-        logger.debug("saveEvent: Saved Event details - {}", savedEvent);
-        return isSaved;
+        logger.debug("saveEvent - Validating event: {}", event);
+        try {
+            validateEvent(event); // Call the validation method
+            logger.debug("saveEvent - Event validation passed.");
+            Event savedEvent = eventRepository.save(event);
+            logger.info("saveEvent - Event saved successfully with ID: {}", savedEvent.getId());
+            logger.debug("saveEvent - Saved Event details: {}", savedEvent);
+            logger.info("Exiting saveEvent, returning: true");
+            return true;
+        } catch (IllegalArgumentException e) {
+            logger.warn("saveEvent - Event validation failed: {}", e.getMessage());
+            logger.info("Exiting saveEvent, returning: false");
+            return false;
+        }
     }
 
     /**
@@ -56,19 +62,19 @@ public class EventServiceImp implements EventService {
      */
     @Override
     public Event findEventById(Long id) {
-        logger.info("** Starting to find event by ID: {} **", id);
-        logger.debug("findEventById: About to call eventRepository.findById({})", id);
+        logger.info("Entering findEventById with id: {}", id);
+        logger.debug("findEventById - Calling eventRepository.findById({})", id);
         Optional<Event> eventOptional = eventRepository.findById(id);
-        if (eventOptional.isPresent()) {
-            logger.debug("findEventById: Event found with ID: {}", id);
-            logger.info("findEventById: Event found with ID: {}", id);
-            return eventOptional.get();
+        Event event = eventOptional.orElse(null);
+        if (event != null) {
+            logger.info("findEventById - Found event with ID: {}", id);
+            logger.debug("findEventById - Retrieved event details: {}", event);
         } else {
-            logger.warn("findEventById: No event found with ID: {}", id);
-            return null;
+            logger.warn("findEventById - No event found with ID: {}", id);
         }
+        logger.info("Exiting findEventById, returning: {}", event);
+        return event;
     }
-
 
     /**
      * Updates an existing event
@@ -79,23 +85,29 @@ public class EventServiceImp implements EventService {
      */
     @Override
     public Event updateEvent(long id, Event event) {
-        logger.info("** Starting to update event with ID: {} **", id);
         logger.debug("UpdateEvent: Event details for update - ID: {}, Event: {}", id, event);
         if (!eventRepository.existsById(id)) {
-            logger.warn("UpdateEvent: Event with id {} not found for update.", id);
+            logger.warn("UpdateEvent - Event with id {} not found for update.", id);
+            logger.info("Exiting UpdateEvent, returning: null");
             return null; // Return null if event doesn't exist
         }
 
-        validateEvent(event); // Call the validation method for updates as well
-        logger.debug("UpdateEvent: Event validation passed for update.");
-
-        event.setId(id); // Ensure the ID stays the same
-        Event updatedEvent = eventRepository.save(event);
-        logger.info("UpdateEvent: Event updated successfully with ID: {}", id);
-        logger.debug("UpdateEvent: Updated Event details - {}", updatedEvent);
-        return updatedEvent;
+        logger.debug("UpdateEvent - Validating event for update: {}", event);
+        try {
+            validateEvent(event); // Call the validation method for updates as well
+            logger.debug("UpdateEvent - Event validation passed for update.");
+            event.setId(id); // Ensure the ID stays the same
+            Event updatedEvent = eventRepository.save(event);
+            logger.info("UpdateEvent - Event updated successfully with ID: {}", id);
+            logger.debug("UpdateEvent - Updated Event details: {}", updatedEvent);
+            logger.info("Exiting UpdateEvent, returning: {}", updatedEvent);
+            return updatedEvent;
+        } catch (IllegalArgumentException e) {
+            logger.warn("UpdateEvent - Event validation failed: {}", e.getMessage());
+            logger.info("Exiting UpdateEvent, returning: null");
+            return null;
+        }
     }
-
 
     /**
      * Retrieves all events
@@ -104,11 +116,12 @@ public class EventServiceImp implements EventService {
      */
     @Override
     public List<Event> findAllEvents() {
-        logger.info("** Starting to retrieve all events **");
-        logger.debug("findAllEvents: About to call eventRepository.findAll()");
+        logger.info("Entering findAllEvents");
+        logger.debug("findAllEvents - Calling eventRepository.findAll()");
         List<Event> events = eventRepository.findAll();
-        logger.debug("findAllEvents: Retrieved {} events", events.size());
-        logger.info("findAllEvents: Successfully retrieved {} events.", events.size());
+        logger.info("findAllEvents - Retrieved {} events.", events.size());
+        logger.debug("findAllEvents - Retrieved event list: {}", events);
+        logger.info("Exiting findAllEvents, returning list of size: {}", events.size());
         return events;
     }
 
@@ -119,15 +132,16 @@ public class EventServiceImp implements EventService {
      */
     @Override
     public void deleteEventById(Long id) {
-        logger.info("** Starting to delete event with ID: {} **", id);
-        logger.debug("deleteEventById: Checking if event with ID {} exists", id);
+        logger.info("Entering deleteEventById with id: {}", id);
+        logger.debug("deleteEventById - Checking if event with ID {} exists", id);
         if (eventRepository.existsById(id)) {
-            logger.debug("deleteEventById: Event with ID {} exists. Proceeding with deletion.", id);
+            logger.debug("deleteEventById - Event with ID {} exists. Proceeding with deletion.", id);
             eventRepository.deleteById(id);
-            logger.info("deleteEventById: Event deleted successfully with ID: {}", id);
+            logger.info("deleteEventById - Event deleted successfully with ID: {}", id);
         } else {
-            logger.warn("deleteEventById: Event with id {} does not exist.", id);
+            logger.warn("deleteEventById - Event with id {} does not exist.", id);
         }
+        logger.info("Exiting deleteEventById");
     }
 
     @Override
@@ -151,32 +165,31 @@ public class EventServiceImp implements EventService {
      * @throws IllegalArgumentException if the event is invalid.
      */
     private void validateEvent(Event event) {
-        logger.debug("** Starting event validation **");
+        logger.debug("Entering validateEvent with event: {}", event);
         if (event == null) {
-            logger.warn("validateEvent: Event object is null.");
+            logger.warn("validateEvent - Event object is null.");
             throw new IllegalArgumentException("Event object cannot be null.");
         }
         if (event.getName() == null || event.getName().trim().isEmpty()) {
-            logger.warn("validateEvent: Event name is null or empty.");
+            logger.warn("validateEvent - Event name is null or empty.");
             throw new IllegalArgumentException("Event name cannot be null or empty.");
         }
         if (event.getDirector() == null) {
-            logger.warn("validateEvent: Director is null.");
+            logger.warn("validateEvent - Director is null.");
             throw new IllegalArgumentException("Director cannot be null.");
         }
         if (event.getNurses() == null) {
-            logger.warn("validateEvent: Nurses list is null");
+            logger.warn("validateEvent - Nurses list is null");
             throw new IllegalArgumentException("Event must be initialized");
         }
         if (event.getPools() == null || event.getPools().isEmpty()) {
-            logger.warn("validateEvent: Resources list is null or empty.");
+            logger.warn("validateEvent - Resources list is null or empty.");
             throw new IllegalArgumentException("Event must have at least one resource.");
         }
         if (event.getStatus() == null) {
-            logger.warn("validateEvent: Status is null.");
+            logger.warn("validateEvent - Status is null.");
             throw new IllegalArgumentException("Status cannot be null.");
         }
-        logger.debug("validateEvent: Event validation passed successfully.");
+        logger.debug("Exiting validateEvent - Event validation passed.");
     }
-
 }

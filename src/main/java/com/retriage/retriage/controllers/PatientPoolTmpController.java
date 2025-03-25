@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +35,7 @@ public class PatientPoolTmpController {
      * POST /patients
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public String createPool(@RequestBody PatientPoolTmpForm poolForm) {
+    public ResponseEntity<?> createPool(@RequestBody PatientPoolTmpForm poolForm) {
         //secondary validation
 
         PatientPoolTmp newPool = new PatientPoolTmp();
@@ -51,7 +52,9 @@ public class PatientPoolTmpController {
         } else {
             log.warn("createPool: Unable to save template name'{}'", newPool.getName());
         }
-        return response;
+        return ResponseEntity.
+                created(URI.create("/templates"))
+                .body(response);
     }
 
     /**
