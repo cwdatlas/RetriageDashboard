@@ -22,7 +22,7 @@ public class EventWebSocketController {
     }
 
 
-    @MessageMapping("/active_event/")
+    @MessageMapping("/update")
     @SendTo("/topic/event_updates")
     public Event WebsocketConnection(EventForm eventForm) {
         logger.debug("WebSocketConnection: Client tried to get data");
@@ -37,10 +37,10 @@ public class EventWebSocketController {
         updatedEvent.setDirector(eventForm.getDirector());
         updatedEvent.setStartTime(eventForm.getStartTime());
 
-        eventService.updateEvent(eventForm.getId(), updatedEvent);
+        Event response = eventService.updateEvent(eventForm.getId(), updatedEvent);
 
-        //Return one or null active events
-        Event response = eventService.findActiveEvent();
+        //TODO: Return event from findActiveEvent() rather than using the updated event.
+        //Event response = eventService.findActiveEvent();
         if (response != null) {
             logger.debug("EventWebSocketController: Zero running events found");
         }

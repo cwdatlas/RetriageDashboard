@@ -1,10 +1,10 @@
 import {useEffect} from 'react';
 import {Event} from "@/app/models/event";
-import SockJS from "sockjs-client";
 import {Client, IMessage} from "@stomp/stompjs";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/ws";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "ws://localhost:8080";
 const ENDPOINT = "/active_event";
+const UPDATE_EVENT = "/ws/update";
 const TOPIC = "/topic/event_updates";
 let client: Client;
 
@@ -13,8 +13,7 @@ export function ConnectEventWebSocket(setActiveEvent: (event: Event) => void) {
     useEffect(() => {
         // Create the STOMP client
         const stompClient = new Client({
-            brokerURL: undefined, // we set it to undefined because we'll use SockJS
-            webSocketFactory: () => new SockJS(API_BASE_URL+ENDPOINT),
+            brokerURL: API_BASE_URL + ENDPOINT,
             reconnectDelay: 5000, // automatically attempt to reconnect if the connection is lost
             onConnect: () => {
                 console.log("STOMP connected");
@@ -47,7 +46,7 @@ export function ConnectEventWebSocket(setActiveEvent: (event: Event) => void) {
 // Sends an event to the server
 export function sendEvent(event: Event) {
     // TODO include error handling
-    client.publish({destination: ENDPOINT, body: JSON.stringify(event)});
+    client.publish({destination: UPDATE_EVENT, body: JSON.stringify(event)});
 }
 
 
