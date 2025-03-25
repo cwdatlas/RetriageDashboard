@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,12 +27,13 @@ public class ImageController {
     private String uploadDir;
 
     @PostMapping("/uploadImage")
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) {
+    public RedirectView uploadImage(@RequestParam("image") MultipartFile file) {
         logger.info("Entering uploadImage with file: {}", file.getOriginalFilename());
 
         if (file.isEmpty()) {
             logger.warn("uploadImage - Received empty file for upload.");
-            return new ResponseEntity<>("Please select a file to upload!", HttpStatus.BAD_REQUEST);
+            RedirectView redirectView = new RedirectView("/upload-form?error=emptyfile"); // Adjust path as needed
+            return redirectView;
         }
 
         try {
@@ -59,11 +61,15 @@ public class ImageController {
             logger.debug("uploadImage - Resolved file path for saving: {}", filePath);
             Files.copy(file.getInputStream(), filePath);
             logger.info("uploadImage - Image uploaded successfully. Filename: {}", uniqueFilename);
-            return new ResponseEntity<>("Image uploaded successfully. Filename: " + uniqueFilename, HttpStatus.OK);
 
+            // Redirect to the homepage
+            RedirectView redirectView = new RedirectView("/"); // Assuming "/" is your homepage path
+            return redirectView;
         } catch (IOException e) {
             logger.error("uploadImage - Error saving image:", e);
-            return new ResponseEntity<>("Failed to upload image!", HttpStatus.INTERNAL_SERVER_ERROR);
+            // Redirect to an error page
+            RedirectView redirectView = new RedirectView("/error"); // Adjust path as needed
+            return redirectView;
         } finally {
             logger.info("Exiting uploadImage");
         }
