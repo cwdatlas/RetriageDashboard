@@ -20,6 +20,10 @@ public class ErrorResponse {
         this.errorCode = errorCode;
     }
 
+    public ErrorResponse() {
+        // Default constructor
+    }
+
     // Getters and setters (or use Lombok's @Data annotation)
 
     public String getMessage() {
