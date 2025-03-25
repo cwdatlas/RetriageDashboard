@@ -1,0 +1,53 @@
+import {useEffect} from 'react';
+import {Event} from "@/app/models/event";
+import SockJS from "sockjs-client";
+import {Client, IMessage} from "@stomp/stompjs";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/ws";
+const ENDPOINT = "/active_event";
+const TOPIC = "/topic/event_updates";
+let client: Client;
+
+export function ConnectEventWebSocket(setActiveEvent: (event: Event) => void) {
+
+    useEffect(() => {
+        // Create the STOMP client
+        const stompClient = new Client({
+            brokerURL: undefined, // we set it to undefined because we'll use SockJS
+            webSocketFactory: () => new SockJS(API_BASE_URL+ENDPOINT),
+            reconnectDelay: 5000, // automatically attempt to reconnect if the connection is lost
+            onConnect: () => {
+                console.log("STOMP connected");
+
+                // Subscribe to /topic/events
+                stompClient.subscribe(TOPIC, (message: IMessage) => {
+                    // The server broadcasts Event objects as JSON
+                    const eventData: Event = JSON.parse(message.body);
+                    console.log("Event Sent to front end: " + eventData);
+                    setActiveEvent(eventData);
+                });
+            },
+            onStompError: (frame) => {
+                console.error("Broker reported error: " + frame.headers["message"]);
+                console.error("Additional details: " + frame.body);
+            },
+        });
+
+        // Activate the STOMP client
+        stompClient.activate();
+        client = stompClient;
+
+        // Cleanup when component unmounts
+        return () => {
+            stompClient.deactivate();
+        };
+    }, []);
+}
+
+// Sends an event to the server
+export function sendEvent(event: Event) {
+    // TODO include error handling
+    client.publish({destination: ENDPOINT, body: JSON.stringify(event)});
+}
+
+

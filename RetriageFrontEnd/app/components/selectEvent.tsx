@@ -5,9 +5,10 @@ import React, {useEffect, useState} from "react";
 import {Event} from "@/app/models/event";
 import {getAllEvents} from "@/app/api/eventApi";
 import ToggleEvent from "@/app/components/eventToggleButton";
-import {updateEvent} from "@/app/api/eventApi";
+import {sendEvent} from "@/app/api/eventWebSocket";
 
-export default function SelectEvent({eventViewToggle, setActiveEvent} : {eventViewToggle: () => void; setActiveEvent: (newEvent: Event) => void;}) {
+
+export default function SelectEvent({eventViewToggle} : {eventViewToggle: () => void}) {
     const [allEvents, setAllEvents] = useState<Event[]>([]);
     const [error, setError] = useState<string | null>(null);
 
@@ -30,13 +31,9 @@ export default function SelectEvent({eventViewToggle, setActiveEvent} : {eventVi
     }, []);
 
     function onStatusChange(event: Event) {
-        updateEvent(event)
-            .catch((err) => {
-            console.error("Failed to update event status:", err);
-            // Possibly show an error message in the UI
-        });
-        setActiveEvent(event);
+        sendEvent(event);
         eventViewToggle();
+
     }
 
     return (

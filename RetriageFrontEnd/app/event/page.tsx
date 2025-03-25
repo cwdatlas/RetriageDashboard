@@ -12,7 +12,7 @@ import ToggleButton from "@/app/components/toggleButton";
 import CreatePatient from "@/app/components/patientCreator";
 import {Status} from "@/app/enumerations/status";
 import {Event} from "@/app/models/event";
-import {getEventById} from "@/app/api/eventApi";
+import {ConnectEventWebSocket} from "@/app/api/eventWebSocket";
 
 export default function EventViewer() {
     const role = getCookies("role") as Role;
@@ -35,20 +35,14 @@ export default function EventViewer() {
         duration: 0
     };
     const [activeEvent, setActiveEvent] = useState(defaultEvent);
-
     function toggleEventView(){
         setViewEvents(!viewEvents);
     }
 
-    async function updateActiveEvent(){
-        if(activeEvent.id == null){
-            setError("Active Event not set")
-        }else{
-            setActiveEvent(await getEventById(activeEvent.id));
-            console.log("Event Updated")
-        }
+    ConnectEventWebSocket(setActiveEvent);
+    if(activeEvent.id != null){
+        toggleEventView();
     }
-
 
     return (
         <main>
@@ -57,7 +51,7 @@ export default function EventViewer() {
             {role === Role.Director && (
                 <div>
                     <ToggleButton onToggle={toggleEventView} label={"Toggle Event Selection"}/>
-                    {viewEvents && (<SelectEvent eventViewToggle={toggleEventView} setActiveEvent={setActiveEvent}/>)}
+                    {viewEvents && (<SelectEvent eventViewToggle={toggleEventView}/>)}
                     {activeEvent.status == Status.Running &&(<CreatePatient event={activeEvent}/>)}
                 </div>
             )}
