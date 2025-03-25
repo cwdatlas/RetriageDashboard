@@ -1,8 +1,7 @@
-package com.retriage.retriage;
+package com.retriage.retriage.configurations;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +13,9 @@ import org.springframework.security.saml2.provider.service.authentication.OpenSa
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.HashSet;
 import java.util.List;
@@ -25,9 +27,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 /**
  * SecurityConfiguration
  * <br></br>
- *  Configures Spring Security for SAML 2.0 Service Provider functionality.
- *  This class defines the security filter chain and customizes the SAML authentication provider
- *  to handle user group/role mapping from SAML attributes to Spring Security authorities.
+ * Configures Spring Security for SAML 2.0 Service Provider functionality.
+ * This class defines the security filter chain and customizes the SAML authentication provider
+ * to handle user group/role mapping from SAML attributes to Spring Security authorities.
+ *
  * @Author: John Botonakis
  * @PatientPool: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
  */
@@ -36,11 +39,11 @@ public class SecurityConfiguration {
     /**
      * configure
      * <br></br>
-     *  Configures the Spring Security filter chain for handling SAML authentication and authorization.
-     *  <p>
-     *  This method defines the security rules and sets up the SAML 2.0 login and logout processes.
-     *  It also configures a custom {@link OpenSaml4AuthenticationProvider} with a {@link #groupsConverter()}
-     *  to map SAML attributes to Spring Security GrantedAuthorities.
+     * Configures the Spring Security filter chain for handling SAML authentication and authorization.
+     * <p>
+     * This method defines the security rules and sets up the SAML 2.0 login and logout processes.
+     * It also configures a custom {@link OpenSaml4AuthenticationProvider} with a {@link #groupsConverter()}
+     * to map SAML attributes to Spring Security GrantedAuthorities.
      *
      * @param http the {@link HttpSecurity} to configure
      * @return a {@link SecurityFilterChain} that is configured for SAML 2.0 security
@@ -60,7 +63,6 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/api/pools/templates").permitAll()
                         .anyRequest().authenticated()) // Require authentication for any request to this application
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider))) // Use the custom SAML authentication provider
@@ -70,16 +72,34 @@ public class SecurityConfiguration {
     }
 
     /**
+     * Define a CorsConfigurationSource bean that allows CORS requests from any origin.
+     * For production, consider restricting origins and methods as needed.
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Allow all origins. You can restrict this by listing specific origins.
+        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true); // Allow cookies/credentials if needed
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    /**
      * Converter
      * <br></br>
-     *  Creates a custom converter to map SAML attributes (specifically "groups") to Spring Security GrantedAuthorities.
-     *  <p>
-     *  This converter is used by the {@link OpenSaml4AuthenticationProvider} to process SAML responses.
-     *  It extracts the "groups" attribute from the SAML assertion and converts each group name into a {@link SimpleGrantedAuthority}.
-     *  If the "groups" attribute is not present, it falls back to the default authorities provided by the SAML authentication.
+     * Creates a custom converter to map SAML attributes (specifically "groups") to Spring Security GrantedAuthorities.
+     * <p>
+     * This converter is used by the {@link OpenSaml4AuthenticationProvider} to process SAML responses.
+     * It extracts the "groups" attribute from the SAML assertion and converts each group name into a {@link SimpleGrantedAuthority}.
+     * If the "groups" attribute is not present, it falls back to the default authorities provided by the SAML authentication.
      *
      * @return a {@link Converter} that maps {@link ResponseToken} to {@link Saml2Authentication},
-     *         extracting group information from SAML attributes to populate authorities.
+     * extracting group information from SAML attributes to populate authorities.
      */
     private Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> groupsConverter() {
         // Create a default ResponseToken to Saml2Authentication converter as a base
