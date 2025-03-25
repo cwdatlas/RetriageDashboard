@@ -5,6 +5,8 @@ import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.stereotype.Controller;
@@ -29,7 +31,8 @@ import java.util.List;
 @CrossOrigin
 public class HomeController {
     AuthenticationPrincipal Saml2AuthenticatedPrincipal;
-    UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    private final UserService userService;
 
     HomeController(UserService userService) {
         this.userService = userService;
@@ -53,7 +56,12 @@ public class HomeController {
      */
     @RequestMapping("/")
     public String oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal, HttpServletResponse response) {
-        List<String> roles = principal.getAttribute("groups");
+        List<String> roles = null;
+        try{
+            roles = principal.getAttribute("groups");
+        }catch(NullPointerException e){
+            logger.warn("oktaLogin: Client logged in without role. set user {} role to guest.", principal.getName());
+        }
         Role userRole = Role.Guest;
 
         if (roles != null) {
