@@ -1,5 +1,6 @@
 package com.retriage.retriage.controllers;
 
+import com.retriage.retriage.exceptions.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -27,13 +30,13 @@ public class ImageController {
     private String uploadDir;
 
     @PostMapping("/uploadImage")
-    public RedirectView uploadImage(@RequestParam("image") MultipartFile file) {
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
         logger.info("Entering uploadImage with file: {}", file.getOriginalFilename());
 
         if (file.isEmpty()) {
             logger.warn("uploadImage - Received empty file for upload.");
-            RedirectView redirectView = new RedirectView("/upload-form?error=emptyfile"); // Adjust path as needed
-            return redirectView;
+            ErrorResponse errorResponse = new ErrorResponse("Please select a file to upload!", HttpStatus.BAD_REQUEST.value(), "FILE_EMPTY");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); // Returns JSON error
         }
 
         try {
@@ -62,14 +65,16 @@ public class ImageController {
             Files.copy(file.getInputStream(), filePath);
             logger.info("uploadImage - Image uploaded successfully. Filename: {}", uniqueFilename);
 
-            // Redirect to the homepage
-            RedirectView redirectView = new RedirectView("/"); // Assuming "/" is your homepage path
-            return redirectView;
+            // Return a success ResponseEntity
+            Map<String, String> successResponse = new HashMap<>();
+            successResponse.put("message", "Image uploaded successfully!");
+            successResponse.put("filename", uniqueFilename);
+            return new ResponseEntity<>(successResponse, HttpStatus.OK);
         } catch (IOException e) {
             logger.error("uploadImage - Error saving image:", e);
             // Redirect to an error page
-            RedirectView redirectView = new RedirectView("/error"); // Adjust path as needed
-            return redirectView;
+            ErrorResponse errorResponse = new ErrorResponse("Failed to upload image!", HttpStatus.INTERNAL_SERVER_ERROR.value(), "UPLOAD_FAILED");
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
             logger.info("Exiting uploadImage");
         }
