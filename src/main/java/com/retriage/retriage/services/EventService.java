@@ -13,9 +13,11 @@ public interface EventService {
 
     Event findEventById(Long id);
 
-    Event UpdateEvent(long id, Event event);
+    Event updateEvent(long id, Event event);
 
     List<Event> findAllEvents();
 
     void deleteEventById(Long id);
+
+    Event findActiveEvent();
 }

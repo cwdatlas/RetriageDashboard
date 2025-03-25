@@ -1,5 +1,6 @@
 package com.retriage.retriage.services;
 
+import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.models.Event;
 import com.retriage.retriage.repositories.EventRepo;
 import org.slf4j.Logger;
@@ -77,7 +78,7 @@ public class EventServiceImp implements EventService {
      * @return The updated event or null if not found
      */
     @Override
-    public Event UpdateEvent(long id, Event event) {
+    public Event updateEvent(long id, Event event) {
         logger.info("** Starting to update event with ID: {} **", id);
         logger.debug("UpdateEvent: Event details for update - ID: {}, Event: {}", id, event);
         if (!eventRepository.existsById(id)) {
@@ -127,6 +128,20 @@ public class EventServiceImp implements EventService {
         } else {
             logger.warn("deleteEventById: Event with id {} does not exist.", id);
         }
+    }
+
+    @Override
+    public Event findActiveEvent() {
+        List<Event> events = eventRepository.findByStatus(Status.Running);
+        Event returnEvent = null;
+        if (events.isEmpty()) {
+            logger.debug("getActiveEvent: Checked for active events, none found.");
+        } else if (events.size() > 1) {
+            logger.error("getActiveEvent: More than one running event found!");
+        } else {
+            returnEvent = events.getFirst();
+        }
+        return returnEvent;
     }
 
     /**
