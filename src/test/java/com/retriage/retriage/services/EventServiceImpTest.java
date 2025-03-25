@@ -374,7 +374,7 @@ public class EventServiceImpTest {
      * Tests that UpdateEvent() successfully updates an existing event.
      */
     @Test
-    void UpdateEvent_ShouldReturnUpdatedEvent_WhenEventExistsAndDataIsValid() {
+    void updateEvent_ShouldReturnUpdatedEvent_WhenEventExistsAndDataIsValid() {
         // Arrange
         Long eventId = 1L;
         Event existingEvent = createSampleEvent(eventId, "Original Event");
@@ -384,7 +384,7 @@ public class EventServiceImpTest {
         when(eventRepository.save(updatedEventData)).thenReturn(updatedEventData);
 
         // Act
-        Event result = eventServiceImp.UpdateEvent(eventId, updatedEventData);
+        Event result = eventServiceImp.updateEvent(eventId, updatedEventData);
 
         // Assert
         assertNotNull(result, "Updated event should not be null");
@@ -398,7 +398,7 @@ public class EventServiceImpTest {
      * Tests that UpdateEvent() returns null when the event to update does not exist.
      */
     @Test
-    void UpdateEvent_ShouldReturnNull_WhenEventDoesNotExist() {
+    void updateEvent_ShouldReturnNull_WhenEventDoesNotExist() {
         // Arrange
         Long nonExistentEventId = 999L;
         Event updatedEventData = createSampleEvent(nonExistentEventId, "Updated Event");
@@ -406,7 +406,7 @@ public class EventServiceImpTest {
         when(eventRepository.existsById(nonExistentEventId)).thenReturn(false);
 
         // Act
-        Event result = eventServiceImp.UpdateEvent(nonExistentEventId, updatedEventData);
+        Event result = eventServiceImp.updateEvent(nonExistentEventId, updatedEventData);
 
         // Assert
         assertNull(result, "Should return null when event does not exist");
@@ -418,7 +418,7 @@ public class EventServiceImpTest {
      * Tests that UpdateEvent() throws IllegalArgumentException when the updated Event data is invalid (e.g., null name).
      */
     @Test
-    void UpdateEvent_ShouldThrowException_WhenUpdatedDataIsInvalid() {
+    void updateEvent_ShouldThrowException_WhenUpdatedDataIsInvalid() {
         // Arrange
         Long eventId = 1L;
         Event invalidUpdatedEventData = createSampleEvent(eventId, null); // Event with null name
@@ -426,7 +426,7 @@ public class EventServiceImpTest {
         when(eventRepository.existsById(eventId)).thenReturn(true);
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> eventServiceImp.UpdateEvent(eventId, invalidUpdatedEventData),
+        assertThrows(IllegalArgumentException.class, () -> eventServiceImp.updateEvent(eventId, invalidUpdatedEventData),
                 "Should throw IllegalArgumentException for invalid updated data");
 
         verify(eventRepository, times(1)).existsById(eventId);
@@ -439,7 +439,7 @@ public class EventServiceImpTest {
      * Behavior: Should throw IllegalArgumentException due to validation.
      */
     @Test
-    void UpdateEvent_StartTimeAfterEndTime_ShouldThrowException() {
+    void updateEvent_StartTimeAfterEndTime_ShouldThrowException() {
         // Arrange
         Long eventIdToUpdate = 20L;
         Event invalidTimeEvent = createSampleEvent(eventIdToUpdate, "Updated Event with Invalid Time");
@@ -449,7 +449,7 @@ public class EventServiceImpTest {
         when(eventRepository.existsById(eventIdToUpdate)).thenReturn(true);
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> eventServiceImp.UpdateEvent(eventIdToUpdate, invalidTimeEvent),
+        assertThrows(IllegalArgumentException.class, () -> eventServiceImp.updateEvent(eventIdToUpdate, invalidTimeEvent),
                 "UpdateEvent should throw exception when startTime is after endTime");
         verify(eventRepository, times(1)).existsById(eventIdToUpdate);
         verify(eventRepository, never()).save(any());
