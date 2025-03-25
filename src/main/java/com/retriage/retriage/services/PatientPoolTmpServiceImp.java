@@ -136,10 +136,6 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
             logger.warn("validatePoolTmp - PatientPoolTmp name is null or empty.");
             throw new IllegalArgumentException("PatientPoolTmp name cannot be null or empty.");
         }
-        if (pool.getPoolNumber() <= 0) {
-            logger.warn("validatePoolTmp - Pool number is not a positive number: {}", pool.getPoolNumber());
-            throw new IllegalArgumentException("Pool number must be a positive number.");
-        }
         logger.debug("Exiting validatePoolTmp - PatientPoolTmp validation passed.");
     }
 }
