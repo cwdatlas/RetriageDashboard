@@ -65,6 +65,9 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/topic/**").permitAll()
+                        .requestMatchers("/active_event/**").permitAll()
                         .anyRequest().authenticated()) // Require authentication for any request to this application
                 .saml2Login(saml2 -> saml2
                 .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom SAML authentication provider
