@@ -48,7 +48,6 @@ public class EventController {
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventTmpForm eventform) {
-        logger.info("Entering createEvent with eventForm: {}", eventform);
         List<String> errorList = new ArrayList<>();
         // Validate Director
         logger.info("Validating Director...");
@@ -125,22 +124,20 @@ public class EventController {
             newEvent.setDuration(eventform.getDuration());
             logger.info("createEvent - Event object created: {}", newEvent);
 
-            //Saving the event
             boolean saved = eventService.saveEvent(newEvent);
-            logger.info("createEvent - Event saved: {}", saved);
-            //Error handling (very basic)
             if (saved) {
-                logger.info("Exiting createEvent, event saved successfully");
+                logger.info("createEvent - Event saved successfully");
                 return ResponseEntity.created(URI.create("/events/")).body(new SuccessResponse("Successfully saved event", newEvent.getId()));
             } else {
                 logger.error("createEvent - Unknown error occurred while saving event");
-                ErrorResponse errorResponse = new ErrorResponse("Unknown error saving event.", HttpStatus.INTERNAL_SERVER_ERROR.value(), "SAVE_FAILED");
+                ErrorResponse errorResponse = new ErrorResponse(List.of("Unknown error saving event."), HttpStatus.INTERNAL_SERVER_ERROR.value(), "SAVE_FAILED");
                 return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
         }
-        logger.info("Exiting createEvent, returning response with errors: {}", errorList);
-        return new ResponseEntity<>(errorList, HttpStatus.BAD_REQUEST);
+        logger.info("createEvent - Returning response with errors: {}", errorList);
+        ErrorResponse errorResponse = new ErrorResponse(errorList, HttpStatus.BAD_REQUEST.value(), "VALIDATION_FAILED");
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -152,7 +149,7 @@ public class EventController {
         Event event = eventService.findEventById(id);
         if (event == null) {
             logger.warn("findEventByID - Event with id {} not found", id);
-            ErrorResponse errorResponse = new ErrorResponse("Event with id " + id + " not found.", HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
+            ErrorResponse errorResponse = new ErrorResponse(List.of("Event with id " + id + " not found."), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
             return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
         logger.info("Exiting findEventByID with event: {}", event);
@@ -166,9 +163,8 @@ public class EventController {
      */
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getAllEvents() {
-        logger.info("Entering getAllEvents");
         List<Event> events = eventService.findAllEvents();
-        logger.info("Exiting getAllEvents, returning {} events", events.size());
+        logger.info("Returning {} events", events.size());
         return new ResponseEntity<>(events, HttpStatus.OK); // Returning 200 OK with the list of events
     }
 
@@ -180,10 +176,9 @@ public class EventController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
-        logger.info("Entering deleteEvent with id: {}", id);
         eventService.deleteEventById(id);
-        logger.info("Exiting deleteEvent, event with id {} deleted", id);
-        return ResponseEntity.status(HttpStatus.OK).build(); // Successful deletion, returns 200 OK with no body
+        logger.info("Event with id {} deleted", id);
+        return ResponseEntity.status(HttpStatus.OK).build(); // Successful deletion
     }
 
     /**
@@ -192,7 +187,6 @@ public class EventController {
      */
     @PutMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> updateEvent(@Valid @RequestBody EventForm eventForm) {
-        logger.info("Entering updateEvent with eventForm: {}", eventForm);
         //secondary validation
 
         Event updatedEvent = new Event();
@@ -209,10 +203,9 @@ public class EventController {
         Event response = eventService.updateEvent(eventForm.getId(), updatedEvent);
         if (response == null) {
             logger.warn("updateEvent - Unable to update event with id: {}", eventForm.getId());
-            ErrorResponse errorResponse = new ErrorResponse("Unable to update event with id: " + eventForm.getId(), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
+            ErrorResponse errorResponse = new ErrorResponse(List.of("Event with id " + eventForm.getId() + " unable to be updated."), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
             return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
-        logger.info("Exiting updateEvent, event with id {} updated successfully", eventForm.getId());
         return ResponseEntity.ok(new SuccessResponse("Updated event successfully", response.getId())); // Using ResponseEntity.ok for success with JSON
     }
 }
