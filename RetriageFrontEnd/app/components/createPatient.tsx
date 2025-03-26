@@ -16,7 +16,6 @@ import {updateEvent} from "@/app/api/eventApi";
 
 export default function CreatePatient({getActiveEvent}: {getActiveEvent: () => Event}) {
     const [showModal, setShowModal] = useState(false);
-
     // Form fields
     const [error, setError] = useState<string | null>(null);
     const [cardId, setCardId] = useState(0);
