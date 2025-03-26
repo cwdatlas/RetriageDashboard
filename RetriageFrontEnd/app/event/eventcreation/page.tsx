@@ -11,7 +11,7 @@ import {createPoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpA
 import {createEvent} from "@/app/api/eventApi";
 
 import {User} from "@/app/models/user";
-import {getCookies} from "@/app/api/cookieApi"
+import {GetCookies} from "@/app/api/cookieApi"
 import {Role} from "@/app/enumerations/role";
 import {PoolType} from "@/app/enumerations/poolType";
 import {PatientPoolTmp} from "@/app/models/patientPoolTmp";
@@ -32,10 +32,10 @@ export default function EventCreation() {
 
     // Director + Pools for this new event
     const director: User = {
-        firstName: getCookies("firstName"),
-        lastName: getCookies("lastName"),
-        email: getCookies("email"),
-        role: getCookies("role") as Role,
+        firstName: GetCookies("firstName"),
+        lastName: GetCookies("lastName"),
+        email: GetCookies("email"),
+        role: GetCookies("role") as Role,
     };
 
     // 2) State to hold *all* pool templates from your API

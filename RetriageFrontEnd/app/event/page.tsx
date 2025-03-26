@@ -1,6 +1,6 @@
 'use client'
 
-import {getCookies} from "@/app/api/cookieApi";
+import {GetCookies} from "@/app/api/cookieApi";
 import {Role} from "@/app/enumerations/role";
 import React, {useEffect, useState} from "react";
 import SelectEvent from "@/app/components/selectEvent";
@@ -14,9 +14,10 @@ import {Status} from "@/app/enumerations/status";
 import {Event} from "@/app/models/event";
 import {useConnectEventWebSocket} from "@/app/api/eventWebSocket";
 import {getActiveEvent as getCurrentActiveEvent} from "@/app/api/eventApi";
+import NurseJobModal from "@/app/components/nurseJobModal";
 
 export default function EventViewer() {
-    const role = getCookies("role") as Role;
+    const role = GetCookies("role") as Role;
     const [viewEvents, setViewEvents] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeEvent, setActiveEvent] = useState<Event | null>(null);
