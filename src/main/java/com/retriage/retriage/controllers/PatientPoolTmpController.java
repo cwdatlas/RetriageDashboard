@@ -1,6 +1,5 @@
 package com.retriage.retriage.controllers;
 
-import com.retriage.retriage.forms.PatientPoolForm;
 import com.retriage.retriage.forms.PatientPoolTmpForm;
 import com.retriage.retriage.models.PatientPoolTmp;
 import com.retriage.retriage.services.PatientPoolTmpService;

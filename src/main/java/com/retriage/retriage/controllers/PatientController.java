@@ -3,11 +3,7 @@ package com.retriage.retriage.controllers;
 import com.retriage.retriage.enums.Condition;
 import com.retriage.retriage.forms.PatientForm;
 import com.retriage.retriage.models.Patient;
-import com.retriage.retriage.models.PatientPool;
-import com.retriage.retriage.models.User;
-import com.retriage.retriage.services.EventServiceImp;
 import com.retriage.retriage.services.PatientService;
-import com.retriage.retriage.services.PatientServiceImp;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +19,8 @@ import java.util.Optional;
 @CrossOrigin
 @RequestMapping("/api/patients")
 public class PatientController {
-    private final PatientService patientService;
     private static final Logger logger = LoggerFactory.getLogger(PatientController.class);
+    private final PatientService patientService;
 
     /**
      * Constructor injection of the service

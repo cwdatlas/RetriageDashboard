@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
 /**
  * Represents a standardized error response sent to the client, containing details like timestamp,
  * HTTP status, error type, message, and the request path.

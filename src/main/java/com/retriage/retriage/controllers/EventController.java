@@ -154,6 +154,7 @@ public class EventController {
     /**
      * getAllEvents
      * Returns every previously created Event
+     *
      * @return The list of every event
      */
     @GetMapping(produces = "application/json")
@@ -179,6 +180,7 @@ public class EventController {
     /**
      * deleteEvent
      * Deletes a specified Event by first finding the passed ID, then deleting it
+     *
      * @param id The ID associated to the event you are looking for
      * @return Returns a confirmation that the event was deleted
      */
@@ -191,8 +193,7 @@ public class EventController {
     }
 
     /**
-     *  updateEvent
-     *
+     * updateEvent
      */
     @PutMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> updateEvent(@Valid @RequestBody EventForm eventForm) {

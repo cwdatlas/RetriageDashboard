@@ -30,9 +30,9 @@ import java.util.List;
 @Controller
 @CrossOrigin
 public class HomeController {
-    AuthenticationPrincipal Saml2AuthenticatedPrincipal;
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
     private final UserService userService;
+    AuthenticationPrincipal Saml2AuthenticatedPrincipal;
 
     HomeController(UserService userService) {
         this.userService = userService;
@@ -57,9 +57,9 @@ public class HomeController {
     @RequestMapping("/")
     public String oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal, HttpServletResponse response) {
         List<String> roles = null;
-        try{
+        try {
             roles = principal.getAttribute("groups");
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             logger.warn("oktaLogin: Client logged in without role. set user {} role to guest.", principal.getName());
         }
         Role userRole = Role.Guest;
@@ -74,7 +74,7 @@ public class HomeController {
         }
         String firstName = principal.getFirstAttribute("firstname");
         String lastName = principal.getFirstAttribute("lastname");
-        if (firstName == null){
+        if (firstName == null) {
             firstName = "Guest";
         }
         if (lastName == null) {

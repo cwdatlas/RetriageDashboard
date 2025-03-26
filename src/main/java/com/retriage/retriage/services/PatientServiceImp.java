@@ -1,6 +1,5 @@
 package com.retriage.retriage.services;
 
-import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.models.Patient;
 import com.retriage.retriage.repositories.PatientRepo;
 import org.slf4j.Logger;

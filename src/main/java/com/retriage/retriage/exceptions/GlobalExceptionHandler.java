@@ -1,6 +1,8 @@
 package com.retriage.retriage.exceptions;
 
 import com.retriage.retriage.forms.PatientForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -8,25 +10,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
- *  Centralized exception handler for the entire application.
- *  <p>
- *  This class is responsible for handling exceptions that occur across all controllers.
- *  It provides a consistent way to manage errors and return meaningful responses to the user,
- *  improving error handling and the overall robustness of the application.
- *  Currently, it specifically handles {@link MethodArgumentNotValidException} for validation failures.
+ * Centralized exception handler for the entire application.
+ * <p>
+ * This class is responsible for handling exceptions that occur across all controllers.
+ * It provides a consistent way to manage errors and return meaningful responses to the user,
+ * improving error handling and the overall robustness of the application.
+ * Currently, it specifically handles {@link MethodArgumentNotValidException} for validation failures.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -39,7 +35,7 @@ public class GlobalExceptionHandler {
      * `ErrorResponse` with an HTTP status of 500 (Internal Server Error).
      *
      * @param ex The `WebRequest` providing context about the current
-     * HTTP request, used here to obtain the request URI.
+     *           HTTP request, used here to obtain the request URI.
      * @return A `ResponseEntity` containing the `ErrorResponse` object and an
      * HTTP status code of 500. The `ErrorResponse` includes the
      * timestamp of the error, the HTTP status code and reason phrase,
@@ -67,7 +63,7 @@ public class GlobalExceptionHandler {
      * It extracts all the validation error messages from the exception and returns them in a structured response.
      *
      * @param ex The {@link MethodArgumentNotValidException} that was thrown due to validation failure.
-     * @return ResponseEntity<List<String>> Returns a '400 Bad Request' response.
+     * @return ResponseEntity<List < String>> Returns a '400 Bad Request' response.
      * The response body contains a list of error messages,
      * each describing a specific validation failure.
      * This list is intended to provide detailed feedback to the client

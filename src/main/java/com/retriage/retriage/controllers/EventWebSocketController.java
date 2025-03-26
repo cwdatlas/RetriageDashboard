@@ -27,7 +27,7 @@ public class EventWebSocketController {
     @MessageMapping("/update")
     @SendTo("/topic/event_updates")
     public Event WebsocketConnection(EventForm eventForm) {
-        if(eventForm.getId() == null) {
+        if (eventForm.getId() == null) {
             logger.debug("WebSocketConnection: Client tried to get data");
             //TODO: Validation for updated event
             Event updatedEvent = new Event();
@@ -51,7 +51,7 @@ public class EventWebSocketController {
 
     @Transactional
     @SubscribeMapping("/topic/event_updates")
-    public Event onEventSubscription(){
+    public Event onEventSubscription() {
         Event response = eventService.findActiveEvent();
         if (response != null) {
             logger.debug("onEventSubscription: Zero running events found");

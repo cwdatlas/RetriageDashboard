@@ -3,8 +3,6 @@ package com.retriage.retriage.repositories;
 import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.models.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
