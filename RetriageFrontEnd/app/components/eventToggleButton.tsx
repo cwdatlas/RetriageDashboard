@@ -9,12 +9,7 @@ import { Status } from "@/app/enumerations/status";
  *  - event: The event object from your parent component (includes id, name, status, etc.).
  *  - onStatusChange?: Optional callback your parent can provide if you want to notify the parent or call an API.
  */
-export default function ToggleEvent({
-                                        event,
-                                        onStatusChange,
-                                    }: {
-    event: Event;
-    onStatusChange?: (UpdatedEvent: Event) => void;
+export default function ToggleEvent({event, onStatusChange,}: { event: Event; onStatusChange?: (UpdatedEvent: Event) => void;
 }) {
     // Keep track of the status in local state
     const [localStatus, setLocalStatus] = useState(event.status);

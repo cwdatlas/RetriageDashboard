@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
-import { Event } from "@/app/models/event";
-import { Patient } from "@/app/models/patient";
-import { Condition } from "@/app/enumerations/condition";
-import { PoolType } from "@/app/enumerations/poolType";
-import { PatientPool } from "@/app/models/patientPool";
+import React, {useState} from "react";
+import {Event} from "@/app/models/event";
+import {Patient} from "@/app/models/patient";
+import {Condition} from "@/app/enumerations/condition";
+import {PoolType} from "@/app/enumerations/poolType";
+import {PatientPool} from "@/app/models/patientPool";
 import {updateEvent} from "@/app/api/eventApi";
+
 
 /**
  * We'll define a temporary type that extends Event to include a "patients" field.
@@ -13,7 +14,7 @@ import {updateEvent} from "@/app/api/eventApi";
  */
 
 
-export default function CreatePatient({event} : { event : Event }) {
+export default function CreatePatient({getActiveEvent}: {getActiveEvent: () => Event}) {
     const [showModal, setShowModal] = useState(false);
 
     // Form fields
@@ -21,9 +22,8 @@ export default function CreatePatient({event} : { event : Event }) {
     const [cardId, setCardId] = useState(0);
     const [condition, setCondition] = useState<Condition>(Condition.Minor);
     const [selectedBayPoolId, setSelectedBayPoolId] = useState<number | null>(null);
-
     // Filter out Bay-type pools
-    const bayPools = (event.pools || []).filter((p) => p.poolType === PoolType.Bay);
+    const bayPools = (getActiveEvent().pools || []).filter((p) => p.poolType === PoolType.Bay);
 
     async function handleAddPatient(e: React.FormEvent) {
         e.preventDefault();
@@ -37,27 +37,26 @@ export default function CreatePatient({event} : { event : Event }) {
         // 2) If user selected a Bay pool, attach it
         if (selectedBayPoolId) {
             console.log("Selected pool is ID of: " + selectedBayPoolId);
-            const chosenPool = event.pools.find(pool => pool.id === selectedBayPoolId);
+            const chosenPool = getActiveEvent().pools.find(pool => pool.id === selectedBayPoolId);
             if (chosenPool) {
-                if(chosenPool.patients == null){
-                    const newPatientArray :  Patient[] = new Array(1);
+                if (chosenPool.patients == null) {
+                    const newPatientArray: Patient[] = new Array(1);
                     newPatientArray[0] = newPatient;
                     chosenPool.patients = newPatientArray;
-                }else{
+                } else {
                     chosenPool.patients.push(newPatient);
                     console.log("Chosen Pool: " + chosenPool.name);
                 }
 
-            }else{
+            } else {
                 setError("Selected Patient Pool not found.")
             }
         }
 
 
-
         // 4) Persist via the parent-provided function
         try {
-            await updateEvent(event);
+            await updateEvent(getActiveEvent());
             console.log("Patient added to Patient Pool");
         } catch (err) {
             setError("Failed to add patient");
@@ -105,7 +104,7 @@ export default function CreatePatient({event} : { event : Event }) {
 
                             <div>
                                 <label>Assign to Bay Pool: </label>
-                                {error && <p style={{ color: "red" }}>{error}</p>}
+                                {error && <p style={{color: "red"}}>{error}</p>}
                                 <select
                                     value={selectedBayPoolId ?? ""}
                                     onChange={(e) => setSelectedBayPoolId(Number(e.target.value))}
@@ -119,12 +118,12 @@ export default function CreatePatient({event} : { event : Event }) {
                                 </select>
                             </div>
 
-                            <div style={{ marginTop: "1rem" }}>
+                            <div style={{marginTop: "1rem"}}>
                                 <button type="submit">Add Patient</button>
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    style={{ marginLeft: "0.5rem" }}
+                                    style={{marginLeft: "0.5rem"}}
                                 >
                                     Cancel
                                 </button>

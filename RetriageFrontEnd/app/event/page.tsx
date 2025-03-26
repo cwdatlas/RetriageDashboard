@@ -18,7 +18,7 @@ export default function EventViewer() {
     const role = getCookies("role") as Role;
 
     const [viewEvents, setViewEvents] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error] = useState<string | null>(null);
 
     const defaultEvent: Event = {
         nurses: [],
@@ -38,11 +38,15 @@ export default function EventViewer() {
     function toggleEventView(){
         setViewEvents(!viewEvents);
     }
-
-    ConnectEventWebSocket(setActiveEvent);
-    if(activeEvent.id != null){
-        toggleEventView();
+    function activeEventSet(event : Event){
+        setActiveEvent(event);
     }
+    function getActiveEvent(): Event{
+        return activeEvent;
+    }
+
+    ConnectEventWebSocket(activeEventSet);
+
 
     return (
         <main>
@@ -52,17 +56,17 @@ export default function EventViewer() {
                 <div>
                     <ToggleButton onToggle={toggleEventView} label={"Toggle Event Selection"}/>
                     {viewEvents && (<SelectEvent eventViewToggle={toggleEventView}/>)}
-                    {activeEvent.status == Status.Running &&(<CreatePatient event={activeEvent}/>)}
+                    {activeEvent.status == Status.Running &&(<CreatePatient getActiveEvent={getActiveEvent}/>)}
                 </div>
             )}
-            {role === Role.Nuse && (
+            {role == Role.Nurse && (
                 <div>
-                    {activeEvent.status == Status.Running &&(<CreatePatient event={activeEvent}/>)}
                     {activeEvent.status != Status.Running &&(<NurseWaitEventPage/>)}
+                    {activeEvent.status == Status.Running &&(<CreatePatient getActiveEvent={getActiveEvent}/>)}
                 </div>
 
             )}
-            {role != Role.Director || role != Role.Director && (
+            {role != Role.Director && role != Role.Nurse && (
                 <GuestWaitPage/>
             )}
             <Footer/>

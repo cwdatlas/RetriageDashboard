@@ -4,6 +4,7 @@ package com.retriage.retriage.controllers;
 import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.models.Event;
 import com.retriage.retriage.services.EventService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -21,8 +22,8 @@ public class EventWebSocketController {
         this.eventService = eventService;
     }
 
-
-    @MessageMapping("/active_event/")
+    @Transactional
+    @MessageMapping("/update")
     @SendTo("/topic/event_updates")
     public Event WebsocketConnection(EventForm eventForm) {
         logger.debug("WebSocketConnection: Client tried to get data");
@@ -39,7 +40,6 @@ public class EventWebSocketController {
 
         eventService.updateEvent(eventForm.getId(), updatedEvent);
 
-        //Return one or null active events
         Event response = eventService.findActiveEvent();
         if (response != null) {
             logger.debug("EventWebSocketController: Zero running events found");

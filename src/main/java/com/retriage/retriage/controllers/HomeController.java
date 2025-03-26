@@ -1,21 +1,20 @@
 package com.retriage.retriage.controllers;
 
 import com.retriage.retriage.enums.Role;
-import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,7 +30,9 @@ import java.util.List;
 @Controller
 @CrossOrigin
 public class HomeController {
-    UserService userService;
+    AuthenticationPrincipal Saml2AuthenticatedPrincipal;
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    private final UserService userService;
 
     HomeController(UserService userService) {
         this.userService = userService;
@@ -48,14 +49,19 @@ public class HomeController {
      * model for rendering in the "home" view.
      *
      * @param principal The {@link Saml2AuthenticatedPrincipal} representing the authenticated SAML user.
-     * This is injected by Spring Security based on the current authentication context.
-     * @param response  The Spring {@link HttpServletResponse} object used to add cookies.
-     * @return A {@link ResponseEntity} that either redirects to the frontend or returns an error.
+     *                  This is injected by Spring Security based on the current authentication context.
+     * @param response  The Spring {@link Model} object used to add attributes for rendering in the view.
+     * @return The name of the view to be rendered, which is "home" in this case.
+     * This corresponds to the `testview.html` (or similar) template file.
      */
     @RequestMapping("/")
-    public ResponseEntity<?> oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal, HttpServletResponse response) {
-        List<String> errors = new ArrayList<>();
-        List<String> roles = principal.getAttribute("groups");
+    public String oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal, HttpServletResponse response) {
+        List<String> roles = null;
+        try{
+            roles = principal.getAttribute("groups");
+        }catch(NullPointerException e){
+            logger.warn("oktaLogin: Client logged in without role. set user {} role to guest.", principal.getName());
+        }
         Role userRole = Role.Guest;
 
         if (roles != null) {
@@ -68,35 +74,27 @@ public class HomeController {
         }
         String firstName = principal.getFirstAttribute("firstname");
         String lastName = principal.getFirstAttribute("lastname");
-        String email = principal.getFirstAttribute("email");
-
-        if (firstName == null) {
-            errors.add("First name not provided by authentication provider.");
+        if (firstName == null){
             firstName = "Guest";
         }
         if (lastName == null) {
-            errors.add("Last name not provided by authentication provider.");
             lastName = "Guest";
         }
+
+        String email = principal.getFirstAttribute("email");
+        //There should always be an email
         if (email == null) {
-            errors.add("Email address not provided by authentication provider.");
-            ErrorResponse errorResponse = new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "MISSING_EMAIL");
-            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+            //maybe throw an error or redirect because there should ALWAYS be an email
+            email = "guest.email.com";
         }
 
-        User existingUser = userService.getUserByEmail(email);
-        if (existingUser == null) {
+        if (userService.getUserByEmail(email) == null) {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setFirstName(firstName);
             newUser.setLastName(lastName);
             newUser.setRole(userRole);
             userService.saveUser(newUser);
-        }
-
-        if (!errors.isEmpty()) {
-            ErrorResponse errorResponse = new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "AUTHENTICATION_ERROR");
-            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
         }
 
         Cookie fNameCookie = new Cookie("firstName", firstName);
@@ -109,7 +107,7 @@ public class HomeController {
         lNameCookie.setPath("/");
         lNameCookie.setDomain("localhost");
         lNameCookie.setHttpOnly(false);
-        fNameCookie.setSecure(false);
+        lNameCookie.setSecure(false);
         response.addCookie(lNameCookie);
         Cookie roleCookie = new Cookie("role", userRole.toString());
         roleCookie.setPath("/");
@@ -124,9 +122,7 @@ public class HomeController {
         emailCookie.setSecure(false);
         response.addCookie(emailCookie);
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", "http://localhost:3000/")
-                .build();
+        return "redirect:http://localhost:3000/";
     }
 
     @GetMapping("/test")
