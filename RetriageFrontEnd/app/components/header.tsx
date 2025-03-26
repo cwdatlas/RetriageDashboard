@@ -2,25 +2,22 @@
 
 import React from "react";
 import Link from "next/link";
-import {getCookies} from "@/app/api/cookieApi";
+import {GetCookies} from "@/app/api/cookieApi";
 
 export default function Header() {
-    const username = getCookies("firstName") + " " + getCookies("lastName");
-    const role = getCookies("role")
+    const username = GetCookies("firstName") + " " + GetCookies("lastName");
+    const role = GetCookies("role");
+    const job = GetCookies("job");
     return (
         <header>
             <div>
-                <Link href="/">
-                    <img
-                        src="/app/images/Shield.PNG"
-                        alt="Home Icon"
-                    />
-                </Link>
+                <Link href="/">Home</Link>
                 <button><Link href="/event">Current Event</Link></button>
             </div>
 
             <div>Username: {username}</div>
             <div>Role: {role}</div>
+            <div>Job: {job}</div>
         </header>
     );
 }
