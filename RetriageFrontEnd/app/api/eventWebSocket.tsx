@@ -8,7 +8,7 @@ const UPDATE_EVENT = "/ws/update";
 const TOPIC = "/topic/event_updates";
 let client: Client;
 
-export function ConnectEventWebSocket(setActiveEvent: (event: Event) => void) {
+export function useConnectEventWebSocket(setActiveEvent: (event: Event) => void) {
 
     useEffect(() => {
         // Create the STOMP client
@@ -16,8 +16,7 @@ export function ConnectEventWebSocket(setActiveEvent: (event: Event) => void) {
             brokerURL: API_BASE_URL + ENDPOINT,
             reconnectDelay: 5000, // automatically attempt to reconnect if the connection is lost
             onConnect: () => {
-                console.log("STOMP connected");
-
+                console.log("STOMP connected: ", stompClient.connected);
                 // Subscribe to /topic/events
                 stompClient.subscribe(TOPIC, (message: IMessage) => {
                     // The server broadcasts Event objects as JSON
@@ -25,6 +24,7 @@ export function ConnectEventWebSocket(setActiveEvent: (event: Event) => void) {
                     console.log("Event Sent to front end: " + eventData);
                     setActiveEvent(eventData);
                 });
+
             },
             onStompError: (frame) => {
                 console.error("Broker reported error: " + frame.headers["message"]);
@@ -35,6 +35,7 @@ export function ConnectEventWebSocket(setActiveEvent: (event: Event) => void) {
         // Activate the STOMP client
         stompClient.activate();
         client = stompClient;
+
 
 
         // Cleanup when component unmounts
