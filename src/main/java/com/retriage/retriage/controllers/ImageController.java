@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,12 +32,10 @@ public class ImageController {
 
     @PostMapping("/uploadImage")
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
-        logger.info("Entering uploadImage with file: {}", file.getOriginalFilename());
-
         if (file.isEmpty()) {
             logger.warn("uploadImage - Received empty file for upload.");
-            ErrorResponse errorResponse = new ErrorResponse("Please select a file to upload!", HttpStatus.BAD_REQUEST.value(), "FILE_EMPTY");
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); // Returns JSON error
+            ErrorResponse errorResponse = new ErrorResponse(List.of("Please select a file to upload!"), HttpStatus.BAD_REQUEST.value(), "FILE_EMPTY");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 
         try {
@@ -73,8 +72,8 @@ public class ImageController {
         } catch (IOException e) {
             logger.error("uploadImage - Error saving image:", e);
             // Redirect to an error page
-            ErrorResponse errorResponse = new ErrorResponse("Failed to upload image!", HttpStatus.INTERNAL_SERVER_ERROR.value(), "UPLOAD_FAILED");
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            ErrorResponse errorResponse = new ErrorResponse(List.of("Failed to upload image!"), HttpStatus.INTERNAL_SERVER_ERROR.value(), "UPLOAD_FAILED");
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR); // Explicitly returning ResponseEntity with ErrorResponse
         } finally {
             logger.info("Exiting uploadImage");
         }
