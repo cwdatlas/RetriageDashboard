@@ -8,6 +8,7 @@ import com.retriage.retriage.forms.EventTmpForm;
 import com.retriage.retriage.models.*;
 import com.retriage.retriage.services.EventService;
 import com.retriage.retriage.services.UserService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,9 +137,7 @@ public class EventController {
 
         }
         logger.info("Exiting createEvent, returning response with errors: {}", errorList);
-        return ResponseEntity.
-                created(URI.create("/events/"))
-                .body(errorList);
+        return ResponseEntity.created(URI.create("/events/")).body(errorList);
     }
 
     /**
@@ -163,6 +162,18 @@ public class EventController {
         List<Event> events = eventService.findAllEvents();
         logger.info("Exiting getAllEvents, returning {} events", events.size());
         return events;
+    }
+
+    @Transactional
+    @GetMapping(value = "/active", produces = "application/json")
+    public ResponseEntity<Event> getActiveEvent() {
+        Event event = eventService.findActiveEvent();
+        if (event == null) {
+            logger.info("getActiveEvent - No active event found, returning HTTP STATUS 404");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        logger.info("getActiveEvent - Active event found, returning HTTP STATUS ok");
+        return ResponseEntity.ok(event);
     }
 
     /**
