@@ -14,7 +14,7 @@ export function SetDefaultCookie(key: string, value: string) {
     })
 }
 
-export function getCookies(key: string) {
+export function GetCookies(key: string) {
     return Cookies.get(key) || "";
 }
 
