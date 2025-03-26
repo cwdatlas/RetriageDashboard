@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,51 +32,42 @@ public class ImageController {
     private String uploadDir;
 
     @PostMapping("/uploadImage")
-    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             logger.warn("uploadImage - Received empty file for upload.");
             ErrorResponse errorResponse = new ErrorResponse(List.of("Please select a file to upload!"), HttpStatus.BAD_REQUEST.value(), "FILE_EMPTY");
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); // Body is ErrorResponse
         }
 
-        try {
-            // Generate a filename for that saved image
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
-            String uniqueFilename = UUID.randomUUID() + fileExtension;
-            logger.debug("uploadImage - Generated unique filename: {}", uniqueFilename);
-
-            // Resolve the upload directory path
-            Path uploadPath = Paths.get(uploadDir);
-            logger.debug("uploadImage - Resolved upload directory path: {}", uploadPath);
-
-            // Create the directory if it doesn't exist
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-                logger.info("uploadImage - Created upload directory: {}", uploadPath);
-            }
-
-            // Save the image
-            Path filePath = uploadPath.resolve(uniqueFilename);
-            logger.debug("uploadImage - Resolved file path for saving: {}", filePath);
-            Files.copy(file.getInputStream(), filePath);
-            logger.info("uploadImage - Image uploaded successfully. Filename: {}", uniqueFilename);
-
-            // Return a success ResponseEntity
-            Map<String, String> successResponse = new HashMap<>();
-            successResponse.put("message", "Image uploaded successfully!");
-            successResponse.put("filename", uniqueFilename);
-            return new ResponseEntity<>(successResponse, HttpStatus.OK);
-        } catch (IOException e) {
-            logger.error("uploadImage - Error saving image:", e);
-            // Redirect to an error page
-            ErrorResponse errorResponse = new ErrorResponse(List.of("Failed to upload image!"), HttpStatus.INTERNAL_SERVER_ERROR.value(), "UPLOAD_FAILED");
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR); // Explicitly returning ResponseEntity with ErrorResponse
-        } finally {
-            logger.info("Exiting uploadImage");
+        // Generate a filename for that saved image
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
+        String uniqueFilename = UUID.randomUUID() + fileExtension;
+        logger.debug("uploadImage - Generated unique filename: {}", uniqueFilename);
+
+        // Resolve the upload directory path
+        Path uploadPath = Paths.get(uploadDir);
+        logger.debug("uploadImage - Resolved upload directory path: {}", uploadPath);
+
+        // Create the directory if it doesn't exist
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+            logger.info("uploadImage - Created upload directory: {}", uploadPath);
+        }
+
+        // Save the image
+        Path filePath = uploadPath.resolve(uniqueFilename);
+        logger.debug("uploadImage - Resolved file path for saving: {}", filePath);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        logger.info("uploadImage - Image uploaded successfully. Filename: {}", uniqueFilename);
+
+        // Return a success ResponseEntity
+        Map<String, String> successResponse = new HashMap<>();
+        successResponse.put("message", "Image uploaded successfully!");
+        successResponse.put("filename", uniqueFilename);
+        return new ResponseEntity<>(successResponse, HttpStatus.OK); // Body is Map<String, String>
     }
 }
