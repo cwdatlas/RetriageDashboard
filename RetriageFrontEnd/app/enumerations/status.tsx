@@ -1,4 +1,3 @@
- 
 export enum Status {
     Running = "Running",
     Paused = "Paused",

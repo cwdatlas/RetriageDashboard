@@ -1,6 +1,6 @@
 import {Event} from "./../models/event";
 import {EventTmp} from "@/app/models/eventTmp";
-import { STATUS_CODES } from 'http';
+import {STATUS_CODES} from 'http';
 
 export const dynamic = 'force-static'
 
@@ -41,8 +41,8 @@ export async function createEvent(event: EventTmp): Promise<EventTmp> {
 /**
  * Optionally, get a single event by ID
  */
-export async function getEventById(id : number): Promise<Event> {
-    const res = await fetch(`${API_BASE_URL}` + ENDPOINT +"/" +  `${id}`, {
+export async function getEventById(id: number): Promise<Event> {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + "/" + `${id}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -65,6 +65,7 @@ export async function deleteEvent(id: number): Promise<void> {
         throw new Error(`Failed to delete event`);
     }
 }
+
 //TODO fix update event to actually work
 export async function updateEvent(newEvent: Event): Promise<void> {
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
@@ -79,20 +80,20 @@ export async function updateEvent(newEvent: Event): Promise<void> {
     }
 }
 
-export async function getActiveEvent(setEvent : (event : Event | null) => void, setError : (error : string) => void) : Promise<void>{
-    const res = await fetch(`${API_BASE_URL}` + ENDPOINT +"/active", {
+export async function getActiveEvent(setEvent: (event: Event | null) => void, setError: (error: string) => void): Promise<void> {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + "/active", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
     });
-    if ( res.statusText == STATUS_CODES[404]){
+    if (res.statusText == STATUS_CODES[404]) {
         setError('No active event found');
         setEvent(null);
-    } else if(!res.ok) {
+    } else if (!res.ok) {
         setError('Failed to fetch event');
     }
-    const activeEvent : Event = await res.json();
+    const activeEvent: Event = await res.json();
     setEvent(activeEvent);
 }
 

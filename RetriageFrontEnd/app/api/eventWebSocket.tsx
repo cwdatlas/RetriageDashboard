@@ -37,7 +37,6 @@ export function useConnectEventWebSocket(setActiveEvent: (event: Event) => void)
         client = stompClient;
 
 
-
         // Cleanup when component unmounts
         return () => {
             stompClient.deactivate();

@@ -45,22 +45,22 @@ export default function EventCreation() {
     const [selectedPools, setSelectedPools] = useState<PatientPoolTmp[]>([]);
 
     // 4) Fetch *all* pool templates on mount
-        useEffect(() => {
-            async function fetchTemplates() {
-                try {
-                    const data = await getAllPoolTemplates(); // your API call
-                    setAllTemplates(data);
-                } catch (err: unknown) {
-                    if (err instanceof Error) {
-                        setError(err.message);
-                    } else {
-                        setError("An unknown error occurred when fetching templates");
-                    }
+    useEffect(() => {
+        async function fetchTemplates() {
+            try {
+                const data = await getAllPoolTemplates(); // your API call
+                setAllTemplates(data);
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError("An unknown error occurred when fetching templates");
                 }
             }
+        }
 
-            fetchTemplates();
-        }, []);
+        fetchTemplates();
+    }, []);
 
     // ------ EVENT FORM SUBMISSION ------
     async function handleSubmitEvent(e: React.FormEvent) {
@@ -117,14 +117,14 @@ export default function EventCreation() {
 
     return (
         <div>
-            <Header />
+            <Header/>
             <h1>Create a New Event</h1>
 
             <form onSubmit={handleSubmitEvent}>
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                {error && <p style={{color: "red"}}>{error}</p>}
 
                 {/* ========== EVENT NAME ========== */}
-                <div style={{ marginBottom: "1rem" }}>
+                <div style={{marginBottom: "1rem"}}>
                     <label htmlFor="eventName">Event Name: </label>
                     <input
                         id="eventName"
@@ -134,7 +134,7 @@ export default function EventCreation() {
                         required
                     />
                 </div>
-                <div style={{ marginBottom: "1rem" }}>
+                <div style={{marginBottom: "1rem"}}>
                     <label htmlFor="eventDuration">End Time: </label>
                     <input
                         id="eventDuration"
@@ -146,7 +146,7 @@ export default function EventCreation() {
                 </div>
 
                 {/* ========== LIST OF ALL RESOURCE TEMPLATES ========== */}
-                <div style={{ marginBottom: "1rem" }}>
+                <div style={{marginBottom: "1rem"}}>
                     <h3>All Pool Templates:</h3>
                     {allTemplates.length === 0 ? (
                         <p>Loading or none found...</p>
@@ -181,7 +181,10 @@ export default function EventCreation() {
                                                             const existingIndex = prev.findIndex(
                                                                 (res) => res.name === template.name
                                                             );
-                                                            const updatedTemplate = { ...template, poolNumber: newNumber };
+                                                            const updatedTemplate = {
+                                                                ...template,
+                                                                poolNumber: newNumber
+                                                            };
 
                                                             if (existingIndex === -1) {
                                                                 // Not in the array yet, add it
@@ -213,15 +216,15 @@ export default function EventCreation() {
 
 
                 {/* ========== SUBMIT EVENT BUTTON ========== */}
-                <button type="submit" style={{ marginBottom: "2rem" }}>
+                <button type="submit" style={{marginBottom: "2rem"}}>
                     Create Event
                 </button>
             </form>
             <form onSubmit={handleSubmitPool}>
                 {/* ========== CREATE Patient Pool Template========== */}
-                <div style={{ marginBottom: "1rem" }}>
+                <div style={{marginBottom: "1rem"}}>
                     <h3>Create Patient Pool Template:</h3>
-                    <div style={{ marginBottom: "1rem" }}>
+                    <div style={{marginBottom: "1rem"}}>
                         <label htmlFor="poolName">Name: </label>
                         <input
                             id="poolName"
@@ -253,24 +256,24 @@ export default function EventCreation() {
                         Medical Service
                     </label>
                     {poolType === PoolType.MedService && (
-                    <div style={{ marginBottom: "1rem" }}>
-                        <label htmlFor="patientProcessTime">Patient Process Time: </label>
-                        <input
-                            id="patientProcessTime"
-                            type="text"
-                            value={patientProcessTime}
-                            onChange={(e) => setPatientProcessTime(e.target.value)}
-                            required
-                        />
-                    </div>)}
+                        <div style={{marginBottom: "1rem"}}>
+                            <label htmlFor="patientProcessTime">Patient Process Time: </label>
+                            <input
+                                id="patientProcessTime"
+                                type="text"
+                                value={patientProcessTime}
+                                onChange={(e) => setPatientProcessTime(e.target.value)}
+                                required
+                            />
+                        </div>)}
 
                 </div>
-                <button type="submit" style={{ marginBottom: "2rem" }}>
+                <button type="submit" style={{marginBottom: "2rem"}}>
                     Create Pool
                 </button>
             </form>
 
-            <Footer />
+            <Footer/>
         </div>
     );
 }

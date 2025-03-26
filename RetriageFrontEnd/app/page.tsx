@@ -16,13 +16,13 @@ export default function Home() {
             <form action="http://localhost:8080/uploadImage" method="post" encType="multipart/form-data">
                 <div>
                     <label htmlFor="image">Choose an image to upload:</label>
-                    <input type="file" id="image" name="image" required />
+                    <input type="file" id="image" name="image" required/>
                 </div>
-                <br />
+                <br/>
                 <button type="submit">Upload</button>
             </form>
 
-            <br />
+            <br/>
 
             {/* Hidden logout form */}
             <form id="logoutForm" method="post" action="http://localhost:8080/logout">

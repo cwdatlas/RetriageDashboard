@@ -1,8 +1,8 @@
 'use client'
 
-import { getCookies } from "@/app/api/cookieApi";
-import { Role } from "@/app/enumerations/role";
-import React, { useEffect, useState } from "react";
+import {getCookies} from "@/app/api/cookieApi";
+import {Role} from "@/app/enumerations/role";
+import React, {useEffect, useState} from "react";
 import SelectEvent from "@/app/components/selectEvent";
 import NurseWaitEventPage from "@/app/components/nurseWaitEventPage";
 import GuestWaitPage from "@/app/components/guestWaitPage";
@@ -10,10 +10,10 @@ import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import ToggleButton from "@/app/components/toggleButton";
 import CreatePatient from "@/app/components/createPatient";
-import { Status } from "@/app/enumerations/status";
-import { Event } from "@/app/models/event";
-import { useConnectEventWebSocket } from "@/app/api/eventWebSocket";
-import { getActiveEvent as getCurrentActiveEvent } from "@/app/api/eventApi";
+import {Status} from "@/app/enumerations/status";
+import {Event} from "@/app/models/event";
+import {useConnectEventWebSocket} from "@/app/api/eventWebSocket";
+import {getActiveEvent as getCurrentActiveEvent} from "@/app/api/eventApi";
 
 export default function EventViewer() {
     const role = getCookies("role") as Role;
@@ -42,27 +42,27 @@ export default function EventViewer() {
 
     return (
         <main>
-            <Header />
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            <Header/>
+            {error && <p style={{color: "red"}}>{error}</p>}
             {role === Role.Director && (
                 <div>
-                    <ToggleButton onToggle={toggleEventView} label={"Toggle Event Selection"} />
-                    {viewEvents && <SelectEvent eventViewToggle={toggleEventView} />}
+                    <ToggleButton onToggle={toggleEventView} label={"Toggle Event Selection"}/>
+                    {viewEvents && <SelectEvent eventViewToggle={toggleEventView}/>}
                     {activeEvent != null && (
                         <div>
-                            {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent} />}
+                            {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent}/>}
                         </div>
                     )}
                 </div>
             )}
             {role === Role.Nurse && activeEvent != null && (
                 <div>
-                    {activeEvent.status !== Status.Running && <NurseWaitEventPage />}
-                    {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent} />}
+                    {activeEvent.status !== Status.Running && <NurseWaitEventPage/>}
+                    {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent}/>}
                 </div>
             )}
-            {role !== Role.Director && role !== Role.Nurse && <GuestWaitPage />}
-            <Footer />
+            {role !== Role.Director && role !== Role.Nurse && <GuestWaitPage/>}
+            <Footer/>
         </main>
     );
 }

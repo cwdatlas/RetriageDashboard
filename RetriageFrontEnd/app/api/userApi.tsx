@@ -3,11 +3,12 @@ import {User} from "./../models/user";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 const endpoint = "/api/users"
+
 /**
  * The user API is very tentative. This api will change once okta integration is in place
  */
 export async function getAllUsers(): Promise<User[]> {
-    const res = await fetch(`${API_BASE_URL}`+endpoint, {
+    const res = await fetch(`${API_BASE_URL}` + endpoint, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -23,7 +24,7 @@ export async function getAllUsers(): Promise<User[]> {
  * Create a new user
  */
 export async function createUser(user: Omit<User, "id">): Promise<User> {
-    const res = await fetch(`${API_BASE_URL}`+endpoint, {
+    const res = await fetch(`${API_BASE_URL}` + endpoint, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -41,7 +42,7 @@ export async function createUser(user: Omit<User, "id">): Promise<User> {
  * Optionally, get a single user by ID
  */
 export async function getUserById(id: number): Promise<User> {
-    const res = await fetch(`${API_BASE_URL}`+endpoint+`${id}`, {
+    const res = await fetch(`${API_BASE_URL}` + endpoint + `${id}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -57,7 +58,7 @@ export async function getUserById(id: number): Promise<User> {
  * Optionally, delete a user
  */
 export async function deleteUser(id: number): Promise<void> {
-    const res = await fetch(`${API_BASE_URL}`+endpoint+`${id}`, {
+    const res = await fetch(`${API_BASE_URL}` + endpoint + `${id}`, {
         method: "DELETE",
     });
     if (!res.ok) {

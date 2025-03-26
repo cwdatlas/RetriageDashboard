@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import { Event } from "@/app/models/event";
-import { Status } from "@/app/enumerations/status";
+import React, {useState} from "react";
+import {Event} from "@/app/models/event";
+import {Status} from "@/app/enumerations/status";
 
 /**
  * Props:
  *  - event: The event object from your parent component (includes id, name, status, etc.).
  *  - onStatusChange?: Optional callback your parent can provide if you want to notify the parent or call an API.
  */
-export default function ToggleEvent({event, onStatusChange,}: { event: Event; onStatusChange?: (UpdatedEvent: Event) => void;
+export default function ToggleEvent({event, onStatusChange,}: {
+    event: Event; onStatusChange?: (UpdatedEvent: Event) => void;
 }) {
     // Keep track of the status in local state
     const [localStatus, setLocalStatus] = useState(event.status);
@@ -34,7 +35,7 @@ export default function ToggleEvent({event, onStatusChange,}: { event: Event; on
     }
 
     return (
-        <main style={{ border: "1px solid #ccc", padding: "1rem", margin: "1rem 0" }}>
+        <main style={{border: "1px solid #ccc", padding: "1rem", margin: "1rem 0"}}>
             <button onClick={handleToggle}>
                 {isPaused ? "Start Running" : "Pause Event"}
             </button>

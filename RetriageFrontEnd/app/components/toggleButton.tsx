@@ -6,7 +6,7 @@ interface ToggleButtonProps {
     label: string;
 }
 
-export default function ToggleButton({ onToggle, label }: ToggleButtonProps) {
+export default function ToggleButton({onToggle, label}: ToggleButtonProps) {
     return (
         <button onClick={onToggle}>
             {label}

@@ -13,9 +13,11 @@ export function SetDefaultCookie(key: string, value: string) {
         }
     })
 }
-export function getCookies(key: string){
+
+export function getCookies(key: string) {
     return Cookies.get(key) || "";
 }
+
 //TODO figure out how to set this method to be lowercase and still use Cookies.set
 export function SetCookies(key: string, value: string) {
     useEffect(() => {

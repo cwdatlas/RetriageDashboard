@@ -8,7 +8,7 @@ import ToggleEvent from "@/app/components/eventToggleButton";
 import {sendEvent} from "@/app/api/eventWebSocket";
 
 
-export default function SelectEvent({eventViewToggle} : {eventViewToggle: () => void}) {
+export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => void }) {
     const [allEvents, setAllEvents] = useState<Event[]>([]);
     const [error, setError] = useState<string | null>(null);
 
@@ -37,29 +37,29 @@ export default function SelectEvent({eventViewToggle} : {eventViewToggle: () => 
     }
 
     return (
-            <main>
-                <div>This is the Admin event page</div>
-                <Link href={"/event/eventcreation"}>Create Event</Link>
+        <main>
+            <div>This is the Admin event page</div>
+            <Link href={"/event/eventcreation"}>Create Event</Link>
 
-                <div style={{ marginBottom: "1rem" }}>
-                    <h3>All Created Events:</h3>
-                    <div>{error}</div>
-                    {allEvents.length === 0 ? (
-                        <p>No Events Found</p>
-                    ) : (
-                        <ul>
-                            {allEvents.map((event, idx) => (
-                                <li key={event.id ?? idx}>
-                                    <div>Name: {event.name}</div>
-                                    <div>Status: {event.status}</div>
-                                    <div>Creation Date: {new Date(event.startTime).toDateString()}</div>
-                                    <div>Runtime Left: {event.duration / 60000} Minutes</div>
-                                    <ToggleEvent event = {event} onStatusChange = {onStatusChange} />
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            </main>
-        )
+            <div style={{marginBottom: "1rem"}}>
+                <h3>All Created Events:</h3>
+                <div>{error}</div>
+                {allEvents.length === 0 ? (
+                    <p>No Events Found</p>
+                ) : (
+                    <ul>
+                        {allEvents.map((event, idx) => (
+                            <li key={event.id ?? idx}>
+                                <div>Name: {event.name}</div>
+                                <div>Status: {event.status}</div>
+                                <div>Creation Date: {new Date(event.startTime).toDateString()}</div>
+                                <div>Runtime Left: {event.duration / 60000} Minutes</div>
+                                <ToggleEvent event={event} onStatusChange={onStatusChange}/>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+        </main>
+    )
 }
