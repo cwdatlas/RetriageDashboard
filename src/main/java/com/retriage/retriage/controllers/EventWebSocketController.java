@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -26,23 +27,34 @@ public class EventWebSocketController {
     @MessageMapping("/update")
     @SendTo("/topic/event_updates")
     public Event WebsocketConnection(EventForm eventForm) {
-        logger.debug("WebSocketConnection: Client tried to get data");
-        //TODO: Validation for updated event
-        Event updatedEvent = new Event();
-        updatedEvent.setName(eventForm.getName());
-        updatedEvent.setId(eventForm.getId());
-        updatedEvent.setDuration(eventForm.getDuration());
-        updatedEvent.setPools(eventForm.getPools());
-        updatedEvent.setStatus(eventForm.getStatus());
-        updatedEvent.setNurses(eventForm.getNurses());
-        updatedEvent.setDirector(eventForm.getDirector());
-        updatedEvent.setStartTime(eventForm.getStartTime());
+        if(eventForm.getId() == null) {
+            logger.debug("WebSocketConnection: Client tried to get data");
+            //TODO: Validation for updated event
+            Event updatedEvent = new Event();
+            updatedEvent.setName(eventForm.getName());
+            updatedEvent.setId(eventForm.getId());
+            updatedEvent.setDuration(eventForm.getDuration());
+            updatedEvent.setPools(eventForm.getPools());
+            updatedEvent.setStatus(eventForm.getStatus());
+            updatedEvent.setNurses(eventForm.getNurses());
+            updatedEvent.setDirector(eventForm.getDirector());
+            updatedEvent.setStartTime(eventForm.getStartTime());
 
-        eventService.updateEvent(eventForm.getId(), updatedEvent);
-
+            eventService.updateEvent(eventForm.getId(), updatedEvent);
+        }
         Event response = eventService.findActiveEvent();
         if (response != null) {
             logger.debug("EventWebSocketController: Zero running events found");
+        }
+        return response;
+    }
+
+    @Transactional
+    @SubscribeMapping("/topic/event_updates")
+    public Event onEventSubscription(){
+        Event response = eventService.findActiveEvent();
+        if (response != null) {
+            logger.debug("onEventSubscription: Zero running events found");
         }
         return response;
     }
