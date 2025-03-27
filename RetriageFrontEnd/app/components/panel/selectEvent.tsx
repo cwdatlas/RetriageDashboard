@@ -1,6 +1,5 @@
 'use client'
 
-import Link from "next/link";
 import React, {useEffect, useState} from "react";
 import {Event} from "@/app/models/event";
 import {getAllEvents} from "@/app/api/eventApi";
@@ -38,9 +37,6 @@ export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => 
 
     return (
         <main>
-            <div>This is the Admin event page</div>
-            <Link href={"/event/eventcreation"}>Create Event</Link>
-
             <div style={{marginBottom: "1rem"}}>
                 <h3>All Created Events:</h3>
                 <div>{error}</div>
