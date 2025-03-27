@@ -197,30 +197,28 @@ public class EventController {
      */
     @PutMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> updateEvent(@Valid @RequestBody EventForm eventForm) {
-//        logger.info("Entering createEvent with eventForm: {}", eventform);
-//        List<String> errorList = new ArrayList<>();
-//        // Validate Director
-//        logger.info("Validating Director...");
-//        if (eventform.getDirector() == null) {
-//            errorList.add("Director must  be added to event");
-//            logger.warn("createEvent - Director is null");
-//        } else if (eventform.getDirector().getEmail() == null) {
-//            errorList.add("Submitted director lacking email address");
-//            logger.warn("createEvent - Director email is null");
-//        } else {
-//            String directorEmail = eventform.getDirector().getEmail();
-//            logger.info("createEvent - Attempting to retrieve director with email: {}", directorEmail);
-//            User director = userService.getUserByEmail(directorEmail);
-//            if (director == null) {
-//                errorList.add("Director does not exist, not authorized to create an event");
-//                logger.warn("createEvent - Director with email {} not found", directorEmail);
-//            } else if (director.getRole() != Role.Director) {
-//                errorList.add("User " + director.getEmail() + " is not a director, they are a " + director.getRole());
-//                logger.warn("createEvent - User {} is not a Director, role is {}", director.getEmail(), director.getRole());
-//            } else {
-//                logger.info("createEvent - Director {} validated", director.getEmail());
-//            }
-//        }
+        List<String> errorList = new ArrayList<>();
+        List<User> nurseList = new ArrayList<>();
+        // Validate Director
+        for (User nurse : eventForm.getNurses()) {
+            if (nurse.getEmail() == null) {
+                errorList.add("Nurse of name of " + nurse.getFirstName() + " " + nurse.getLastName() + " must have email.");
+                logger.debug("createEvent - submitted Nurse of name {} did not have an email address.", nurse.getFirstName() + " " + nurse.getLastName());
+            } else {
+                String nurseEmail = nurse.getEmail();
+                User savedNurse = userService.getUserByEmail(nurseEmail);
+                if (savedNurse == null) {
+                    errorList.add("Submitted nurse " + nurse.getEmail() + "was not found.");
+                    logger.debug("updateEvent - Nurse with email {} not found", nurseEmail);
+                } else if (savedNurse.getRole() == Role.Guest) {
+                    errorList.add("User " + savedNurse.getEmail() + " is a Guest, Guests can't be added to an event");
+                    logger.info("createEvent - User {} is a Guest", nurse.getEmail());
+                } else {
+                    nurseList.add(savedNurse);
+                    logger.debug("createEvent - Nurse {} validated", savedNurse.getEmail());
+                }
+            }
+        }
 
         Event updatedEvent = new Event();
         updatedEvent.setName(eventForm.getName());
@@ -228,7 +226,7 @@ public class EventController {
         updatedEvent.setDuration(eventForm.getDuration());
         updatedEvent.setPools(eventForm.getPools());
         updatedEvent.setStatus(eventForm.getStatus());
-        updatedEvent.setNurses(eventForm.getNurses());
+        updatedEvent.setNurses(nurseList);
         updatedEvent.setDirector(eventForm.getDirector());
         updatedEvent.setStartTime(eventForm.getStartTime());
         logger.debug("updateEvent - Updated Event object created: {}", updatedEvent);
