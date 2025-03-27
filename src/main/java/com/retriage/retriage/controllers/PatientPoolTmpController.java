@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/pools/templates")
 public class PatientPoolTmpController {
     private static final Logger log = LoggerFactory.getLogger(PatientPoolTmpController.class);
