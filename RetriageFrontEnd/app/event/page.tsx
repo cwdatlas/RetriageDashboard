@@ -2,9 +2,9 @@
 
 import {GetCookies} from "@/app/api/cookieApi";
 import {Role} from "@/app/enumerations/role";
-import React, {act, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import SelectEvent from "@/app/components/panel/selectEvent";
-import NurseWaitEventPage from "@/app/components/pages/nurseWaitEventPage";
+import NurseWaitPage from "@/app/components/pages/nurseWaitPage";
 import GuestWaitPage from "@/app/components/pages/guestWaitPage";
 import Header from "@/app/components/panel/header";
 import Footer from "@/app/components/panel/footer";
@@ -15,6 +15,8 @@ import {Event} from "@/app/models/event";
 import {sendEvent, useConnectEventWebSocket} from "@/app/api/eventWebSocket";
 import {getActiveEvent as getCurrentActiveEvent} from "@/app/api/eventApi";
 import {User} from "@/app/models/user";
+import Link from "next/link";
+import EventVisualization from "@/app/components/pages/eventVisualization";
 
 export default function EventViewer() {
     const role = GetCookies("role") as Role;
@@ -65,22 +67,40 @@ export default function EventViewer() {
             {error && <p style={{color: "red"}}>{error}</p>}
             {role === Role.Director && (
                 <div>
+                    <div>This is the Admin event page</div>
+                    <p><Link href={"/event/eventcreation"}>Create Event</Link></p>
                     <ToggleButton onToggle={toggleEventView} label={"Toggle Event Selection"}/>
                     {viewEvents && <SelectEvent eventViewToggle={toggleEventView}/>}
                     {activeEvent != null && (
                         <div>
                             {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent}/>}
+                            {<EventVisualization getActiveEvent={getActiveEvent}/>}
                         </div>
                     )}
                 </div>
             )}
-            {role === Role.Nurse && activeEvent != null && (
+            {role === Role.Nurse &&(
                 <div>
-                    {activeEvent.status !== Status.Running && <NurseWaitEventPage/>}
-                    {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent}/>}
+                    {activeEvent == null && <NurseWaitPage/>}
+                    {activeEvent != null &&(
+                        <div>
+                            {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent}/>}
+                            {<EventVisualization getActiveEvent={getActiveEvent}/>}
+                        </div>
+                    )}
                 </div>
             )}
-            {role !== Role.Director && role !== Role.Nurse && <GuestWaitPage/>}
+            {role == Role.Guest && (
+                <div>
+                    {activeEvent == null && <GuestWaitPage/>}
+                    {activeEvent != null &&(
+                        <div>
+                            {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent}/>}
+                            {<EventVisualization getActiveEvent={getActiveEvent}/>}
+                        </div>
+                        )}
+                </div>
+            )}
             <Footer/>
         </main>
     );
