@@ -92,6 +92,7 @@ public class PatientController {
         logger.info("Exiting getPatientById, returning response: {}", response.getStatusCode());
         return response;
     }
+
     /**
      * deletePatient
      * Deletes a Patient, specified by their ID

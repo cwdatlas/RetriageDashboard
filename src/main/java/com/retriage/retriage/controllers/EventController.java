@@ -14,7 +14,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -198,7 +197,6 @@ public class EventController {
 
     /**
      * updateEvent
-     *
      */
     @PutMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> updateEvent(@Valid @RequestBody EventForm eventForm) {

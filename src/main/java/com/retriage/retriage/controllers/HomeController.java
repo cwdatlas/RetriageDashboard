@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,7 +52,7 @@ public class HomeController {
      * model for rendering in the "home" view.
      *
      * @param principal The {@link Saml2AuthenticatedPrincipal} representing the authenticated SAML user.
-     * This is injected by Spring Security based on the current authentication context.
+     *                  This is injected by Spring Security based on the current authentication context.
      * @param response  The Spring {@link HttpServletResponse} object used to add cookies.
      * @return A {@link ResponseEntity} that either redirects to the frontend or returns an error.
      */
