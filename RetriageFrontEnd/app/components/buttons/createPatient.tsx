@@ -5,8 +5,7 @@ import {Patient} from "@/app/models/patient";
 import {Condition} from "@/app/enumerations/condition";
 import {PoolType} from "@/app/enumerations/poolType";
 import {PatientPool} from "@/app/models/patientPool";
-import {updateEvent} from "@/app/api/eventApi";
-import {GetCookies} from "@/app/api/cookieApi";
+import {sendEvent} from "@/app/api/eventWebSocket";
 
 
 /**
@@ -55,7 +54,7 @@ export default function CreatePatient({getActiveEvent}: { getActiveEvent: () => 
 
         // 4) Persist via the parent-provided function
         try {
-            await updateEvent(getActiveEvent());
+            sendEvent(getActiveEvent());
             console.log("Patient added to Patient Pool");
         } catch (err) {
             setError("Failed to add patient");
