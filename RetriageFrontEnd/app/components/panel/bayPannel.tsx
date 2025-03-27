@@ -3,8 +3,8 @@
 import {PatientPool} from "@/app/models/patientPool";
 import PatientIcon from "@/app/components/panel/patientIcon";
 
-export default function BayPanel({bay} : {bay : PatientPool}) {
-    return(
+export default function BayPanel({bay}: { bay: PatientPool }) {
+    return (
         <div>
             <h2>{bay.name}</h2>
             <div>

@@ -29,9 +29,9 @@ export default function EventViewer() {
         getCurrentActiveEvent(setActiveEvent, setError);
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log("Active event initialized: ", activeEvent != null);
-        if(activeEvent) {
+        if (activeEvent) {
             const user = activeEvent.nurses.find(user => user.email === GetCookies("email"));
             console.log("New User ", user != null, ". Data of: ", user);
             if (!user) {
@@ -79,10 +79,10 @@ export default function EventViewer() {
                     )}
                 </div>
             )}
-            {role === Role.Nurse &&(
+            {role === Role.Nurse && (
                 <div>
                     {activeEvent == null && <NurseWaitPage/>}
-                    {activeEvent != null &&(
+                    {activeEvent != null && (
                         <div>
                             {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent}/>}
                             {<EventVisualization getActiveEvent={getActiveEvent}/>}
@@ -93,12 +93,12 @@ export default function EventViewer() {
             {role == Role.Guest && (
                 <div>
                     {activeEvent == null && <GuestWaitPage/>}
-                    {activeEvent != null &&(
+                    {activeEvent != null && (
                         <div>
                             {activeEvent.status === Status.Running && <CreatePatient getActiveEvent={getActiveEvent}/>}
                             {<EventVisualization getActiveEvent={getActiveEvent}/>}
                         </div>
-                        )}
+                    )}
                 </div>
             )}
             <Footer/>

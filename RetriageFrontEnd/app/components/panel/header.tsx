@@ -19,7 +19,7 @@ export default function Header() {
             <div>Username: {username}</div>
             <div>Role: {role}</div>
             <div>Job: {job}</div>
-            <LogoutButton />
+            <LogoutButton/>
         </header>
     );
 }

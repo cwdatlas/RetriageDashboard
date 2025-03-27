@@ -3,8 +3,8 @@
 import PatientIcon from "@/app/components/panel/patientIcon";
 import {PatientPool} from "@/app/models/patientPool";
 
-export default function MedServicePanel({service} : {service : PatientPool}) {
-    return(
+export default function MedServicePanel({service}: { service: PatientPool }) {
+    return (
         <div>
             <h2>{service.name}</h2>
             <div>

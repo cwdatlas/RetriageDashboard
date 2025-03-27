@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {SetCookies} from "@/app/api/cookieApi"
 
-export default function NurseJobModal(){
+export default function NurseJobModal() {
     const [job, setJob] = useState('');
 
-    function updateCookies(){
+    function updateCookies() {
         // Save the nurse job as a cookie
         SetCookies("job", job);
     }
@@ -15,13 +15,13 @@ export default function NurseJobModal(){
         <div style={overlayStyle}>
             <div style={modalStyle}>
                 <form onSubmit={updateCookies}>
-                    <label style={{ marginBottom: '10px', display: 'block' }}>
+                    <label style={{marginBottom: '10px', display: 'block'}}>
                         Enter nurse job:
                         <input
                             type="text"
                             value={job}
                             onChange={(e) => setJob(e.target.value)}
-                            style={{ marginLeft: '10px' }}
+                            style={{marginLeft: '10px'}}
                         />
                     </label>
                     <button type="submit">Submit</button>

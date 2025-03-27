@@ -1,8 +1,8 @@
-import { Event } from '@/app/models/event'
-import { PoolType } from "@/app/enumerations/poolType";
+import {Event} from '@/app/models/event'
+import {PoolType} from "@/app/enumerations/poolType";
 import BayPanel from "@/app/components/panel/bayPannel";
 
-export default function EventVisualization({ getActiveEvent }: { getActiveEvent: () => Event }) {
+export default function EventVisualization({getActiveEvent}: { getActiveEvent: () => Event }) {
     const event = getActiveEvent();
     return (
         <div>
@@ -14,7 +14,7 @@ export default function EventVisualization({ getActiveEvent }: { getActiveEvent:
                         return (
                             template.poolType === PoolType.Bay && (
                                 <div key={idx}>
-                                    <BayPanel bay={template} />
+                                    <BayPanel bay={template}/>
                                 </div>
                             )
                         )
@@ -26,7 +26,7 @@ export default function EventVisualization({ getActiveEvent }: { getActiveEvent:
                         return (
                             template.poolType === PoolType.MedService && (
                                 <div key={idx}>
-                                    <BayPanel bay={template} />
+                                    <BayPanel bay={template}/>
                                 </div>
                             )
                         )
