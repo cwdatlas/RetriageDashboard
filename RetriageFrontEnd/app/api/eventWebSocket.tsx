@@ -47,6 +47,7 @@ export function useConnectEventWebSocket(setActiveEvent: (event: Event) => void)
 // Sends an event to the server
 export function sendEvent(event: Event) {
     // TODO include error handling
+    console.log("Sending event to be saved.");
     client.publish({destination: UPDATE_EVENT, body: JSON.stringify(event)});
 }
 
