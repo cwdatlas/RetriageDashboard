@@ -1,22 +1,27 @@
 package com.retriage.retriage.exceptions;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import java.util.List;
+
 /**
  * Represents a standardized error response sent to the client, containing details like timestamp,
  * HTTP status, error type, message, and the request path.
  */
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 public class ErrorResponse {
-    private LocalDateTime timestamp;
-    private int status;
-    private String error;
-    private String message;
-    private String path; // Optional: The request path that caused the error
+    private List<String> messages; // Changed from String to List<String>
+    private int statusCode;
+    private String errorCode;
+
+    public ErrorResponse(List<String> messages, int statusCode, String errorCode) {
+        this.messages = messages;
+        this.statusCode = statusCode;
+        this.errorCode = errorCode;
+    }
 }

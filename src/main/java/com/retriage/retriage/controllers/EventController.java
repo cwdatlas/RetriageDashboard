@@ -3,6 +3,8 @@ package com.retriage.retriage.controllers;
 import com.retriage.retriage.enums.PoolType;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.enums.Status;
+import com.retriage.retriage.exceptions.ErrorResponse;
+import com.retriage.retriage.exceptions.SuccessResponse;
 import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.forms.EventTmpForm;
 import com.retriage.retriage.models.*;
@@ -12,6 +14,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +49,6 @@ public class EventController {
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventTmpForm eventform) {
-        logger.info("Entering createEvent with eventForm: {}", eventform);
         List<String> errorList = new ArrayList<>();
         // Validate Director
         logger.info("Validating Director...");
@@ -88,13 +90,12 @@ public class EventController {
                     patientPool.setPoolType(poolTmp.getPoolType());
                     patientPool.setUseable(poolTmp.isUseable());
                     if (poolTmp.getPoolType() == PoolType.Bay) {
-                        patientPool.setProcessTime(eventform.getDuration()); //TODO Keep process time and end time in the same type of time
+                        patientPool.setProcessTime(eventform.getDuration());
                         logger.debug("createEvent - Bay Pool created, process time set to event duration: {}", eventform.getDuration());
                     } else {
                         patientPool.setProcessTime(poolTmp.getProcessTime());
                         logger.debug("createEvent - Non-Bay Pool created, process time set to: {}", poolTmp.getProcessTime());
                     }
-                    // Create new name based on template name
                     if (poolTmp.getPoolNumber() == 1) {
                         patientPool.setName(poolTmp.getName());
                     } else {
@@ -124,31 +125,36 @@ public class EventController {
             newEvent.setDuration(eventform.getDuration());
             logger.info("createEvent - Event object created: {}", newEvent);
 
-            //Saving the event
             boolean saved = eventService.saveEvent(newEvent);
-            logger.info("createEvent - Event saved: {}", saved);
-            //Error handling (very basic)
             if (saved) {
-                errorList.add("Successfully saved event");
+                logger.info("createEvent - Event saved successfully");
+                return ResponseEntity.created(URI.create("/events/")).body(new SuccessResponse("Successfully saved event", newEvent.getId()));
             } else {
-                errorList.add("Unknown error saving event");
                 logger.error("createEvent - Unknown error occurred while saving event");
+                ErrorResponse errorResponse = new ErrorResponse(List.of("Unknown error saving event."), HttpStatus.INTERNAL_SERVER_ERROR.value(), "SAVE_FAILED");
+                return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
         }
-        logger.info("Exiting createEvent, returning response with errors: {}", errorList);
-        return ResponseEntity.created(URI.create("/events/")).body(errorList);
+        logger.info("createEvent - Returning response with errors: {}", errorList);
+        ErrorResponse errorResponse = new ErrorResponse(errorList, HttpStatus.BAD_REQUEST.value(), "VALIDATION_FAILED");
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
      * findEventByID
      */
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<Event> findEventByID(@PathVariable Long id) {
+    public ResponseEntity<?> findEventByID(@PathVariable Long id) {
         logger.info("Entering findEventByID with id: {}", id);
         Event event = eventService.findEventById(id);
+        if (event == null) {
+            logger.warn("findEventByID - Event with id {} not found", id);
+            ErrorResponse errorResponse = new ErrorResponse(List.of("Event with id " + id + " not found."), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        }
         logger.info("Exiting findEventByID with event: {}", event);
-        return ResponseEntity.created(URI.create("/events/" + id)).body(event);
+        return ResponseEntity.ok(event); // Returning 200 OK with the Event object as JSON
     }
 
     /**
@@ -158,11 +164,10 @@ public class EventController {
      * @return The list of every event
      */
     @GetMapping(produces = "application/json")
-    public List<Event> getAllEvents() {
-        logger.info("Entering getAllEvents");
+    public ResponseEntity<?> getAllEvents() {
         List<Event> events = eventService.findAllEvents();
-        logger.info("Exiting getAllEvents, returning {} events", events.size());
-        return events;
+        logger.info("Returning {} events", events.size());
+        return new ResponseEntity<>(events, HttpStatus.OK); // Returning 200 OK with the list of events
     }
 
     @Transactional
@@ -185,18 +190,18 @@ public class EventController {
      * @return Returns a confirmation that the event was deleted
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
-        logger.info("Entering deleteEvent with id: {}", id);
+    public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
         eventService.deleteEventById(id);
-        logger.info("Exiting deleteEvent, event with id {} deleted", id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        logger.info("Event with id {} deleted", id);
+        return ResponseEntity.status(HttpStatus.OK).build(); // Successful deletion
     }
 
     /**
      * updateEvent
+     *
      */
     @PutMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> updateEvent(@Valid @RequestBody EventForm eventForm) {
+    public ResponseEntity<?> updateEvent(@Valid @RequestBody EventForm eventForm) {
         List<String> errorList = new ArrayList<>();
         List<User> nurseList = new ArrayList<>();
         // Validate Director
@@ -234,14 +239,9 @@ public class EventController {
         Event response = eventService.updateEvent(eventForm.getId(), updatedEvent);
         if (response == null) {
             logger.warn("updateEvent - Unable to update event with id: {}", eventForm.getId());
-            return ResponseEntity.
-                    created(URI.create("/events/"))
-                    .body("Unable to update event");
+            ErrorResponse errorResponse = new ErrorResponse(List.of("Event with id " + eventForm.getId() + " unable to be updated."), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
-        logger.info("Exiting updateEvent, event with id {} updated successfully", eventForm.getId());
-        return ResponseEntity.
-                created(URI.create("/events/"))
-                .body("Updated event successfully");
+        return ResponseEntity.ok(new SuccessResponse("Updated event successfully", response.getId())); // Using ResponseEntity.ok for success with JSON
     }
-
 }
