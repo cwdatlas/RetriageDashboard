@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-export default function NurseWaitEventPage() {
+export default function NurseWaitPage() {
     return (
         <main>
             <div>This is the event page</div>
