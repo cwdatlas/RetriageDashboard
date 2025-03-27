@@ -2,19 +2,19 @@
 
 import {GetCookies} from "@/app/api/cookieApi";
 import {Role} from "@/app/enumerations/role";
-import React, {useEffect, useState} from "react";
-import SelectEvent from "@/app/components/selectEvent";
-import NurseWaitEventPage from "@/app/components/nurseWaitEventPage";
-import GuestWaitPage from "@/app/components/guestWaitPage";
-import Header from "@/app/components/header";
-import Footer from "@/app/components/footer";
-import ToggleButton from "@/app/components/toggleButton";
-import CreatePatient from "@/app/components/createPatient";
+import React, {act, useEffect, useState} from "react";
+import SelectEvent from "@/app/components/panel/selectEvent";
+import NurseWaitEventPage from "@/app/components/pages/nurseWaitEventPage";
+import GuestWaitPage from "@/app/components/pages/guestWaitPage";
+import Header from "@/app/components/panel/header";
+import Footer from "@/app/components/panel/footer";
+import ToggleButton from "@/app/components/buttons/toggleButton";
+import CreatePatient from "@/app/components/buttons/createPatient";
 import {Status} from "@/app/enumerations/status";
 import {Event} from "@/app/models/event";
-import {useConnectEventWebSocket} from "@/app/api/eventWebSocket";
+import {sendEvent, useConnectEventWebSocket} from "@/app/api/eventWebSocket";
 import {getActiveEvent as getCurrentActiveEvent} from "@/app/api/eventApi";
-import NurseJobModal from "@/app/components/nurseJobModal";
+import {User} from "@/app/models/user";
 
 export default function EventViewer() {
     const role = GetCookies("role") as Role;
@@ -26,6 +26,24 @@ export default function EventViewer() {
     useEffect(() => {
         getCurrentActiveEvent(setActiveEvent, setError);
     }, []);
+
+    useEffect(()=>{
+        console.log("Active event initialized: ", activeEvent != null);
+        if(activeEvent) {
+            const user = activeEvent.nurses.find(user => user.email === GetCookies("email"));
+            console.log("New User ", user != null, ". Data of: ", user);
+            if (!user) {
+                const newUser: User = {
+                    email: GetCookies("email"),
+                    firstName: GetCookies("firstName"),
+                    lastName: GetCookies("lastName"),
+                    role: role,
+                }
+                activeEvent.nurses.push(newUser)
+                sendEvent(activeEvent)
+            }
+        }
+    })
 
     // Use the custom hook to connect the WebSocket
     useConnectEventWebSocket(setActiveEvent);

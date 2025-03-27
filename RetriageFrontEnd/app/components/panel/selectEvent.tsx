@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, {useEffect, useState} from "react";
 import {Event} from "@/app/models/event";
 import {getAllEvents} from "@/app/api/eventApi";
-import ToggleEvent from "@/app/components/eventToggleButton";
+import ToggleEvent from "@/app/components/buttons/eventToggleButton";
 import {sendEvent} from "@/app/api/eventWebSocket";
 
 

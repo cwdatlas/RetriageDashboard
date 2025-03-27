@@ -6,6 +6,7 @@ import {Condition} from "@/app/enumerations/condition";
 import {PoolType} from "@/app/enumerations/poolType";
 import {PatientPool} from "@/app/models/patientPool";
 import {updateEvent} from "@/app/api/eventApi";
+import {GetCookies} from "@/app/api/cookieApi";
 
 
 /**
@@ -46,7 +47,6 @@ export default function CreatePatient({getActiveEvent}: { getActiveEvent: () => 
                     chosenPool.patients.push(newPatient);
                     console.log("Chosen Pool: " + chosenPool.name);
                 }
-
             } else {
                 setError("Selected Patient Pool not found.")
             }

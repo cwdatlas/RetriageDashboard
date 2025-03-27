@@ -3,8 +3,8 @@
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 
-import Header from "@/app/components/header";
-import Footer from "@/app/components/footer";
+import Header from "@/app/components/panel/header";
+import Footer from "@/app/components/panel/footer";
 
 // 1) Import your pool-template function
 import {createPoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpApi";
@@ -16,6 +16,7 @@ import {Role} from "@/app/enumerations/role";
 import {PoolType} from "@/app/enumerations/poolType";
 import {PatientPoolTmp} from "@/app/models/patientPoolTmp";
 import {EventTmp} from "@/app/models/eventTmp";
+import UploadImagePanel from "@/app/components/panel/uploadImagePanel";
 
 export default function EventCreation() {
     const router = useRouter();
@@ -272,6 +273,7 @@ export default function EventCreation() {
                     Create Pool
                 </button>
             </form>
+            <UploadImagePanel/>
 
             <Footer/>
         </div>

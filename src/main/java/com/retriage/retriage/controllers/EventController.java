@@ -197,8 +197,30 @@ public class EventController {
      */
     @PutMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> updateEvent(@Valid @RequestBody EventForm eventForm) {
-        logger.info("Entering updateEvent with eventForm: {}", eventForm);
-        //secondary validation
+//        logger.info("Entering createEvent with eventForm: {}", eventform);
+//        List<String> errorList = new ArrayList<>();
+//        // Validate Director
+//        logger.info("Validating Director...");
+//        if (eventform.getDirector() == null) {
+//            errorList.add("Director must  be added to event");
+//            logger.warn("createEvent - Director is null");
+//        } else if (eventform.getDirector().getEmail() == null) {
+//            errorList.add("Submitted director lacking email address");
+//            logger.warn("createEvent - Director email is null");
+//        } else {
+//            String directorEmail = eventform.getDirector().getEmail();
+//            logger.info("createEvent - Attempting to retrieve director with email: {}", directorEmail);
+//            User director = userService.getUserByEmail(directorEmail);
+//            if (director == null) {
+//                errorList.add("Director does not exist, not authorized to create an event");
+//                logger.warn("createEvent - Director with email {} not found", directorEmail);
+//            } else if (director.getRole() != Role.Director) {
+//                errorList.add("User " + director.getEmail() + " is not a director, they are a " + director.getRole());
+//                logger.warn("createEvent - User {} is not a Director, role is {}", director.getEmail(), director.getRole());
+//            } else {
+//                logger.info("createEvent - Director {} validated", director.getEmail());
+//            }
+//        }
 
         Event updatedEvent = new Event();
         updatedEvent.setName(eventForm.getName());

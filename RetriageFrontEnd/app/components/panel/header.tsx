@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import {GetCookies} from "@/app/api/cookieApi";
+import LogoutButton from "@/app/components/buttons/logoutButton";
 
 export default function Header() {
     const username = GetCookies("firstName") + " " + GetCookies("lastName");
@@ -18,6 +19,7 @@ export default function Header() {
             <div>Username: {username}</div>
             <div>Role: {role}</div>
             <div>Job: {job}</div>
+            <LogoutButton />
         </header>
     );
 }
