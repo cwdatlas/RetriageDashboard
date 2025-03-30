@@ -75,7 +75,7 @@ public class SecurityConfiguration {
                 .saml2Logout(withDefaults())
                 .logout(logout -> logout
                         .logoutUrl("/logout") // This is where Spring Security listens for logout requests
-                        .logoutSuccessUrl("http://localhost:3000/logout") // Redirect after logout
+                        .logoutSuccessUrl("/") // Redirect to HOME after logout
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")); // Enable SAML Logout with default configurations
