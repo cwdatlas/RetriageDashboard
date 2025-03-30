@@ -1,10 +1,21 @@
 import {Patient} from "@/app/models/patient";
+import {useDraggable} from "@dnd-kit/core";
 
 export default function PatientIcon({patient}: { patient: Patient }) {
+    const {attributes, listeners, setNodeRef, transform} = useDraggable({
+        id: patient.id || 0,
+    });
+    const style = transform ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`
+    } : undefined;
+
     return (
         <div
             className="border"
-            style={{width: "100px", textAlign: "center"}}
+            ref={setNodeRef}
+            style={style}
+            {...listeners}
+            {...attributes}
         >
             {/* Top section with dark background and icon */}
             <div className="bg-dark" style={{padding: "10px"}}>
