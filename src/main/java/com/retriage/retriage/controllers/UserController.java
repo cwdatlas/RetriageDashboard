@@ -1,15 +1,19 @@
 package com.retriage.retriage.controllers;
 
 import com.retriage.retriage.enums.Role;
+import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.forms.UserForm;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,19 +37,19 @@ public class UserController {
      * Creates a new User with the information passed in from userForm
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public String createUser(@Valid @RequestBody UserForm userForm) {
-        //Secondary Validation done thru the GlobalException Handler
-
+    public ResponseEntity<String> createUser(@Valid @RequestBody UserForm userForm) {
         User newUser = new User();
         newUser.setFirstName(userForm.getFirstName());
         newUser.setLastName(userForm.getLastName());
         newUser.setEmail(userForm.getEmail());
         newUser.setRole(userForm.getRole());
         newUser.setCreatedPatients(userForm.getCreatedPatients());
+
         User saved = userService.saveUser(newUser);
         logger.info("createUser - User saved successfully with ID: {}", saved.getId());
-        String response = "User created: " + saved.getFirstName() + " " + saved.getLastName() + " " + saved.getEmail();
-        return response;
+
+        URI location = URI.create("/users/" + saved.getId());
+        return ResponseEntity.created(location).body("User created: " + saved.getFirstName() + " " + saved.getLastName());
     }
 
     /**
@@ -54,8 +58,7 @@ public class UserController {
      */
     @GetMapping(produces = "application/json")
     public List<User> getAllUsers() {
-        List<User> users = userService.findAllUsers();
-        return users;
+        return userService.findAllUsers();
     }
 
     /**
@@ -108,32 +111,42 @@ public class UserController {
      * Patch or partially update a User associated with a specified ID
      */
     @PatchMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<User> patchUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<?> patchUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         Optional<User> optionalUser = userService.findUserById(id);
         if (optionalUser.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse(List.of("User with id " + id + " not found."), HttpStatus.NOT_FOUND.value(), "USER_NOT_FOUND"));
         }
 
         User user = optionalUser.get();
+        List<String> errors = new ArrayList<>();
 
-        // Apply updates dynamically
         updates.forEach((key, value) -> {
-            switch (key) {
-                case "firstName":
-                    user.setFirstName((String) value);
-                    break;
-                case "lastName":
-                    user.setLastName((String) value);
-                    break;
-                case "email":
-                    user.setEmail((String) value);
-                    break;
-                case "role":
-                    user.setRole((Role) value);
-                    break;
-                default:
+            try {
+                switch (key) {
+                    case "firstName":
+                        user.setFirstName((String) value);
+                        break;
+                    case "lastName":
+                        user.setLastName((String) value);
+                        break;
+                    case "email":
+                        user.setEmail((String) value);
+                        break;
+                    case "role":
+                        user.setRole(Role.valueOf((String) value));
+                        break;
+                    default:
+                        errors.add("Invalid field provided for update: " + key);
+                }
+            } catch (IllegalArgumentException e) {
+                errors.add("Invalid value for field " + key + ": " + value);
             }
         });
+
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(errors, HttpStatus.BAD_REQUEST.value(), "INVALID_INPUT"));
+        }
 
         User updatedUser = userService.saveUser(user);
         return ResponseEntity.ok(updatedUser);

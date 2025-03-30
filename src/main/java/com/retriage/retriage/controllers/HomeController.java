@@ -65,15 +65,16 @@ public class HomeController {
         try {
             roles = principal.getAttribute("groups");
         } catch (NullPointerException e) {
-            logger.warn("oktaLogin: Client logged in without role. set user {} role to guest.", principal.getName());
+            logger.warn("oktaLogin: Client logged in without role. Setting role to guest for user {}",
+                    principal != null ? principal.getName() : "UNKNOWN_USER_GROUP");
         }
+
         Role userRole = Role.Guest;
         List<String> errors = new ArrayList<>();
-
-//        if (roles == null || !roles.contains("Director")) { // used for testing the new accessDeniedException
+//        if (roles == null || !roles.contains("Director") {
         if (roles == null) {
-            logger.warn("oktaLogin: Client logged in without role. set user {} role to guest.", principal.getName());
-            throw new AccessDeniedException("TEST - This test works");
+            logger.warn("oktaLogin: Client logged in without role. Access denied.");
+            throw new AccessDeniedException("Access denied due to missing role.");
         } else {
             for (Role role : Role.values()) {
                 if (roles.contains(role.toString())) {
@@ -82,22 +83,23 @@ public class HomeController {
                 }
             }
         }
+
         String firstName = principal.getFirstAttribute("firstname");
         String lastName = principal.getFirstAttribute("lastname");
         String email = principal.getFirstAttribute("email");
 
         if (firstName == null) {
             errors.add("First name not provided by authentication provider.");
-            firstName = "Guest";
+            firstName = "Guesty";
         }
         if (lastName == null) {
             errors.add("Last name not provided by authentication provider.");
-            lastName = "Guest";
+            lastName = "McGuestFace";
         }
         if (email == null) {
             errors.add("Email address not provided by authentication provider.");
             ErrorResponse errorResponse = new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "MISSING_EMAIL");
-            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED); // Body is ErrorResponse
+            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
         }
 
         if (userService.getUserByEmail(email) == null) {
@@ -111,37 +113,31 @@ public class HomeController {
 
         if (!errors.isEmpty()) {
             ErrorResponse errorResponse = new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "AUTHENTICATION_ERROR");
-            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED); // Body is ErrorResponse
+            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
         }
 
-        Cookie fNameCookie = new Cookie("firstName", firstName);
-        fNameCookie.setPath("/");
-        fNameCookie.setDomain("localhost");
-        fNameCookie.setHttpOnly(false);
-        fNameCookie.setSecure(false);
-        response.addCookie(fNameCookie);
-        Cookie lNameCookie = new Cookie("lastName", lastName);
-        lNameCookie.setPath("/");
-        lNameCookie.setDomain("localhost");
-        lNameCookie.setHttpOnly(false);
-        fNameCookie.setSecure(false);
-        response.addCookie(lNameCookie);
-        Cookie roleCookie = new Cookie("role", userRole.toString());
-        roleCookie.setPath("/");
-        roleCookie.setDomain("localhost");
-        roleCookie.setHttpOnly(false);
-        roleCookie.setSecure(false);
-        response.addCookie(roleCookie);
-        Cookie emailCookie = new Cookie("email", email);
-        emailCookie.setPath("/");
-        emailCookie.setDomain("localhost");
-        emailCookie.setHttpOnly(false);
-        emailCookie.setSecure(false);
-        response.addCookie(emailCookie);
+        // Setting cookies using helper method
+        response.addCookie(createCookie("firstName", firstName));
+        response.addCookie(createCookie("lastName", lastName));
+        response.addCookie(createCookie("role", userRole.toString()));
+        response.addCookie(createCookie("email", email));
 
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", "http://localhost:3000/")
-                .build(); // No body in a 302 redirect
+                .build();
     }
+
+    /**
+     * Helper method to create a cookie with standard settings.
+     */
+    private Cookie createCookie(String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setPath("/");
+        cookie.setDomain("localhost");
+        cookie.setHttpOnly(false);
+        cookie.setSecure(false);
+        return cookie;
+    }
+
 
 }
