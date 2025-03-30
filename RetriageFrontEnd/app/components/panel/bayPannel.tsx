@@ -2,10 +2,17 @@
 
 import {PatientPool} from "@/app/models/patientPool";
 import PatientIcon from "@/app/components/panel/patientIcon";
+import {useDroppable} from "@dnd-kit/core";
 
 export default function BayPanel({bay}: { bay: PatientPool }) {
+    const {isOver, setNodeRef} = useDroppable({
+        id: bay.id || 0,
+    });
+    const style = {
+        color: isOver ? 'green' : undefined,
+    };
     return (
-        <div>
+        <div ref={setNodeRef} style={style}>
             <h2>{bay.name}</h2>
             <div>
                 {bay.patients.map((template, idx) => {
