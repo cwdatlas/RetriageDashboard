@@ -63,10 +63,11 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/**").hasAnyRole("Guest", "Director")
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers("/active_event/**").permitAll()
+//                        .requestMatchers("/").hasAuthority("Director") // Test to ensure the requestMatchers method works
                         .anyRequest().authenticated() // Require authentication for any request to this application
                 )
                 // Login Settings
