@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorResponse.put("error", "Something went wrong");
+        errorResponse.put("error", "Internal Server Error");
         errorResponse.put("message", ex.getMessage());
 
         logger.debug("Returning generic error response: {}", errorResponse);
@@ -78,6 +78,8 @@ public class GlobalExceptionHandler {
         logger.warn("Handling validation exception: {}", ex.getMessage());
 
         Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
         errorResponse.put("error", "Validation Error!");
         errorResponse.put("message", "Data in request body is invalid");
 
@@ -85,11 +87,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * Handle file size exceeded exceptions
+     */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Map<String, Object>> handleFileSizeException(MaxUploadSizeExceededException ex) {
-        logger.warn("Handling file size exceeded exception: {}", ex.getMessage());
+        logger.error("Handling file size exceeded exception: {}", ex.getMessage());
 
         Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
         errorResponse.put("error", "File too large!");
         errorResponse.put("message", "Please upload a smaller file.");
 
@@ -97,11 +104,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-
+    /**
+     * Handle access denied exceptions
+     */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        logger.warn("Handling access denied exception: {}", ex.getMessage());
+
         List<String> errors = List.of("Access Denied: You do not have permission to view this page.");
-        ErrorResponse errorResponse = new ErrorResponse(errors, HttpStatus.FORBIDDEN.value(), "ACCESS_DENIED");
+        ErrorResponse errorResponse = new ErrorResponse(errors, HttpStatus.FORBIDDEN.value(), "ACCESS_PERM._DENIED");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 }
