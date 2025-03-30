@@ -45,7 +45,6 @@ public class EventController {
      * Creates a new Event with the given form data
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    @PreAuthorize("hasAuthority('ADMIN')") //Restricts to ADMIN role only
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventTmpForm eventform) {
         List<String> errorList = new ArrayList<>();
         // Validate Director
@@ -182,6 +181,7 @@ public class EventController {
      * @return Returns a confirmation that the event was deleted
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('Director')") //Restricts to Director roles only
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
         eventService.deleteEventById(id);
         logger.info("Event with id {} deleted", id);
@@ -192,6 +192,7 @@ public class EventController {
      * updateEvent
      */
     @PutMapping(consumes = "application/json", produces = "application/json")
+    @PreAuthorize("hasAuthority('Director')") //Restricts to Director roles only
     public ResponseEntity<?> updateEvent(@Valid @RequestBody EventForm eventForm) {
         List<String> errorList = new ArrayList<>();
         List<User> nurseList = new ArrayList<>();
