@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.stereotype.Controller;
@@ -57,6 +59,7 @@ public class HomeController {
      * @return A {@link ResponseEntity} that either redirects to the frontend or returns an error.
      */
     @RequestMapping("/")
+//    @PreAuthorize("hasAuthority('Director')") // Use this to check the role of a User
     public ResponseEntity<?> oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal, HttpServletResponse response) {
         List<String> roles = null;
         try {
@@ -67,8 +70,10 @@ public class HomeController {
         Role userRole = Role.Guest;
         List<String> errors = new ArrayList<>();
 
+//        if (roles == null || !roles.contains("Director")) { // used for testing the new accessDeniedException
         if (roles == null) {
             logger.warn("oktaLogin: Client logged in without role. set user {} role to guest.", principal.getName());
+            throw new AccessDeniedException("TEST - This test works");
         } else {
             for (Role role : Role.values()) {
                 if (roles.contains(role.toString())) {
