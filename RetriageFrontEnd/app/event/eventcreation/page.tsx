@@ -104,7 +104,6 @@ export default function EventCreation() {
 
         try {
             await createPoolTemplate(newPool);
-            router.push("/");
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message || "An error occurred");
@@ -117,7 +116,7 @@ export default function EventCreation() {
     }
 
     return (
-        <div>
+        <div className="d-flex flex-column min-vh-100">
             <Header/>
             <h1>Create a New Event</h1>
 

@@ -4,5 +4,5 @@ public enum Condition {
     Minor,
     Delayed,
     Immediate,
-    Expectant
+    Deceased
 }
