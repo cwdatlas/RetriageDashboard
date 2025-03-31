@@ -5,6 +5,7 @@ import {useState} from "react";
 import {DndContext, DragEndEvent, DragOverEvent, DragStartEvent} from "@dnd-kit/core";
 import {Patient} from "@/app/models/patient";
 import {sendEvent} from "@/app/api/eventWebSocket";
+import MedServicePanel from "@/app/components/panel/medServicePanel";
 
 export default function EventVisualization({getActiveEvent}: { getActiveEvent: () => Event }) {
     const event = getActiveEvent();
@@ -23,7 +24,7 @@ export default function EventVisualization({getActiveEvent}: { getActiveEvent: (
                         return (
                             template.poolType === PoolType.Bay && (
                                 <div key={idx}>
-                                    <BayPanel bay={template}/>
+                                    <BayPanel bay={template} getActiveEvent={getActiveEvent}/>
                                 </div>
                             )
                         )
@@ -35,7 +36,7 @@ export default function EventVisualization({getActiveEvent}: { getActiveEvent: (
                         return (
                             template.poolType === PoolType.MedService && (
                                 <div key={idx}>
-                                    <BayPanel bay={template}/>
+                                    <MedServicePanel service={template} getActiveEvent={getActiveEvent}/>
                                 </div>
                             )
                         )
