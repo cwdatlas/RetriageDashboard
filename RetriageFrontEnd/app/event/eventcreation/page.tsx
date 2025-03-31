@@ -135,14 +135,14 @@ export default function EventCreation() {
                     />
                 </div>
                 <div style={{marginBottom: "1rem"}}>
-                    <label htmlFor="eventDuration">End Time: </label>
+                    <label htmlFor="eventDuration">Duration: </label>
                     <input
                         id="eventDuration"
                         type="text"
                         value={duration}
                         onChange={(e) => setDuration(e.target.value)}
                         required
-                    />
+                    /> minutes
                 </div>
 
                 {/* ========== LIST OF ALL RESOURCE TEMPLATES ========== */}
@@ -264,7 +264,7 @@ export default function EventCreation() {
                                 value={patientProcessTime}
                                 onChange={(e) => setPatientProcessTime(e.target.value)}
                                 required
-                            />
+                            />minutes
                         </div>)}
 
                 </div>
