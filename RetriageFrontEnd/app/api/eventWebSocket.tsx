@@ -8,7 +8,7 @@ const UPDATE_EVENT = "/ws/update";
 const TOPIC = "/topic/event_updates";
 let client: Client;
 
-export function useConnectEventWebSocket(setActiveEvent: (event: Event) => void) {
+export function useConnectEventWebSocket(setActiveEvent: (event: Event | null) => void) {
 
     useEffect(() => {
         // Create the STOMP client
@@ -21,8 +21,12 @@ export function useConnectEventWebSocket(setActiveEvent: (event: Event) => void)
                 stompClient.subscribe(TOPIC, (message: IMessage) => {
                     // The server broadcasts Event objects as JSON
                     const eventData: Event = JSON.parse(message.body);
-                    console.log("Event Sent to front end: " + eventData);
-                    setActiveEvent(eventData);
+                    if(eventData && eventData.name == "NoEventFound") {
+                        setActiveEvent(null);
+                    }else if (eventData) {
+                        console.log("Event Sent to front end: " + eventData);
+                        setActiveEvent(eventData);
+                    }
                 });
 
             },
