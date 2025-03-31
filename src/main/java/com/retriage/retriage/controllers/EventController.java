@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -34,12 +35,9 @@ public class EventController {
      * Constructor injection of the service
      */
     public EventController(EventService eventService, UserService userService) {
-        logger.info("Entering EventController constructor");
         this.eventService = eventService;
-        logger.info("Event Service injected: {}", eventService);
+        logger.debug("Event Service injected: {}", eventService);
         this.userService = userService;
-        logger.info("User Service injected: {}", userService);
-        logger.info("Exiting EventController constructor");
     }
 
     /**
@@ -47,43 +45,41 @@ public class EventController {
      * Creates a new Event with the given form data
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
+    @PreAuthorize("hasAuthority('ADMIN')") //Restricts to ADMIN role only
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventTmpForm eventform) {
         List<String> errorList = new ArrayList<>();
         // Validate Director
-        logger.info("Validating Director...");
+        logger.debug("createEvent - Validating Director...");
         if (eventform.getDirector() == null) {
             errorList.add("Director must  be added to event");
             logger.warn("createEvent - Director is null");
         } else if (eventform.getDirector().getEmail() == null) {
-            errorList.add("Submitted director lacking email address");
+            errorList.add("createEvent - Submitted director lacking email address");
             logger.warn("createEvent - Director email is null");
         } else {
             String directorEmail = eventform.getDirector().getEmail();
-            logger.info("createEvent - Attempting to retrieve director with email: {}", directorEmail);
+            logger.debug("createEvent - Attempting to retrieve director with email: {}", directorEmail);
             User director = userService.getUserByEmail(directorEmail);
             if (director == null) {
                 errorList.add("Director does not exist, not authorized to create an event");
                 logger.warn("createEvent - Director with email {} not found", directorEmail);
             } else if (director.getRole() != Role.Director) {
                 errorList.add("User " + director.getEmail() + " is not a director, they are a " + director.getRole());
-                logger.warn("createEvent - User {} is not a Director, role is {}", director.getEmail(), director.getRole());
+                logger.warn("createEvent - User role: {} is not Director, Current User role: {}", director.getEmail(), director.getRole());
             } else {
-                logger.info("createEvent - Director {} validated", director.getEmail());
+                logger.debug("createEvent - Director validated!");
             }
         }
-        logger.info("Director Validation Complete!");
-
         // Patient Pool Template validation
         List<PatientPool> pools = new ArrayList<>();
         logger.info("Validating Patient Pools...");
         if (eventform.getPoolTmps().isEmpty()) {
             errorList.add("Must add at least 1 Pool Template");
-            logger.warn("createEvent - No Pool Templates provided");
+            logger.debug("createEvent - No Pool Templates provided");
         } else {
             PatientPoolTmp[] templates = eventform.getPoolTmps().toArray(new PatientPoolTmp[eventform.getPoolTmps().size()]);
-            logger.info("createEvent - Processing {} Pool Templates", templates.length);
+            logger.debug("createEvent - Processing {} Pool Templates", templates.length);
             for (PatientPoolTmp poolTmp : templates) {
-                logger.debug("createEvent - Processing Pool Template: {}", poolTmp);
                 for (int i = 1; i <= poolTmp.getPoolNumber(); i++) {
                     PatientPool patientPool = new PatientPool();
                     patientPool.setPoolType(poolTmp.getPoolType());
@@ -107,7 +103,6 @@ public class EventController {
                 }
             }
         }
-        logger.info("Patient Pool Validation Complete!");
         // validation for event
         if (pools.isEmpty()) {
             errorList.add("Must add at least 1 Pool Template"); //TODO use dry practices to exclude this piece of code
@@ -135,9 +130,9 @@ public class EventController {
             }
 
         }
-        logger.info("createEvent - Returning response with errors: {}", errorList);
-        ErrorResponse errorResponse = new ErrorResponse(errorList, HttpStatus.BAD_REQUEST.value(), "VALIDATION_FAILED");
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+            logger.warn("createEvent - Returning response with errors: {}", errorList);
+            ErrorResponse errorResponse = new ErrorResponse(errorList, HttpStatus.BAD_REQUEST.value(), "VALIDATION_FAILED");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -145,14 +140,12 @@ public class EventController {
      */
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> findEventByID(@PathVariable Long id) {
-        logger.info("Entering findEventByID with id: {}", id);
         Event event = eventService.findEventById(id);
         if (event == null) {
             logger.warn("findEventByID - Event with id {} not found", id);
             ErrorResponse errorResponse = new ErrorResponse(List.of("Event with id " + id + " not found."), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
             return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
-        logger.info("Exiting findEventByID with event: {}", event);
         return ResponseEntity.ok(event); // Returning 200 OK with the Event object as JSON
     }
 
@@ -165,7 +158,7 @@ public class EventController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getAllEvents() {
         List<Event> events = eventService.findAllEvents();
-        logger.info("Returning {} events", events.size());
+        logger.debug("Returning {} events", events.size());
         return new ResponseEntity<>(events, HttpStatus.OK); // Returning 200 OK with the list of events
     }
 
@@ -174,10 +167,10 @@ public class EventController {
     public ResponseEntity<Event> getActiveEvent() {
         Event event = eventService.findActiveEvent();
         if (event == null) {
-            logger.info("getActiveEvent - No active event found, returning HTTP STATUS 404");
+            logger.warn("getActiveEvent - No active event found, returning HTTP STATUS 404");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        logger.info("getActiveEvent - Active event found, returning HTTP STATUS ok");
+        logger.debug("getActiveEvent - Active event found, returning HTTP STATUS ok");
         return ResponseEntity.ok(event);
     }
 
@@ -206,19 +199,19 @@ public class EventController {
         for (User nurse : eventForm.getNurses()) {
             if (nurse.getEmail() == null) {
                 errorList.add("Nurse of name of " + nurse.getFirstName() + " " + nurse.getLastName() + " must have email.");
-                logger.debug("createEvent - submitted Nurse of name {} did not have an email address.", nurse.getFirstName() + " " + nurse.getLastName());
+                logger.warn("createEvent - submitted Nurse of name {} did not have an email address.", nurse.getFirstName() + " " + nurse.getLastName());
             } else {
                 String nurseEmail = nurse.getEmail();
                 User savedNurse = userService.getUserByEmail(nurseEmail);
                 if (savedNurse == null) {
                     errorList.add("Submitted nurse " + nurse.getEmail() + "was not found.");
-                    logger.debug("updateEvent - Nurse with email {} not found", nurseEmail);
+                    logger.warn("updateEvent - Nurse with email {} not found", nurseEmail);
                 } else if (savedNurse.getRole() == Role.Guest) {
                     errorList.add("User " + savedNurse.getEmail() + " is a Guest, Guests can't be added to an event");
-                    logger.info("createEvent - User {} is a Guest", nurse.getEmail());
+                    logger.warn("createEvent - User {} is a Guest", nurse.getEmail());
                 } else {
                     nurseList.add(savedNurse);
-                    logger.debug("createEvent - Nurse {} validated", savedNurse.getEmail());
+                    logger.warn("createEvent - Nurse {} validated", savedNurse.getEmail());
                 }
             }
         }

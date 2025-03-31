@@ -67,7 +67,9 @@ public class SecurityConfiguration {
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers("/active_event/**").permitAll()
-                        .anyRequest().authenticated()) // Require authentication for any request to this application
+                        .anyRequest().authenticated() // Require authentication for any request to this application
+                )
+                // Login Settings
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom SAML authentication provider
                         .defaultSuccessUrl("/", true)) // <- Forces redirect to home after successful login)
@@ -75,9 +77,9 @@ public class SecurityConfiguration {
                 .saml2Logout(withDefaults())
                 .logout(logout -> logout
                         .logoutUrl("/logout") // This is where Spring Security listens for logout requests
-                        .logoutSuccessUrl("/") // Redirect after logout
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
+                        .logoutSuccessUrl("/") // Redirect to HOME after logout
+                        .invalidateHttpSession(true) // Invalidates the http session, makes user have to log in again
+                        .clearAuthentication(true) // Clears all authentication on logout
                         .deleteCookies("JSESSIONID")); // Enable SAML Logout with default configurations
 
         return http.build(); // Build and return the configured SecurityFilterChain

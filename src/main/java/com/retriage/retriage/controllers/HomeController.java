@@ -139,8 +139,10 @@ public class HomeController {
                 .build(); // No body in a 302 redirect
     }
 
-    @GetMapping("/test")
-    public String testView() {
-        return "testview"; // This will look for testview.html in src/main/resources/templates
-    }
+//    @GetMapping("/logout")
+//    public ResponseEntity<Void> logoutRedirect() {
+//        return ResponseEntity.status(HttpStatus.FOUND)
+//                .header("Location", "http://localhost:3000/") // Redirect to home instead of /logout
+//                .build();
+//}
 }

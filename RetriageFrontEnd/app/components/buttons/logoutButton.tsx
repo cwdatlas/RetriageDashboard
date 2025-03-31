@@ -1,6 +1,7 @@
 export default function LogoutButton() {
     const handleLogout = () => {
-        document.getElementById("logoutForm")?.submit(); // TODO fix submit method
+        const form = document.getElementById("logoutForm") as HTMLFormElement | null;
+        form?.requestSubmit(); // Use requestSubmit() for modern behavior
     };
 
     return (
