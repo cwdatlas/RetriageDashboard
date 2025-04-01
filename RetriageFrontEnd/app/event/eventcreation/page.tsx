@@ -95,6 +95,7 @@ export default function EventCreation() {
     async function handleSubmitPool(e: React.FormEvent) {
         e.preventDefault();
         const newPool: PatientPoolTmp = {
+            queueSize: 0,
             poolType: poolType,
             processTime: parseInt(patientProcessTime) || 1,
             usable: true,
@@ -146,17 +147,17 @@ export default function EventCreation() {
                 </div>
 
                 {/* ========== LIST OF ALL RESOURCE TEMPLATES ========== */}
-                <div style={{marginBottom: "1rem"}}>
+                <div style={{ marginBottom: "1rem" }}>
                     <h3>All Pool Templates:</h3>
                     {allTemplates.length === 0 ? (
                         <p>Loading or none found...</p>
                     ) : (
                         <ul>
                             {allTemplates.map((template, idx) => {
-                                // Check if this template is currently in selectedPools
-                                // If so, grab its poolNumber; otherwise default to 0
+                                // Check if this template is in selectedPools. If so, get its poolNumber and queueSize; otherwise, default to 0.
                                 const existing = selectedPools.find((res) => res.name === template.name);
                                 const currentPoolNumber = existing?.poolNumber ?? 0;
+                                const currentQueueSize = existing?.queueSize ?? 0;
 
                                 return (
                                     <li key={template.name ?? idx}>
@@ -169,28 +170,26 @@ export default function EventCreation() {
                                                 value={currentPoolNumber}
                                                 onChange={(e) => {
                                                     const newNumber = parseInt(e.target.value, 10);
-
                                                     if (newNumber === 0) {
-                                                        // 0 means remove from selectedPools if it exists
+                                                        // Remove from selectedPools if 0 is chosen.
                                                         setSelectedPools((prev) =>
                                                             prev.filter((res) => res.name !== template.name)
                                                         );
                                                     } else {
-                                                        // 1–5 means add (or update) with the chosen poolNumber
+                                                        // Add or update the pool template with the chosen poolNumber,
+                                                        // preserving any existing queueSize (or defaulting to 0).
                                                         setSelectedPools((prev) => {
                                                             const existingIndex = prev.findIndex(
                                                                 (res) => res.name === template.name
                                                             );
                                                             const updatedTemplate = {
                                                                 ...template,
-                                                                poolNumber: newNumber
+                                                                poolNumber: newNumber,
+                                                                queueSize: existing?.queueSize ?? 0,
                                                             };
-
                                                             if (existingIndex === -1) {
-                                                                // Not in the array yet, add it
                                                                 return [...prev, updatedTemplate];
                                                             } else {
-                                                                // Already in the array, just update the poolNumber
                                                                 const newArray = [...prev];
                                                                 newArray[existingIndex] = updatedTemplate;
                                                                 return newArray;
@@ -199,7 +198,42 @@ export default function EventCreation() {
                                                     }
                                                 }}
                                             >
-                                                {/* Render dropdown options 0..5 */}
+                                                {[0, 1, 2, 3, 4, 5].map((num) => (
+                                                    <option key={num} value={num}>
+                                                        {num}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </label>
+                                        <label style={{ marginLeft: "1rem" }}>
+                                            Queue Size:{" "}
+                                            <select
+                                                value={currentQueueSize}
+                                                onChange={(e) => {
+                                                    const newQueueSize = parseInt(e.target.value, 10);
+                                                    setSelectedPools((prev) => {
+                                                        const existingIndex = prev.findIndex(
+                                                            (res) => res.name === template.name
+                                                        );
+                                                        if (existingIndex === -1) {
+                                                            // If the template isn't already selected, add it with a default poolNumber (e.g., 1)
+                                                            // and the chosen queueSize.
+                                                            return [
+                                                                ...prev,
+                                                                { ...template, poolNumber: 1, queueSize: newQueueSize },
+                                                            ];
+                                                        } else {
+                                                            // Otherwise, update the queueSize on the existing entry.
+                                                            const newArray = [...prev];
+                                                            newArray[existingIndex] = {
+                                                                ...newArray[existingIndex],
+                                                                queueSize: newQueueSize,
+                                                            };
+                                                            return newArray;
+                                                        }
+                                                    });
+                                                }}
+                                            >
                                                 {[0, 1, 2, 3, 4, 5].map((num) => (
                                                     <option key={num} value={num}>
                                                         {num}
@@ -213,6 +247,7 @@ export default function EventCreation() {
                         </ul>
                     )}
                 </div>
+
 
 
                 {/* ========== SUBMIT EVENT BUTTON ========== */}
@@ -267,23 +302,6 @@ export default function EventCreation() {
                         />
                         Floor
                     </label>
-                    {/*
-                    <div style={{marginBottom: "1rem"}}>
-                        <label htmlFor="">{PoolType.MedService != poolType && (
-                            <div>Number of Beds</div>
-                        )}
-                            {PoolType.MedService == poolType && (
-                                <div>Queue Length</div>
-                            )}</label>
-                        <input
-                            id="patientProcessTime"
-                            type="text"
-                            value={patientProcessTime}
-                            onChange={(e) => setPatientProcessTime(e.target.value)}
-                            required
-                        /> {poolType === PoolType.MedService ? (<span>Patients</span>) : (<span>Beds</span>)}
-                    </div>
-                    */}
 
                     {poolType === PoolType.MedService && (
                         <div style={{marginBottom: "1rem"}}>
