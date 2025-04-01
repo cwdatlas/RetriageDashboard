@@ -254,7 +254,37 @@ export default function EventCreation() {
                             onChange={() => setPoolType(PoolType.MedService)}
                         />
                         Medical Service
+
                     </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="pools"
+                            value={PoolType.Floor}
+                            checked={poolType === PoolType.Floor}
+                            onChange={() => setPoolType(PoolType.Floor)}
+                        />
+                        Floor
+                    </label>
+                    {/*
+                    <div style={{marginBottom: "1rem"}}>
+                        <label htmlFor="">{PoolType.MedService != poolType && (
+                            <div>Number of Beds</div>
+                        )}
+                            {PoolType.MedService == poolType && (
+                                <div>Queue Length</div>
+                            )}</label>
+                        <input
+                            id="patientProcessTime"
+                            type="text"
+                            value={patientProcessTime}
+                            onChange={(e) => setPatientProcessTime(e.target.value)}
+                            required
+                        /> {poolType === PoolType.MedService ? (<span>Patients</span>) : (<span>Beds</span>)}
+                    </div>
+                    */}
+
                     {poolType === PoolType.MedService && (
                         <div style={{marginBottom: "1rem"}}>
                             <label htmlFor="patientProcessTime">Patient Process Time: </label>
