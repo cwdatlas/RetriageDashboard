@@ -24,9 +24,13 @@ import java.util.List;
  * Extracts the JWT Token from the request header, validates the token using JwtUtil,
  * and sets the authentication context
  */
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -47,6 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.debug("doFilterInternal - No Bearer token found in request header.");
             chain.doFilter(request, response);
             return;
         }
@@ -66,9 +71,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                logger.debug("doFilterInternal - JWT token validated for user: {}", username);
             }
         } catch (ExpiredJwtException e) {
+            logger.warn("doFilterInternal - JWT token expired.");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token has expired.");
+            return;
+        } catch (Exception e) {
+            logger.error("doFilterInternal - JWT token validation failed: {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token.");
             return;
         }
 
