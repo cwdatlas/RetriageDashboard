@@ -22,9 +22,7 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
      * @param poolTemplateRepository Repository declared in PatientPoolTmpServiceImp
      */
     public PatientPoolTmpServiceImp(PatientPoolTmpRepo poolTemplateRepository) {
-        logger.info("Entering PatientPoolTmpServiceImp constructor with poolTemplateRepository: {}", poolTemplateRepository);
         this.poolTemplateRepository = poolTemplateRepository;
-        logger.info("Exiting PatientPoolTmpServiceImp constructor");
     }
 
     /**
@@ -36,25 +34,20 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
      */
     @Override
     public boolean savePoolTmp(PatientPoolTmp pool) {
-        logger.info("Entering savePoolTmp with pool: {}", pool);
-        logger.debug("savePoolTmp - Validating pool template: {}", pool);
         try {
             validatePoolTmp(pool); // Call validatePool here, it will throw exception if invalid
-            logger.debug("savePoolTmp - PatientPoolTmp validation passed."); // Log only if validation passes
+            logger.info("savePoolTmp - PatientPoolTmp validation passed."); // Log only if validation passes
 
             PatientPoolTmp savedPool = poolTemplateRepository.save(pool);
-            boolean isSaved = savedPool != null;
-            if (isSaved) {
-                logger.info("savePoolTmp - PatientPoolTmp saved successfully with ID: {}", savedPool.getId());
-                logger.debug("savePoolTmp - Saved PatientPoolTmp details: {}", savedPool);
+            if (savedPool != null) {
+                logger.info("savePoolTmp - Pool template saved successfully with ID: {}", savedPool.getId());
+                return true;
             } else {
-                logger.error("savePoolTmp - Failed to save pool template: {}", pool);
+                logger.error("savePoolTmp - Pool template save failed.");
+                return false;
             }
-            logger.info("Exiting savePoolTmp, returning: {}", isSaved);
-            return isSaved;
         } catch (IllegalArgumentException e) {
-            logger.warn("savePoolTmp - PatientPoolTmp validation failed: {}", e.getMessage());
-            logger.info("Exiting savePoolTmp, returning: false");
+            logger.warn("savePoolTmp - Pool template save failed: {}", e.getMessage());
             return false;
         }
     }
@@ -67,12 +60,8 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
      */
     @Override
     public List<PatientPoolTmp> findAllPoolTmp() {
-        logger.info("Entering findAllPoolTmp");
-        logger.debug("findAllPoolsTmp - Calling poolTemplateRepository.findAll()");
         List<PatientPoolTmp> pools = poolTemplateRepository.findAll();
         logger.info("findAllPoolsTmp - Retrieved {} pool templates.", pools.size());
-        logger.debug("findAllPoolsTmp - Retrieved pool template list: {}", pools);
-        logger.info("Exiting findAllPoolTmp, returning list of size: {}", pools.size());
         return pools;
     }
 
@@ -85,16 +74,12 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
      */
     @Override
     public Optional<PatientPoolTmp> findPoolTmpById(Long id) {
-        logger.info("Entering findPoolTmpById with id: {}", id);
-        logger.debug("findPoolByIdTmp - Calling poolTemplateRepository.findById({})", id);
         Optional<PatientPoolTmp> poolOptional = poolTemplateRepository.findById(id);
         if (poolOptional.isPresent()) {
             logger.info("findPoolByIdTmp - PatientPoolTmp found with ID: {}", id);
-            logger.debug("findPoolByIdTmp - Found PatientPoolTmp details: {}", poolOptional.get());
         } else {
             logger.warn("findPoolByIdTmp - No pool template found with ID: {}", id);
         }
-        logger.info("Exiting findPoolTmpById, returning Optional with value present: {}", poolOptional.isPresent());
         return poolOptional;
     }
 
@@ -106,17 +91,12 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
      */
     @Override
     public void deletePoolTmpById(Long id) {
-        logger.info("Entering deletePoolTmpById with id: {}", id);
-        logger.debug("deletePoolByIdTmp - Checking if pool template with ID {} exists", id);
         if (poolTemplateRepository.existsById(id)) {
-            logger.debug("deletePoolByIdTmp - PatientPoolTmp with ID {} exists. Proceeding with deletion.", id);
             poolTemplateRepository.deleteById(id);
             logger.info("deletePoolByIdTmp - PatientPoolTmp deleted successfully with ID: {}", id);
         } else {
             logger.warn("deletePoolByIdTmp - PatientPoolTmp with id {} does not exist.", id);
-            logger.debug("deletePoolByIdTmp - Attempted to delete non-existent pool template with id: {}", id);
         }
-        logger.info("Exiting deletePoolTmpById");
     }
 
     /**
@@ -127,7 +107,6 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
      * @throws IllegalArgumentException if the pool is invalid.
      */
     private void validatePoolTmp(PatientPoolTmp pool) {
-        logger.debug("Entering validatePoolTmp with pool: {}", pool);
         if (pool == null) {
             logger.warn("validatePoolTmp - PatientPoolTmp object is null.");
             throw new IllegalArgumentException("PatientPoolTmp object cannot be null.");
@@ -136,6 +115,5 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
             logger.warn("validatePoolTmp - PatientPoolTmp name is null or empty.");
             throw new IllegalArgumentException("PatientPoolTmp name cannot be null or empty.");
         }
-        logger.debug("Exiting validatePoolTmp - PatientPoolTmp validation passed.");
     }
 }
