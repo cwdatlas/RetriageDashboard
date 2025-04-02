@@ -1,11 +1,14 @@
 package com.retriage.retriage.configurations;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class JwtUtil {
@@ -60,5 +63,32 @@ public class JwtUtil {
                 .parseClaimsJws(token) // Parses and validates the JWT.
                 .getBody() // Gets the body of the parsed JWT.
                 .getSubject(); // Gets the subject (username) from the body.
+    }
+
+    /**
+     * Extracts the roles from a JWT token.
+     *
+     * @param token The JWT token to extract roles from.
+     * @return A list of roles extracted from the token's claims.
+     */
+    public List<String> extractRoles(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey()) // Retrieves the signing key for parsing.
+                .build()
+                .parseClaimsJws(token) // Parses and validates the JWT.
+                .getBody();
+
+        return claims.get("roles", List.class); // Extracts the "roles" claim as a List of Strings.
+    }
+
+    /**
+     * Retrieves the signing key used to verify the JWT.
+     *
+     * @return The signing key as a Key object.
+     */
+    private Key getSigningKey() {
+        System.out.println("Secret Key: " + SECRET_KEY);
+        byte[] keyBytes = SECRET_KEY.getEncoded();
+        return Keys.hmacShaKeyFor(keyBytes); // Creates an HMAC SHA key from the decoded bytes.
     }
 }
