@@ -18,8 +18,16 @@ export default function MedServicePanel({service, getActiveEvent}: {
 
     return (
         <div ref={setNodeRef} style={style} className="card rounded mb-3">
-            <div className="card-header">
+            <div className="card-header d-flex justify-content-between align-items-center">
                 <h2 className="card-title">{service.name}</h2>
+                <div className="d-flex align-items-center">
+                    <img
+                        src="/images/bed.png"
+                        alt="Bed Icon"
+                        style={{ width: "24px", height: "24px", marginRight: "4px" }}
+                    />
+                    <span>{service.queueSize - service.patients.length}</span>
+                </div>
             </div>
             <div className="card-body">
                 <div className="row row-cols-6">

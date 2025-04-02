@@ -15,16 +15,23 @@ const conditionIcons: Record<Condition, string> = {
     [Condition.Deceased]: "/images/deceased.png",
 };
 
-export default function PatientIcon({patient, patientList, getActiveEvent}: {
-    patient: Patient,
-    patientList: Patient[],
-    getActiveEvent: () => Event
+export default function PatientIcon({
+                                        patient,
+                                        patientList,
+                                        getActiveEvent,
+                                    }: {
+    patient: Patient;
+    patientList: Patient[];
+    getActiveEvent: () => Event;
 }) {
     const {attributes, listeners, setNodeRef, transform} = useDraggable({
         id: patient.id || 0,
     });
     const style = transform
-        ? {transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`}
+        ? {
+            transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+            zIndex: 9999
+        }
         : undefined;
 
     // State for context menu
@@ -64,7 +71,9 @@ export default function PatientIcon({patient, patientList, getActiveEvent}: {
     // Action handlers
     const handleDelete = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const index: number = patientList.findIndex(storedPatient => storedPatient.id === patient.id);
+        const index: number = patientList.findIndex(
+            (storedPatient) => storedPatient.id === patient.id
+        );
         if (index !== -1) {
             patientList.splice(index, 1);
             sendEvent(getActiveEvent());
@@ -77,7 +86,9 @@ export default function PatientIcon({patient, patientList, getActiveEvent}: {
 
     const handleDischarge = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const index: number = patientList.findIndex(storedPatient => storedPatient.id === patient.id);
+        const index: number = patientList.findIndex(
+            (storedPatient) => storedPatient.id === patient.id
+        );
         if (index !== -1) {
             patientList.splice(index, 1);
             sendEvent(getActiveEvent());
@@ -116,16 +127,27 @@ export default function PatientIcon({patient, patientList, getActiveEvent}: {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
             }}
         >
-            <div className="dropdown-item" onClick={handleDelete} style={{padding: "8px", cursor: "pointer"}}>
+            <div
+                className="dropdown-item"
+                onClick={handleDelete}
+                style={{padding: "8px", cursor: "pointer"}}
+            >
                 Delete
             </div>
-            <div className="dropdown-item" onClick={handleDischarge} style={{padding: "8px", cursor: "pointer"}}>
+            <div
+                className="dropdown-item"
+                onClick={handleDischarge}
+                style={{padding: "8px", cursor: "pointer"}}
+            >
                 Discharge
             </div>
-            {GetCookies('role') === Role.Director && (
+            {GetCookies("role") === Role.Director && (
                 <>
-                    <div className="dropdown-item" onClick={toggleConditionOptions}
-                         style={{padding: "8px", cursor: "pointer"}}>
+                    <div
+                        className="dropdown-item"
+                        onClick={toggleConditionOptions}
+                        style={{padding: "8px", cursor: "pointer"}}
+                    >
                         Update Condition
                     </div>
                     {showConditionOptions && (
@@ -158,22 +180,22 @@ export default function PatientIcon({patient, patientList, getActiveEvent}: {
             onContextMenu={handleContextMenu}
         >
             {/* Top section with image icon based on condition */}
-            <div className="bg-dark" style={{padding: "10px"}}>
+            <div className="bg-dark" style={{padding: "10%"}}>
                 <img
                     src={conditionIcons[patient.condition] || "/images/default.png"}
                     alt={patient.condition}
                     style={{
-                        width: "50px",
-                        height: "50px",
+                        width: "80%",
+                        height: "auto",
                         display: "block",
                         margin: "0 auto",
-                        borderRadius: "50%"
+                        borderRadius: "50%",
                     }}
                 />
             </div>
 
             {/* Bottom section with patient card ID */}
-            <div style={{padding: "5px"}}>
+            <div style={{padding: "5%"}}>
                 {error && <p>{error}</p>}
                 <p className="mb-0">{patient.cardId}</p>
             </div>
