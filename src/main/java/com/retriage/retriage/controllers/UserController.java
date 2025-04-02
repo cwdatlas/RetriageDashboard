@@ -85,7 +85,7 @@ public class UserController {
      * deleteUser
      * Deletes a User specified by their passed in ID
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();

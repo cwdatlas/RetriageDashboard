@@ -91,7 +91,7 @@ public class PatientPoolController {
     /**
      * deletePool - Deletes a Pool by ID
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deletePool(@PathVariable Long id) {
         if (poolService.findPoolById(id).isEmpty()) {
             logger.warn("deletePool - Pool with id {} not found.", id);

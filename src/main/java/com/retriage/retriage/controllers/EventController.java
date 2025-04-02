@@ -182,7 +182,7 @@ public class EventController {
      * @param id The ID associated to the event you are looking for
      * @return Returns a confirmation that the event was deleted
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
         eventService.deleteEventById(id);
         logger.info("Event with id {} deleted", id);

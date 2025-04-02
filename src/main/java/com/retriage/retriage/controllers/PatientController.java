@@ -87,7 +87,7 @@ public class PatientController {
      * deletePatient
      * Deletes a Patient, specified by their ID
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deletePatient(@PathVariable Long id) {
         if (!patientService.getPatientById(id).isPresent()) {
             logger.warn("deletePatient - Patient with id {} not found", id);
@@ -111,8 +111,6 @@ public class PatientController {
         }
         return ResponseEntity.ok(patient);
     }
-
-
 
     /**
      * partialUpdatePatient

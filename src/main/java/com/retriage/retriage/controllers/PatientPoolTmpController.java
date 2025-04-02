@@ -92,14 +92,11 @@ public class PatientPoolTmpController {
         }
     }
 
-    // OPTIONAL: Update or partial updates (PUT/PATCH) and Delete
-    // For completeness, here's a simple delete example
-
     /**
      * 4) Delete a Patient
      * DELETE /templates/{id}
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deletePool(@PathVariable Long id) {
         if (poolService.findPoolTmpById(id).isEmpty()) {
             log.warn("deletePool - Template with id {} not found.", id);
