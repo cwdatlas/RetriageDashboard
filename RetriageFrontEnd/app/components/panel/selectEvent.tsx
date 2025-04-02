@@ -49,7 +49,7 @@ export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => 
                                 <div>Name: {event.name}</div>
                                 <div>Status: {event.status}</div>
                                 <div>Creation Date: {new Date(event.startTime).toDateString()}</div>
-                                <div>Runtime Left: {event.duration / 60000} Minutes</div>
+                                <div>Runtime Left: {event.remainingDuration / 60000} Minutes</div>
                                 <ToggleEvent event={event} onStatusChange={onStatusChange}/>
                             </li>
                         ))}
