@@ -69,6 +69,7 @@ public class EventWebSocketController {
         updatedEvent.setNurses(nurseList);
         updatedEvent.setDirector(eventForm.getDirector());
         updatedEvent.setStartTime(eventForm.getStartTime());
+        updatedEvent.setRemainingDuration(eventForm.getRemainingDuration());
 
         eventService.updateEvent(eventForm.getId(), updatedEvent);
 

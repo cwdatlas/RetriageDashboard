@@ -118,6 +118,7 @@ public class EventController {
             newEvent.setStatus(Status.Paused);
             newEvent.setStartTime(System.currentTimeMillis());
             newEvent.setDuration(eventform.getDuration());
+            newEvent.setRemainingDuration(eventform.getDuration());
             logger.info("createEvent - Event object created: {}", newEvent);
 
             boolean saved = eventService.saveEvent(newEvent);
@@ -226,6 +227,7 @@ public class EventController {
         updatedEvent.setNurses(nurseList);
         updatedEvent.setDirector(eventForm.getDirector());
         updatedEvent.setStartTime(eventForm.getStartTime());
+        updatedEvent.setRemainingDuration(eventForm.getRemainingDuration());
         logger.debug("updateEvent - Updated Event object created: {}", updatedEvent);
 
         Event response = eventService.updateEvent(eventForm.getId(), updatedEvent);

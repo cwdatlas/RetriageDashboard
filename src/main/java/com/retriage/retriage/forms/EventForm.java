@@ -37,6 +37,9 @@ public class EventForm {
     @NotNull(message = "End time is required")
     private Long duration;
 
+    @NotNull(message="Duration Left must be not null. At least 0.")
+    private long remainingDuration;
+
     public EventForm() {
     }
 

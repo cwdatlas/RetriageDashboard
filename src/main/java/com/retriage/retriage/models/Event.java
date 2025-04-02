@@ -2,6 +2,7 @@ package com.retriage.retriage.models;
 
 import com.retriage.retriage.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
@@ -35,6 +36,9 @@ public class Event {
     //Owner
     @ManyToMany
     private List<User> nurses;
+
+    @NotNull(message="Duration Left must be not null. At least 0.")
+    private long remainingDuration;
 
     public Event() {
     }
