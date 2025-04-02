@@ -33,7 +33,7 @@ public class ImageController {
     @PostMapping("/uploadImage")
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
-            logger.warn("uploadImage - Received empty file for upload.");
+            logger.warn("uploadImage - File upload failed: Empty file.");
             ErrorResponse errorResponse = new ErrorResponse(
                     List.of("Please select a file to upload!"),
                     HttpStatus.BAD_REQUEST.value(),
@@ -44,7 +44,6 @@ public class ImageController {
 
         // Generate a unique filename
         String uniqueFilename = UUID.randomUUID() + getFileExtension(file.getOriginalFilename());
-        logger.debug("uploadImage - Generated unique filename: {}", uniqueFilename);
 
         // Ensure the upload directory exists
         Path uploadPath = Paths.get(uploadDir);
@@ -53,7 +52,7 @@ public class ImageController {
         // Save the file
         Path filePath = uploadPath.resolve(uniqueFilename);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        logger.debug("uploadImage - Image uploaded successfully. Filename: {}", uniqueFilename);
+        logger.info("uploadImage - Image uploaded successfully: {}", uniqueFilename);
 
         // Return success response
         Map<String, String> successResponse = Map.of(
@@ -79,7 +78,7 @@ public class ImageController {
     private void ensureDirectoryExists(Path path) throws IOException {
         if (!Files.exists(path)) {
             Files.createDirectories(path);
-            logger.debug("uploadImage - Created upload directory: {}", path);
+            logger.info("uploadImage - Upload directory created: {}", path);
         }
     }
 

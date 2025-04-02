@@ -46,7 +46,7 @@ public class UserController {
         newUser.setCreatedPatients(userForm.getCreatedPatients());
 
         User saved = userService.saveUser(newUser);
-        logger.info("createUser - User saved successfully with ID: {}", saved.getId());
+        logger.info("createUser - User created successfully with ID: {}", saved.getId());
 
         URI location = URI.create("/users/" + saved.getId());
         return ResponseEntity.created(location).body("User created: " + saved.getFirstName() + " " + saved.getLastName());
@@ -58,7 +58,9 @@ public class UserController {
      */
     @GetMapping(produces = "application/json")
     public List<User> getAllUsers() {
-        return userService.findAllUsers();
+        List<User> users = userService.findAllUsers();
+        logger.info("getAllUsers - Retrieved {} users.", users.size());
+        return users;
     }
 
     /**
@@ -68,17 +70,13 @@ public class UserController {
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<User> findUserByID(@PathVariable Long id) {
         Optional<User> optionalUser = userService.findUserById(id);
-        ResponseEntity<User> response = optionalUser
-                .map(user -> {
-                    logger.info("findUserByID - Found user with id: {}", id);
-                    return ResponseEntity.ok(user);
-                })
-                .orElseGet(() -> {
-                    logger.warn("findUserByID - User with id {} not found", id);
-                    return ResponseEntity.notFound().build();
-                });
-        logger.info("Exiting findUserByID, returning response: {}", response.getStatusCode());
-        return response;
+        if (optionalUser.isPresent()) {
+            logger.info("findUserByID - User found with ID: {}", id);
+            return ResponseEntity.ok(optionalUser.get());
+        } else {
+            logger.warn("findUserByID - User find failed: User with id {} not found.", id);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -88,6 +86,7 @@ public class UserController {
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUserById(id);
+        logger.info("deleteUser - User deleted with ID: {}", id);
         return ResponseEntity.noContent().build();
     }
 
@@ -99,8 +98,10 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         User updatedUser = userService.updateUser(id, user);
         if (updatedUser == null) {
+            logger.warn("updateUser - User update failed: User with id {} not found.", id);
             return ResponseEntity.notFound().build();
         }
+        logger.info("updateUser - User updated with ID: {}", id);
         return ResponseEntity.ok(updatedUser);
         //PUT is used for full updates, requires all fields, and
         //replaces the entire record with new data
@@ -114,6 +115,7 @@ public class UserController {
     public ResponseEntity<?> patchUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         Optional<User> optionalUser = userService.findUserById(id);
         if (optionalUser.isEmpty()) {
+            logger.warn("patchUser - User partial update failed: User with id {} not found.", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse(List.of("User with id " + id + " not found."), HttpStatus.NOT_FOUND.value(), "USER_NOT_FOUND"));
         }
@@ -145,11 +147,12 @@ public class UserController {
         });
 
         if (!errors.isEmpty()) {
+            logger.warn("patchUser - User partial update failed: Invalid input.");
             return ResponseEntity.badRequest().body(new ErrorResponse(errors, HttpStatus.BAD_REQUEST.value(), "INVALID_INPUT"));
         }
 
         User updatedUser = userService.saveUser(user);
+        logger.info("patchUser - User partially updated with ID: {}", updatedUser.getId());
         return ResponseEntity.ok(updatedUser);
     }
-
 }

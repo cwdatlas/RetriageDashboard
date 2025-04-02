@@ -45,10 +45,10 @@ public class PatientPoolController {
 
         boolean saved = poolService.savePool(newPool);
         if (saved) {
-            logger.info("createPool - Successfully created pool: {}", newPool.getName());
+            logger.info("createPool - Pool created successfully with ID: {}", newPool.getId());
             return ResponseEntity.created(URI.create("/pools/" + newPool.getId())).body(newPool);
         } else {
-            logger.error("createPool - Failed to create pool: {}", poolForm.getName());
+            logger.error("createPool - Pool creation failed.");
             ErrorResponse errorResponse = new ErrorResponse(
                     List.of("Failed to create pool."),
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -64,7 +64,7 @@ public class PatientPoolController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<PatientPool>> getAllPools() {
         List<PatientPool> pools = poolService.findAllPool();
-        logger.info("getAllPools - Returning {} pools", pools.size());
+        logger.info("getAllPools - Retrieved {} pools.", pools.size());
         return ResponseEntity.ok(pools);
     }
 
@@ -75,10 +75,10 @@ public class PatientPoolController {
     public ResponseEntity<?> findPoolByID(@PathVariable Long id) {
         Optional<PatientPool> optionalPool = poolService.findPoolById(id);
         if (optionalPool.isPresent()) {
-            logger.info("findPoolByID - Pool with id {} found.", id);
+            logger.info("findPoolByID - Pool found with ID: {}", id);
             return ResponseEntity.ok(optionalPool.get());
         } else {
-            logger.warn("findPoolByID - Pool with id {} not found.", id);
+            logger.warn("findPoolByID - Pool find failed: Pool with id {} not found.", id);
             ErrorResponse errorResponse = new ErrorResponse(
                     List.of("Pool with id " + id + " not found."),
                     HttpStatus.NOT_FOUND.value(),
@@ -94,7 +94,7 @@ public class PatientPoolController {
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deletePool(@PathVariable Long id) {
         if (poolService.findPoolById(id).isEmpty()) {
-            logger.warn("deletePool - Pool with id {} not found.", id);
+            logger.warn("deletePool - Pool delete failed: Pool with id {} not found.", id);
             ErrorResponse errorResponse = new ErrorResponse(
                     List.of("Pool with id " + id + " not found."),
                     HttpStatus.NOT_FOUND.value(),
@@ -104,7 +104,7 @@ public class PatientPoolController {
         }
 
         poolService.deletePoolById(id);
-        logger.info("deletePool - Pool with id {} successfully deleted.", id);
+        logger.info("deletePool - Pool deleted with ID: {}", id);
         return ResponseEntity.noContent().build();
     }
 }

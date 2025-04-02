@@ -36,26 +36,21 @@ public class EventWebSocketController {
     @MessageMapping("/update")
     @SendTo("/topic/event_updates")
     public Event WebsocketConnection(EventForm eventForm) {
-        logger.debug("WebSocketConnection: Client tried to get data");
         List<String> errorList = new ArrayList<>();
         List<User> nurseList = new ArrayList<>();
         // Validate nurses
         for (User nurse : eventForm.getNurses()) {
             if (nurse.getEmail() == null) {
-                errorList.add("Nurse of name of " + nurse.getFirstName() + " " + nurse.getLastName() + " must have email.");
-                logger.debug("createEvent - submitted Nurse of name {} did not have an email address.", nurse.getFirstName() + " " + nurse.getLastName());
+                errorList.add("Nurse must have a valid email.");
+                logger.warn("WebsocketConnection - Nurse validation failed: Invalid email.");
             } else {
                 String nurseEmail = nurse.getEmail();
                 User savedNurse = userService.getUserByEmail(nurseEmail);
-                if (savedNurse == null) {
-                    errorList.add("Submitted nurse " + nurse.getEmail() + "was not found.");
-                    logger.debug("updateEvent - Nurse with email {} not found", nurseEmail);
-                } else if (savedNurse.getRole() == Role.Guest) {
-                    errorList.add("User " + savedNurse.getEmail() + " is a Guest, Guests can't be added to an event");
-                    logger.info("createEvent - User {} is a Guest", nurse.getEmail());
+                if (savedNurse == null || savedNurse.getRole() == Role.Guest) {
+                    errorList.add("Nurse not found or is a Guest.");
+                    logger.warn("WebsocketConnection - Nurse validation failed: Nurse not found or Guest.");
                 } else {
                     nurseList.add(savedNurse);
-                    logger.debug("createEvent - Nurse {} validated", savedNurse.getEmail());
                 }
             }
         }
@@ -74,11 +69,12 @@ public class EventWebSocketController {
 
         Event response = eventService.findActiveEvent();
         if (response == null) {
-            logger.debug("EventWebSocketController: Zero running events found");
+            logger.warn("WebsocketConnection - Active event find failed: No active event found.");
             Event errorReturnEvent = new Event();
             errorReturnEvent.setName("NoEventFound");
             return errorReturnEvent;
         }
+        logger.info("WebsocketConnection - Active event found.");
         return response;
     }
 }

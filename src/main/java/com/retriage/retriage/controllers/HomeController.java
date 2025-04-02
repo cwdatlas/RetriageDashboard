@@ -59,22 +59,20 @@ public class HomeController {
      * @return A {@link ResponseEntity} that either redirects to the frontend or returns an error.
      */
     @RequestMapping("/")
-//    @PreAuthorize("hasAuthority('Director')") // Use this to check the role of a User
     public ResponseEntity<?> oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal, HttpServletResponse response) {
         List<String> roles = null;
         try {
             roles = principal.getAttribute("groups");
         } catch (NullPointerException e) {
-            logger.warn("oktaLogin: Client logged in without role. Setting role to guest for user {}",
-                    principal != null ? principal.getName() : "UNKNOWN_USER_GROUP");
+            logger.warn("oktaLogin - User logged in without role: {}", principal != null ? principal.getName() : "UNKNOWN_USER_GROUP");
         }
 
         Role userRole = Role.Guest;
         List<String> errors = new ArrayList<>();
-//        if (roles == null || !roles.contains("Director") {
+
         if (roles == null) {
-            logger.warn("oktaLogin: Client logged in without role. Access denied.");
-            throw new AccessDeniedException("Access denied due to missing role.");
+            logger.warn("oktaLogin - Access denied: Missing role.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(List.of("Access denied due to missing role."), HttpStatus.FORBIDDEN.value(), "ACCESS_DENIED"));
         } else {
             for (Role role : Role.values()) {
                 if (roles.contains(role.toString())) {
@@ -89,17 +87,17 @@ public class HomeController {
         String email = principal.getFirstAttribute("email");
 
         if (firstName == null) {
-            errors.add("First name not provided by authentication provider.");
+            errors.add("First name not provided.");
             firstName = "Guesty";
         }
         if (lastName == null) {
-            errors.add("Last name not provided by authentication provider.");
+            errors.add("Last name not provided.");
             lastName = "McGuestFace";
         }
         if (email == null) {
-            errors.add("Email address not provided by authentication provider.");
-            ErrorResponse errorResponse = new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "MISSING_EMAIL");
-            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+            errors.add("Email not provided.");
+            logger.warn("oktaLogin - Authentication failed: Missing email.");
+            return new ResponseEntity<>(new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "MISSING_EMAIL"), HttpStatus.UNAUTHORIZED);
         }
 
         if (userService.getUserByEmail(email) == null) {
@@ -109,11 +107,12 @@ public class HomeController {
             newUser.setLastName(lastName);
             newUser.setRole(userRole);
             userService.saveUser(newUser);
+            logger.info("oktaLogin - New user saved with email: {}", email);
         }
 
         if (!errors.isEmpty()) {
-            ErrorResponse errorResponse = new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "AUTHENTICATION_ERROR");
-            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+            logger.warn("oktaLogin - Authentication failed: Validation errors.");
+            return new ResponseEntity<>(new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "AUTHENTICATION_ERROR"), HttpStatus.UNAUTHORIZED);
         }
 
         // Setting cookies using helper method
@@ -122,6 +121,7 @@ public class HomeController {
         response.addCookie(createCookie("role", userRole.toString()));
         response.addCookie(createCookie("email", email));
 
+        logger.info("oktaLogin - User authenticated and cookies set for email: {}", email);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", "http://localhost:3000/")
                 .build();

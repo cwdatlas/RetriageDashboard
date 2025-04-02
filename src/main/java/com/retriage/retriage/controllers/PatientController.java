@@ -48,6 +48,7 @@ public class PatientController {
         }
 
         if (!errors.isEmpty()) {
+            logger.warn("createPatient - Patient creation failed: Invalid input.");
             return ResponseEntity.badRequest().body(new ErrorResponse(errors, 400, "INVALID_INPUT"));
         }
 
@@ -56,6 +57,7 @@ public class PatientController {
         patient.setCardId(patientForm.getCardId());
         patient.setCondition(patientForm.getCondition());
         Patient saved = patientService.savePatient(patient);
+        logger.info("createPatient - Patient created successfully with ID: {}", saved.getId());
         return ResponseEntity.created(URI.create("/patients/" + saved.getId())).body(saved);
     }
 
@@ -65,7 +67,9 @@ public class PatientController {
      */
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<Patient>> getAllPatients() {
-        return ResponseEntity.ok(patientService.getAllPatients());
+        List<Patient> patients = patientService.getAllPatients();
+        logger.info("getAllPatients - Retrieved {} patients.", patients.size());
+        return ResponseEntity.ok(patients);
     }
 
     /**
@@ -74,13 +78,14 @@ public class PatientController {
      */
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> getPatientById(@PathVariable Long id) {
-        logger.debug("getPatientById - Fetching patient with id: {}", id);
-        return patientService.getPatientById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> {
-                    logger.warn("getPatientById - Patient with id {} not found", id);
-                    return ResponseEntity.notFound().build();
-                });
+        Optional<Patient> patient = patientService.getPatientById(id);
+        if (patient.isPresent()) {
+            logger.info("getPatientById - Patient found with ID: {}", id);
+            return ResponseEntity.ok(patient.get());
+        } else {
+            logger.warn("getPatientById - Patient find failed: Patient with id {} not found.", id);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -90,11 +95,12 @@ public class PatientController {
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deletePatient(@PathVariable Long id) {
         if (!patientService.getPatientById(id).isPresent()) {
-            logger.warn("deletePatient - Patient with id {} not found", id);
+            logger.warn("deletePatient - Patient delete failed: Patient with id {} not found.", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse(List.of("Patient not found"), 404, "DELETE_FAILED"));
         }
         patientService.deletePatient(id);
+        logger.info("deletePatient - Patient deleted with ID: {}", id);
         return ResponseEntity.noContent().build();
     }
 
@@ -105,10 +111,11 @@ public class PatientController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePatient(@PathVariable Long id, @RequestBody Patient patient) {
         if (!patientService.updatePatient(id, patient)) {
-            logger.warn("updatePatient - Patient with id {} not found", id);
+            logger.warn("updatePatient - Patient update failed: Patient with id {} not found.", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse(List.of("Patient not found for update."), 404, "PATIENT_ID_NOT_FOUND"));
         }
+        logger.info("updatePatient - Patient updated with ID: {}", id);
         return ResponseEntity.ok(patient);
     }
 
@@ -120,7 +127,7 @@ public class PatientController {
     public ResponseEntity<?> partialUpdatePatient(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         Optional<Patient> optionalPatient = patientService.getPatientById(id);
         if (optionalPatient.isEmpty()) {
-            logger.warn("partialUpdatePatient - Patient with id {} not found", id);
+            logger.warn("partialUpdatePatient - Patient partial update failed: Patient with id {} not found.", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse(List.of("Patient not found for partial update."), 404, "PATIENT_ID_NOT_FOUND"));
         }
@@ -146,9 +153,12 @@ public class PatientController {
         });
 
         if (!errors.isEmpty()) {
+            logger.warn("partialUpdatePatient - Patient partial update failed: Invalid input.");
             return ResponseEntity.badRequest().body(new ErrorResponse(errors, 400, "INVALID_INPUT"));
         }
 
-        return ResponseEntity.ok(patientService.savePatient(existingPatient));
+        Patient updatedPatient = patientService.savePatient(existingPatient);
+        logger.info("partialUpdatePatient - Patient partially updated with ID: {}", updatedPatient.getId());
+        return ResponseEntity.ok(updatedPatient);
     }
 }
