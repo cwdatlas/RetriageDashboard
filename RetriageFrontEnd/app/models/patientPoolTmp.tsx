@@ -6,4 +6,5 @@ export interface PatientPoolTmp {
     usable: boolean;
     poolType: PoolType;
     poolNumber: number;
+    queueSize: number;
 }

@@ -5,7 +5,7 @@ import Footer from "@/app/components/panel/footer";
 
 export default function Home() {
     return (
-        <main>
+        <main className="d-flex flex-column min-vh-100">
             <Header/>
 
             <p>The Mass Mock Casualty Event is put on by Kathrin Pieper at the Carroll College nursing department.

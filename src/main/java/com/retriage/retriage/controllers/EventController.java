@@ -36,8 +36,8 @@ public class EventController {
      */
     public EventController(EventService eventService, UserService userService) {
         this.eventService = eventService;
+        logger.debug("Event Service injected: {}", eventService);
         this.userService = userService;
-        logger.debug("EventController initialized with EventService and UserService");
     }
 
     /**
@@ -45,66 +45,95 @@ public class EventController {
      * Creates a new Event with the given form data
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
+    @PreAuthorize("hasAuthority('ADMIN')") //Restricts to ADMIN role only
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventTmpForm eventform) {
         List<String> errorList = new ArrayList<>();
-
-        if (eventform.getDirector() == null || eventform.getDirector().getEmail() == null) {
-            errorList.add("Director must be specified with a valid email");
-            logger.warn("createEvent - Invalid Director email input");
+        // Validate Director
+        logger.debug("createEvent - Validating Director...");
+        if (eventform.getDirector() == null) {
+            errorList.add("Director must  be added to event");
+            logger.warn("createEvent - Director is null");
+        } else if (eventform.getDirector().getEmail() == null) {
+            errorList.add("createEvent - Submitted director lacking email address");
+            logger.warn("createEvent - Director email is null");
         } else {
             String directorEmail = eventform.getDirector().getEmail();
+            logger.debug("createEvent - Attempting to retrieve director with email: {}", directorEmail);
             User director = userService.getUserByEmail(directorEmail);
-
             if (director == null) {
-                errorList.add("Director does not exist");
+                errorList.add("Director does not exist, not authorized to create an event");
                 logger.warn("createEvent - Director with email {} not found", directorEmail);
             } else if (director.getRole() != Role.Director) {
-                errorList.add("User is not a director");
-                logger.warn("createEvent - User {} is not a Director (Role: {})", director.getEmail(), director.getRole());
+                errorList.add("User " + director.getEmail() + " is not a director, they are a " + director.getRole());
+                logger.warn("createEvent - User role: {} is not Director, Current User role: {}", director.getEmail(), director.getRole());
+            } else {
+                logger.debug("createEvent - Director validated!");
             }
         }
-
+        // Patient Pool Template validation
         List<PatientPool> pools = new ArrayList<>();
+        logger.info("Validating Patient Pools...");
         if (eventform.getPoolTmps().isEmpty()) {
-            errorList.add("At least one Pool Template is required");
-            logger.warn("createEvent - No Pool Templates provided");
+            errorList.add("Must add at least 1 Pool Template");
+            logger.debug("createEvent - No Pool Templates provided");
         } else {
-            for (PatientPoolTmp poolTmp : eventform.getPoolTmps()) {
+            PatientPoolTmp[] templates = eventform.getPoolTmps().toArray(new PatientPoolTmp[eventform.getPoolTmps().size()]);
+            logger.debug("createEvent - Processing {} Pool Templates", templates.length);
+            for (PatientPoolTmp poolTmp : templates) {
                 for (int i = 1; i <= poolTmp.getPoolNumber(); i++) {
                     PatientPool patientPool = new PatientPool();
                     patientPool.setPoolType(poolTmp.getPoolType());
                     patientPool.setUseable(poolTmp.isUseable());
-                    patientPool.setProcessTime(poolTmp.getPoolType() == PoolType.Bay ? eventform.getDuration() : poolTmp.getProcessTime());
-                    patientPool.setName(poolTmp.getPoolNumber() == 1 ? poolTmp.getName() : poolTmp.getName() + " " + i);
+                    patientPool.setQueueSize(poolTmp.getQueueSize());
+                    if (poolTmp.getPoolType() == PoolType.Bay) {
+                        patientPool.setProcessTime(eventform.getDuration());
+                        logger.debug("createEvent - Bay Pool created, process time set to event duration: {}", eventform.getDuration());
+                    } else {
+                        patientPool.setProcessTime(poolTmp.getProcessTime());
+                        logger.debug("createEvent - Non-Bay Pool created, process time set to: {}", poolTmp.getProcessTime());
+                    }
+                    if (poolTmp.getPoolNumber() == 1) {
+                        patientPool.setName(poolTmp.getName());
+                    } else {
+                        patientPool.setName(poolTmp.getName() + " " + i);
+                    }
+                    patientPool.setPatients(new ArrayList<Patient>());
                     patientPool.setActive(true);
                     pools.add(patientPool);
+                    logger.debug("createEvent - Patient Pool added: {}", patientPool);
                 }
             }
-            logger.debug("createEvent - Created {} Patient Pools", pools.size());
         }
+        // validation for event
+        if (pools.isEmpty()) {
+            errorList.add("Must add at least 1 Pool Template"); //TODO use dry practices to exclude this piece of code
+            logger.warn("createEvent - No Patient Pools created after validation");
+        } else if (errorList.isEmpty()) {
+            Event newEvent = new Event();
+            newEvent.setName(eventform.getName());
+            User director = userService.getUserByEmail(eventform.getDirector().getEmail());
+            newEvent.setDirector(director);
+            newEvent.setNurses(new ArrayList<User>());
+            newEvent.setPools(pools);
+            newEvent.setStatus(Status.Paused);
+            newEvent.setStartTime(System.currentTimeMillis());
+            newEvent.setDuration(eventform.getDuration());
+            logger.info("createEvent - Event object created: {}", newEvent);
 
-        if (!errorList.isEmpty()) {
-            logger.warn("createEvent - Validation failed with errors: {}", errorList);
-            return new ResponseEntity<>(new ErrorResponse(errorList, HttpStatus.BAD_REQUEST.value(), "VALIDATION_FAILED"), HttpStatus.BAD_REQUEST);
+            boolean saved = eventService.saveEvent(newEvent);
+            if (saved) {
+                logger.info("createEvent - Event saved successfully");
+                return ResponseEntity.created(URI.create("/events/")).body(new SuccessResponse("Successfully saved event", newEvent.getId()));
+            } else {
+                logger.error("createEvent - Unknown error occurred while saving event");
+                ErrorResponse errorResponse = new ErrorResponse(List.of("Unknown error saving event."), HttpStatus.INTERNAL_SERVER_ERROR.value(), "SAVE_FAILED");
+                return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
         }
-
-        Event newEvent = new Event();
-        newEvent.setName(eventform.getName());
-        newEvent.setDirector(userService.getUserByEmail(eventform.getDirector().getEmail()));
-        newEvent.setNurses(new ArrayList<>());
-        newEvent.setPools(pools);
-        newEvent.setStatus(Status.Paused);
-        newEvent.setStartTime(System.currentTimeMillis());
-        newEvent.setDuration(eventform.getDuration());
-
-        boolean saved = eventService.saveEvent(newEvent);
-        if (saved) {
-            logger.debug("createEvent - Event '{}' created successfully", newEvent.getName());
-            return ResponseEntity.created(URI.create("/events/")).body(new SuccessResponse("Successfully saved event", newEvent.getId()));
-        } else {
-            logger.error("createEvent - Failed to save event due to unknown error");
-            return new ResponseEntity<>(new ErrorResponse(List.of("Unknown error saving event."), HttpStatus.INTERNAL_SERVER_ERROR.value(), "SAVE_FAILED"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            logger.warn("createEvent - Returning response with errors: {}", errorList);
+            ErrorResponse errorResponse = new ErrorResponse(errorList, HttpStatus.BAD_REQUEST.value(), "VALIDATION_FAILED");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -115,9 +144,10 @@ public class EventController {
         Event event = eventService.findEventById(id);
         if (event == null) {
             logger.warn("findEventByID - Event with id {} not found", id);
-            return new ResponseEntity<>(new ErrorResponse(List.of("Event not found"), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND"), HttpStatus.NOT_FOUND);
+            ErrorResponse errorResponse = new ErrorResponse(List.of("Event with id " + id + " not found."), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok(event);
+        return ResponseEntity.ok(event); // Returning 200 OK with the Event object as JSON
     }
 
     /**
@@ -129,8 +159,8 @@ public class EventController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getAllEvents() {
         List<Event> events = eventService.findAllEvents();
-        logger.debug("getAllEvents - Found {} events", events.size());
-        return ResponseEntity.ok(events);
+        logger.debug("Returning {} events", events.size());
+        return new ResponseEntity<>(events, HttpStatus.OK); // Returning 200 OK with the list of events
     }
 
     @Transactional
@@ -138,9 +168,10 @@ public class EventController {
     public ResponseEntity<Event> getActiveEvent() {
         Event event = eventService.findActiveEvent();
         if (event == null) {
-            logger.warn("getActiveEvent - No active event found");
+            logger.warn("getActiveEvent - No active event found, returning HTTP STATUS 404");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        logger.debug("getActiveEvent - Active event found, returning HTTP STATUS ok");
         return ResponseEntity.ok(event);
     }
 
@@ -152,61 +183,57 @@ public class EventController {
      * @return Returns a confirmation that the event was deleted
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('Director')") //Restricts to Director roles only
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
         eventService.deleteEventById(id);
-        logger.info("deleteEvent - Event {} deleted successfully", id);
-        return ResponseEntity.ok().build();
+        logger.info("Event with id {} deleted", id);
+        return ResponseEntity.status(HttpStatus.OK).build(); // Successful deletion
     }
 
     /**
      * updateEvent
      */
     @PutMapping(consumes = "application/json", produces = "application/json")
-    @PreAuthorize("hasAuthority('Director')") //Restricts to Director roles only
     public ResponseEntity<?> updateEvent(@Valid @RequestBody EventForm eventForm) {
         List<String> errorList = new ArrayList<>();
         List<User> nurseList = new ArrayList<>();
-
+        // Validate Director
         for (User nurse : eventForm.getNurses()) {
             if (nurse.getEmail() == null) {
-                errorList.add("Nurse must have an email");
-                logger.warn("updateEvent - Nurse {} is missing an email", nurse.getFirstName() + " " + nurse.getLastName());
+                errorList.add("Nurse of name of " + nurse.getFirstName() + " " + nurse.getLastName() + " must have email.");
+                logger.warn("createEvent - submitted Nurse of name {} did not have an email address.", nurse.getFirstName() + " " + nurse.getLastName());
             } else {
-                User savedNurse = userService.getUserByEmail(nurse.getEmail());
+                String nurseEmail = nurse.getEmail();
+                User savedNurse = userService.getUserByEmail(nurseEmail);
                 if (savedNurse == null) {
-                    errorList.add("Nurse not found");
-                    logger.warn("updateEvent - Nurse with email {} not found", nurse.getEmail());
+                    errorList.add("Submitted nurse " + nurse.getEmail() + "was not found.");
+                    logger.warn("updateEvent - Nurse with email {} not found", nurseEmail);
                 } else if (savedNurse.getRole() == Role.Guest) {
-                    errorList.add("Guest users cannot be nurses");
-                    logger.warn("updateEvent - User {} is a Guest and cannot be added", nurse.getEmail());
+                    errorList.add("User " + savedNurse.getEmail() + " is a Guest, Guests can't be added to an event");
+                    logger.warn("createEvent - User {} is a Guest", nurse.getEmail());
                 } else {
                     nurseList.add(savedNurse);
+                    logger.warn("createEvent - Nurse {} validated", savedNurse.getEmail());
                 }
             }
         }
 
-        if (!errorList.isEmpty()) {
-            logger.warn("updateEvent - Validation errors: {}", errorList);
-            return new ResponseEntity<>(new ErrorResponse(errorList, HttpStatus.BAD_REQUEST.value(), "VALIDATION_FAILED"), HttpStatus.BAD_REQUEST);
-        }
-
         Event updatedEvent = new Event();
-        updatedEvent.setId(eventForm.getId());
         updatedEvent.setName(eventForm.getName());
+        updatedEvent.setId(eventForm.getId());
         updatedEvent.setDuration(eventForm.getDuration());
         updatedEvent.setPools(eventForm.getPools());
         updatedEvent.setStatus(eventForm.getStatus());
         updatedEvent.setNurses(nurseList);
         updatedEvent.setDirector(eventForm.getDirector());
         updatedEvent.setStartTime(eventForm.getStartTime());
+        logger.debug("updateEvent - Updated Event object created: {}", updatedEvent);
 
         Event response = eventService.updateEvent(eventForm.getId(), updatedEvent);
         if (response == null) {
-            logger.warn("updateEvent - Update failed for event {}", eventForm.getId());
-            return new ResponseEntity<>(new ErrorResponse(List.of("Event update failed"), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND"), HttpStatus.NOT_FOUND);
+            logger.warn("updateEvent - Unable to update event with id: {}", eventForm.getId());
+            ErrorResponse errorResponse = new ErrorResponse(List.of("Event with id " + eventForm.getId() + " unable to be updated."), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
-        logger.info("updateEvent - Event {} updated successfully", response.getId());
-        return ResponseEntity.ok(new SuccessResponse("Event updated successfully", response.getId()));
+        return ResponseEntity.ok(new SuccessResponse("Updated event successfully", response.getId())); // Using ResponseEntity.ok for success with JSON
     }
 }

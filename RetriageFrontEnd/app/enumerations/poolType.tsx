@@ -1,5 +1,6 @@
 export enum PoolType {
     Bay = "Bay",
-    MedService = "MedService"
+    MedService = "MedService",
+    Floor = "Floor"
 
 }

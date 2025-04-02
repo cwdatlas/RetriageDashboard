@@ -96,7 +96,7 @@ export default function CreatePatient({getActiveEvent}: { getActiveEvent: () => 
                                     <option value={Condition.Immediate}>Immediate</option>
                                     <option value={Condition.Delayed}>Delayed</option>
                                     <option value={Condition.Minor}>Minor</option>
-                                    <option value={Condition.Expectant}>Expectant</option>
+                                    <option value={Condition.Deceased}>Deceased</option>
                                 </select>
                             </div>
 

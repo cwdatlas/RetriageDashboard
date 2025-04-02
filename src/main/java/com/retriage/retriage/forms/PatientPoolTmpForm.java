@@ -26,6 +26,10 @@ public class PatientPoolTmpForm {
     @Size(min = 1, message = "Must have at least 1 pool and a maximum of 5 pools")
     private int poolNumber;
 
+    @NotNull
+    @Size(max = 50)
+    private int queueSize;
+
     public PatientPoolTmpForm() {
     }
 }

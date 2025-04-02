@@ -27,6 +27,8 @@ public class PatientPoolForm {
 
     private PoolType poolType;
 
+    private int queueSize;
+
     public PatientPoolForm() {
     }
 }

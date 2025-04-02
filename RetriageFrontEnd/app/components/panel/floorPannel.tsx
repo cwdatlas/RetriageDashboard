@@ -1,39 +1,44 @@
 'use client'
 
-import {PatientPool} from "@/app/models/patientPool";
+import { PatientPool } from "@/app/models/patientPool";
 import PatientIcon from "@/app/components/panel/patientIcon";
-import {useDroppable} from "@dnd-kit/core";
-import {Event} from "@/app/models/event";
+import { useDroppable } from "@dnd-kit/core";
+import { Event } from "@/app/models/event";
 
-export default function BayPanel({bay, getActiveEvent}: { bay: PatientPool, getActiveEvent: () => Event }) {
-    const {isOver, setNodeRef} = useDroppable({
-        id: bay.id || 0,
+export default function FloorPanel({ floor, getActiveEvent }: { floor: PatientPool, getActiveEvent: () => Event }) {
+    const { isOver, setNodeRef } = useDroppable({
+        id: floor.id || 0,
     });
     const style = {
         color: isOver ? 'green' : undefined,
     };
+
     return (
         <div ref={setNodeRef} style={style} className="card rounded mb-3">
             <div className="card-header d-flex justify-content-between align-items-center">
-                <h2 className="card-title">{bay.name}</h2>
+                <h2 className="card-title mb-0">{floor.name}</h2>
                 <div className="d-flex align-items-center">
                     <img
                         src="/images/bed.png"
                         alt="Bed Icon"
                         style={{ width: "24px", height: "24px", marginRight: "4px" }}
                     />
-                    <span>{bay.queueSize - bay.patients.length}</span>
+                    <span>{floor.queueSize - floor.patients.length}</span>
                 </div>
             </div>
             <div className="card-body">
                 <div className="row row-cols-6">
-                    {bay.patients.map((patient, idx) => (
+                    {floor.patients.map((patient, idx) => (
                         <div key={idx} className="col mb-2">
-                            <PatientIcon patient={patient} patientList={bay.patients} getActiveEvent={getActiveEvent}/>
+                            <PatientIcon
+                                patient={patient}
+                                patientList={floor.patients}
+                                getActiveEvent={getActiveEvent}
+                            />
                         </div>
                     ))}
                 </div>
             </div>
         </div>
-    )
+    );
 }

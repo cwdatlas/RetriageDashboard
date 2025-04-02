@@ -9,4 +9,5 @@ export interface PatientPool {
     active: boolean;
     usable: boolean;
     poolType: PoolType;
+    queueSize: number;
 }
