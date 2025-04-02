@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Centralized exception handler for the entire application.
@@ -75,7 +76,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST) // Sets HTTP status to 400
     @ResponseBody // Ensures the response is in the body (e.g., JSON)
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
-        logger.warn("Handling validation exception: {}", ex.getMessage());
+        logger.warn("Handling validation exception: {} - Field errors: {}",
+                ex.getClass().getSimpleName(),
+                ex.getBindingResult().getFieldErrors().stream()
+                        .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                        .collect(Collectors.joining(", ")));
+
 
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
