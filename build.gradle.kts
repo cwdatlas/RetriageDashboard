@@ -73,6 +73,9 @@ dependencies {
 	}
 	// Spring Security SAML 2.0 Service Provider dependency
 	implementation ("org.springframework.security:spring-security-saml2-service-provider")
+
+	// JWT Token Dependency
+	implementation("io.jsonwebtoken:jjwt:0.11.5")
 }
 
 tasks.withType<Test> {
