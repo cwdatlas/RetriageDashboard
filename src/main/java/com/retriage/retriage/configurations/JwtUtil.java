@@ -87,7 +87,6 @@ public class JwtUtil {
      * @return The signing key as a Key object.
      */
     private Key getSigningKey() {
-        System.out.println("Secret Key: " + SECRET_KEY);
         byte[] keyBytes = SECRET_KEY.getEncoded();
         return Keys.hmacShaKeyFor(keyBytes); // Creates an HMAC SHA key from the decoded bytes.
     }
