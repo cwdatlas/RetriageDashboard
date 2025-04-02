@@ -68,11 +68,20 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Disables CSRF in favor of using JWT
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/**").permitAll() // Allow public access for auth endpoints
+                        // --- PUBLIC endpoints ---
+                        .requestMatchers("/api/test/public").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/topic/**").permitAll()
+
+                        // --- SECURED endpoints ---
+                        // Endpoints that need specific roles before the general authentication
+                        .requestMatchers("/api/test/secured").hasRole("Director")
+
+                        // --- GENERAL authenticated endpoints ---
+                        .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/active_event/**").authenticated()
-//                        .requestMatchers("/").hasAuthority("Director") // Test to ensure the requestMatchers method works
+
+                        // -- Fallback for anything outside the scope above ---
                         .anyRequest().authenticated() // Require authentication for any request to this application
                 )
                 // Add JWT Auth Filter BEFORE the SAML authentication
