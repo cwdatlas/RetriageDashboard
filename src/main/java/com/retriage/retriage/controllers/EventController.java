@@ -83,7 +83,7 @@ public class EventController {
                 for (int i = 1; i <= poolTmp.getPoolNumber(); i++) {
                     PatientPool patientPool = new PatientPool();
                     patientPool.setPoolType(poolTmp.getPoolType());
-                    patientPool.setUseable(poolTmp.isUseable());
+                    patientPool.setReusable(poolTmp.isUseable());
                     patientPool.setQueueSize(poolTmp.getQueueSize());
                     if (poolTmp.getPoolType() == PoolType.Bay) {
                         patientPool.setProcessTime(eventform.getDuration());
@@ -98,7 +98,6 @@ public class EventController {
                         patientPool.setName(poolTmp.getName() + " " + i);
                     }
                     patientPool.setPatients(new ArrayList<Patient>());
-                    patientPool.setActive(true);
                     pools.add(patientPool);
                     logger.debug("createEvent - Patient Pool added: {}", patientPool);
                 }
@@ -119,6 +118,7 @@ public class EventController {
             newEvent.setStartTime(System.currentTimeMillis());
             newEvent.setDuration(eventform.getDuration());
             newEvent.setRemainingDuration(eventform.getDuration());
+            newEvent.setTimeOfStatusChange(System.currentTimeMillis());
             logger.info("createEvent - Event object created: {}", newEvent);
 
             boolean saved = eventService.saveEvent(newEvent);
@@ -228,6 +228,12 @@ public class EventController {
         updatedEvent.setDirector(eventForm.getDirector());
         updatedEvent.setStartTime(eventForm.getStartTime());
         updatedEvent.setRemainingDuration(eventForm.getRemainingDuration());
+        Event oldEvent = eventService.findEventById(eventForm.getId());
+        if(oldEvent == null){
+            errorList.add("Attempted to update event without already existing.");
+        }else if(oldEvent.getStatus() == eventForm.getStatus()){
+            updatedEvent.setTimeOfStatusChange(eventForm.getTimeOfStatusChange());
+        }
         logger.debug("updateEvent - Updated Event object created: {}", updatedEvent);
 
         Event response = eventService.updateEvent(eventForm.getId(), updatedEvent);

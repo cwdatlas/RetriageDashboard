@@ -40,6 +40,9 @@ public class EventForm {
     @NotNull(message="Duration Left must be not null. At least 0.")
     private long remainingDuration;
 
+    @NotNull(message="timeOfStatusChange Left must be not null. At least 0.")
+    private long timeOfStatusChange;
+
     public EventForm() {
     }
 
