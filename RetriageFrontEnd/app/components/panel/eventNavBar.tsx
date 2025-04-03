@@ -1,46 +1,47 @@
-// MiniNavBar component: a sticky nav bar with buttons and a countdown timer.
-import {useEffect, useState} from "react";
-import {GetCookies} from "@/app/api/cookieApi";
-import {Role} from "@/app/enumerations/role";
-import {Event} from "@/app/models/event";
-import {Status} from "@/app/enumerations/status";
+import { useEffect, useState } from "react";
+import { GetCookies } from "@/app/api/cookieApi";
+import { Role } from "@/app/enumerations/role";
+import { Event } from "@/app/models/event";
+import { Status } from "@/app/enumerations/status";
 import ToggleButton from "@/app/components/buttons/toggleButton";
 import CreatePatient from "@/app/components/buttons/createPatient";
 import Link from "next/link";
 
 export default function EventNavBar({
-                        activeEvent,
-                        toggleEventView,
-                        getActiveEvent,
-                    }: {
+                                        activeEvent,
+                                        toggleEventView,
+                                        getActiveEvent,
+                                    }: {
     activeEvent: Event | null;
     toggleEventView: () => void;
     getActiveEvent: () => Event;
 }) {
-    const [timeLeft, setTimeLeft] = useState<number>(activeEvent?.remainingDuration || 0);
+    const [timeLeft, setTimeLeft] = useState<number>(0);
     const [role] = useState(GetCookies("role") as Role);
 
-    // When activeEvent updates (e.g. via a WebSocket update), sync the timer.
+    // When activeEvent updates, immediately recalc time left.
     useEffect(() => {
-        if (activeEvent && activeEvent.status === Status.Running) {
-            setTimeLeft(activeEvent.remainingDuration);
+        if (activeEvent && activeEvent.status === Status.Running && activeEvent.startTime) {
+            const now = Date.now();
+            const start = new Date(activeEvent.startTime).getTime();
+            setTimeLeft(Math.max(activeEvent.remainingDuration - (now - start), 0));
         }
     }, [activeEvent]);
 
-// Local countdown that ticks every second.
+    // Recalculate the time left every second using the startTime.
     useEffect(() => {
-        if (activeEvent && activeEvent.status === Status.Running) {
+        if (activeEvent && activeEvent.status === Status.Running && activeEvent.startTime) {
             const interval = setInterval(() => {
-                setTimeLeft((prev) => {
-                    const newTime = prev - 1000;
-                    return newTime >= 0 ? newTime : 0;
-                });
+                const now = Date.now();
+                const start = new Date(activeEvent.startTime).getTime();
+                const calculated = activeEvent.remainingDuration - (now - start);
+                setTimeLeft(calculated > 0 ? calculated : 0);
             }, 1000);
             return () => clearInterval(interval);
         }
     }, [activeEvent]);
 
-    // Simple formatter to show mm:ss
+    // Simple formatter to show mm:ss.
     const formatTime = (ms: number) => {
         const totalSeconds = Math.floor(ms / 1000);
         const minutes = Math.floor(totalSeconds / 60);
@@ -49,13 +50,14 @@ export default function EventNavBar({
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-secondary sticky-top" style={{zIndex: 1050}}>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-secondary sticky-top" style={{ zIndex: 1050 }}>
             <div className="container-fluid">
                 {/* Left side: toggle event section button */}
-                {role == Role.Director &&
+                {role === Role.Director && (
                     <div className="d-flex">
-                        <ToggleButton onToggle={toggleEventView} label={"Toggle Event Section"}/>
-                    </div>}
+                        <ToggleButton onToggle={toggleEventView} label={"Toggle Event Section"} />
+                    </div>
+                )}
                 {/* Center: countdown timer */}
                 <div className="mx-auto">
                     {activeEvent && activeEvent.status === Status.Running ? (
@@ -68,14 +70,15 @@ export default function EventNavBar({
                 <div className="d-flex">
                     {activeEvent && activeEvent.status === Status.Running && (
                         <div className="me-2">
-                            {activeEvent.status === Status.Running && role != Role.Guest &&
-                                <CreatePatient getActiveEvent={getActiveEvent}/>}
+                            {role !== Role.Guest && <CreatePatient getActiveEvent={getActiveEvent} />}
                         </div>
                     )}
                     <div>
-                        {role == Role.Director && <Link className="btn btn-primary" href="/event/eventcreation">
-                            Create Event
-                        </Link>}
+                        {role === Role.Director && (
+                            <Link className="btn btn-primary" href="/event/eventcreation">
+                                Create Event
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
