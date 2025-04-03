@@ -30,7 +30,7 @@ public class PatientPoolController {
 
     /**
      * createPool
-     * Creates a Pool to be used during an event
+     * Creates a new Patient Pool to be used during an event
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> createPool(@RequestBody PatientPoolForm poolForm) {
@@ -44,45 +44,66 @@ public class PatientPoolController {
 
         boolean saved = poolService.savePool(newPool);
         if (saved) {
+            logger.info("createPool - Pool created successfully with ID: {}", newPool.getId());
             return ResponseEntity.created(URI.create("/pools/" + newPool.getId())).body(newPool);
         } else {
-            ErrorResponse errorResponse = new ErrorResponse(List.of("Failed to create pool."), HttpStatus.INTERNAL_SERVER_ERROR.value(), "CREATE_FAILED");
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("createPool - Pool creation failed.");
+            ErrorResponse errorResponse = new ErrorResponse(
+                    List.of("Failed to create pool."),
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "CREATE_POOL_FAILED"
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
     /**
-     * getAllPools
-     * Returns all previously created Pool objects
+     * getAllPools - Returns all Patient Pools
      */
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<PatientPool>> getAllPools() {
         List<PatientPool> pools = poolService.findAllPool();
-        return new ResponseEntity<>(pools, HttpStatus.OK);
+        logger.info("getAllPools - Retrieved {} pools.", pools.size());
+        return ResponseEntity.ok(pools);
     }
 
     /**
-     * findPoolByID
-     * Returns the Pool object associated with the passed in ID
+     * findPoolByID - Returns a Pool by ID
      */
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> findPoolByID(@PathVariable Long id) {
         Optional<PatientPool> optionalPool = poolService.findPoolById(id);
         if (optionalPool.isPresent()) {
-            return ResponseEntity.ok(optionalPool.get()); // Body is PatientPool
+            logger.info("findPoolByID - Pool found with ID: {}", id);
+            return ResponseEntity.ok(optionalPool.get());
         } else {
-            ErrorResponse errorResponse = new ErrorResponse(List.of("Pool with id " + id + " not found."), HttpStatus.NOT_FOUND.value(), "POOL_NOT_FOUND");
-            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND); // Body is ErrorResponse
+            logger.warn("findPoolByID - Pool find failed: Pool with id {} not found.", id);
+            ErrorResponse errorResponse = new ErrorResponse(
+                    List.of("Pool with id " + id + " not found."),
+                    HttpStatus.NOT_FOUND.value(),
+                    "POOL_NOT_FOUND"
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
 
     /**
-     * deletePool
-     * Deletes the Pool object associated with the passed in ID
+     * deletePool - Deletes a Pool by ID
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePool(@PathVariable Long id) {
+    @DeleteMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<?> deletePool(@PathVariable Long id) {
+        if (poolService.findPoolById(id).isEmpty()) {
+            logger.warn("deletePool - Pool delete failed: Pool with id {} not found.", id);
+            ErrorResponse errorResponse = new ErrorResponse(
+                    List.of("Pool with id " + id + " not found."),
+                    HttpStatus.NOT_FOUND.value(),
+                    "POOL_NOT_FOUND"
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+
         poolService.deletePoolById(id);
+        logger.info("deletePool - Pool deleted with ID: {}", id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -66,13 +66,15 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/topic/**").permitAll()
-                        .requestMatchers("/active_event/**").permitAll()
+                        .requestMatchers("/active_event/**").authenticated()
+//                        .requestMatchers("/").hasAuthority("Director") // Test to ensure the requestMatchers method works
                         .anyRequest().authenticated() // Require authentication for any request to this application
                 )
                 // Login Settings
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom SAML authentication provider
-                        .defaultSuccessUrl("/", true)) // <- Forces redirect to home after successful login)
+                        .defaultSuccessUrl("/", true) // <- Forces redirect to home after successful login)
+                )
                 //Logout Settings
                 .saml2Logout(withDefaults())
                 .logout(logout -> logout
@@ -80,7 +82,8 @@ public class SecurityConfiguration {
                         .logoutSuccessUrl("/") // Redirect to HOME after logout
                         .invalidateHttpSession(true) // Invalidates the http session, makes user have to log in again
                         .clearAuthentication(true) // Clears all authentication on logout
-                        .deleteCookies("JSESSIONID")); // Enable SAML Logout with default configurations
+                        .deleteCookies("JSESSIONID")
+                ); // Enable SAML Logout with default configurations
 
         return http.build(); // Build and return the configured SecurityFilterChain
     }

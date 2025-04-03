@@ -4,6 +4,7 @@ import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.forms.PatientPoolTmpForm;
 import com.retriage.retriage.models.PatientPoolTmp;
 import com.retriage.retriage.services.PatientPoolTmpService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class PatientPoolTmpController {
      * POST /templates
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> createPool(@RequestBody PatientPoolTmpForm poolForm) {
+    public ResponseEntity<?> createPool(@Valid @RequestBody PatientPoolTmpForm poolForm) {
         PatientPoolTmp newPool = new PatientPoolTmp();
         newPool.setName(poolForm.getName());
         newPool.setUseable(poolForm.isUseable());
@@ -46,12 +47,16 @@ public class PatientPoolTmpController {
 
         boolean saved = poolService.savePoolTmp(newPool);
         if (saved) {
-            log.debug("createPool: Saved new pool Template name '{}'", newPool.getName());
-            return ResponseEntity.created(URI.create("/templates")).body(newPool); // Body is PatientPoolTmp
+            log.info("createPool - Pool template created successfully with ID: {}", newPool.getId());
+            return ResponseEntity.created(URI.create("/templates/" + newPool.getId())).body(newPool);
         } else {
-            log.warn("createPool: Unable to save template name'{}'", newPool.getName());
-            ErrorResponse errorResponse = new ErrorResponse(List.of("Unable to save pool template."), HttpStatus.INTERNAL_SERVER_ERROR.value(), "SAVE_FAILED");
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR); // Body is ErrorResponse
+            log.error("createPool - Pool template creation failed.");
+            ErrorResponse errorResponse = new ErrorResponse(
+                    List.of("Unable to save pool template."),
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "SAVE_FAILED"
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
@@ -62,9 +67,8 @@ public class PatientPoolTmpController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<PatientPoolTmp>> getAllPools() {
         List<PatientPoolTmp> pools = poolService.findAllPoolTmp();
-        log.debug("Found {} pools", pools.size());
-        log.debug("Pools '{}' found", pools);
-        return new ResponseEntity<>(pools, HttpStatus.OK); // Body is List<PatientPoolTmp>
+        log.info("getAllPools - Retrieved {} pool templates.", pools.size());
+        return ResponseEntity.ok(pools);
     }
 
     /**
@@ -73,24 +77,39 @@ public class PatientPoolTmpController {
      */
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> findPoolByID(@PathVariable Long id) {
-        Optional<PatientPoolTmp> optionalDirector = poolService.findPoolTmpById(id);
-        if (optionalDirector.isPresent()) {
-            return ResponseEntity.ok(optionalDirector.get()); // Body is PatientPoolTmp
+        Optional<PatientPoolTmp> optionalPool = poolService.findPoolTmpById(id);
+        if (optionalPool.isPresent()) {
+            log.info("findPoolByID - Pool template found with ID: {}", id);
+            return ResponseEntity.ok(optionalPool.get());
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // No body, 404 Not Found
+            log.warn("findPoolByID - Pool template find failed: Pool template with id {} not found.", id);
+            ErrorResponse errorResponse = new ErrorResponse(
+                    List.of("Template with id " + id + " not found."),
+                    HttpStatus.NOT_FOUND.value(),
+                    "TEMPLATE_NOT_FOUND"
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
-
-    // OPTIONAL: Update or partial updates (PUT/PATCH) and Delete
-    // For completeness, here's a simple delete example
 
     /**
      * 4) Delete a Patient
      * DELETE /templates/{id}
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePool(@PathVariable Long id) {
+    @DeleteMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<?> deletePool(@PathVariable Long id) {
+        if (poolService.findPoolTmpById(id).isEmpty()) {
+            log.warn("deletePool - Pool template delete failed: Pool template with id {} not found.", id);
+            ErrorResponse errorResponse = new ErrorResponse(
+                    List.of("Template with id " + id + " not found."),
+                    HttpStatus.NOT_FOUND.value(),
+                    "POOL_TEMPLATE_NOT_FOUND"
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+
         poolService.deletePoolTmpById(id);
-        return ResponseEntity.noContent().build(); // No body, 204 No Content
+        log.info("deletePool - Pool template deleted with ID: {}", id);
+        return ResponseEntity.noContent().build();
     }
 }

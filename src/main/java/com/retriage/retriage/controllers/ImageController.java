@@ -33,40 +33,53 @@ public class ImageController {
     @PostMapping("/uploadImage")
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
-            logger.warn("uploadImage - Received empty file for upload.");
-            ErrorResponse errorResponse = new ErrorResponse(List.of("Please select a file to upload!"), HttpStatus.BAD_REQUEST.value(), "FILE_EMPTY");
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); // Body is ErrorResponse
+            logger.warn("uploadImage - File upload failed: Empty file.");
+            ErrorResponse errorResponse = new ErrorResponse(
+                    List.of("Please select a file to upload!"),
+                    HttpStatus.BAD_REQUEST.value(),
+                    "IMG_FILE_EMPTY"
+            );
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 
-        // Generate a filename for that saved image
-        String originalFilename = file.getOriginalFilename();
-        String fileExtension = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-        String uniqueFilename = UUID.randomUUID() + fileExtension;
-        logger.debug("uploadImage - Generated unique filename: {}", uniqueFilename);
+        // Generate a unique filename
+        String uniqueFilename = UUID.randomUUID() + getFileExtension(file.getOriginalFilename());
 
-        // Resolve the upload directory path
+        // Ensure the upload directory exists
         Path uploadPath = Paths.get(uploadDir);
-        logger.debug("uploadImage - Resolved upload directory path: {}", uploadPath);
+        ensureDirectoryExists(uploadPath);
 
-        // Create the directory if it doesn't exist
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-            logger.info("uploadImage - Created upload directory: {}", uploadPath);
-        }
-
-        // Save the image
+        // Save the file
         Path filePath = uploadPath.resolve(uniqueFilename);
-        logger.debug("uploadImage - Resolved file path for saving: {}", filePath);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        logger.info("uploadImage - Image uploaded successfully. Filename: {}", uniqueFilename);
+        logger.info("uploadImage - Image uploaded successfully: {}", uniqueFilename);
 
-        // Return a success ResponseEntity
-        Map<String, String> successResponse = new HashMap<>();
-        successResponse.put("message", "Image uploaded successfully!");
-        successResponse.put("filename", uniqueFilename);
-        return new ResponseEntity<>(successResponse, HttpStatus.OK); // Body is Map<String, String>
+        // Return success response
+        Map<String, String> successResponse = Map.of(
+                "message", "Image uploaded successfully!",
+                "filename", uniqueFilename
+        );
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
+
+    /**
+     * Helper method to extract file extension.
+     */
+    private String getFileExtension(String filename) {
+        if (filename != null && filename.contains(".")) {
+            return filename.substring(filename.lastIndexOf("."));
+        }
+        return "";
+    }
+
+    /**
+     * Helper method to ensure the upload directory exists.
+     */
+    private void ensureDirectoryExists(Path path) throws IOException {
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+            logger.info("uploadImage - Upload directory created: {}", path);
+        }
+    }
+
 }
