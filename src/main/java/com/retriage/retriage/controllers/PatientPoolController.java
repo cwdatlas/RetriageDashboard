@@ -37,8 +37,7 @@ public class PatientPoolController {
         PatientPool newPool = new PatientPool();
         newPool.setId(poolForm.getId());
         newPool.setName(poolForm.getName());
-        newPool.setActive(poolForm.isActive());
-        newPool.setUseable(poolForm.isUseable());
+        newPool.setReusable(poolForm.isReusable());
         newPool.setPatients(poolForm.getPatients());
         newPool.setProcessTime(poolForm.getProcessTime());
         newPool.setPoolType(poolForm.getPoolType());

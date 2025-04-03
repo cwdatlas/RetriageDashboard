@@ -19,9 +19,9 @@ public class PatientPoolForm {
     @Positive(message = "Process time must be a positive number")
     private Long processTime;
 
-    private boolean active;
+    private Long startedProcessingAt;
 
-    private boolean useable;
+    private boolean reusable;
 
     private List<Patient> patients;
 

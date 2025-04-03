@@ -19,9 +19,9 @@ public class PatientPool {
 
     private Long processTime;
 
-    private boolean active;
+    private Long startedProcessingAt;
 
-    private boolean useable;
+    private boolean reusable;
     //Owner
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "pool_id")

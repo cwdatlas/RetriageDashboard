@@ -33,7 +33,7 @@ public class ResourceServiceImpTest {
         resource.setName(name);
 //        resource.setProcessTime(processTime);
         resource.setActive(active);
-        resource.setUseable(useable);
+        resource.setReusable(useable);
         return resource;
     }
 
@@ -182,7 +182,7 @@ public class ResourceServiceImpTest {
         // Assert
         assertTrue(result, "saveResource should return true when active and useable are false");
         assertFalse(savedResource.isActive(), "Saved resource should have active as false");
-        assertFalse(savedResource.isUseable(), "Saved resource should have useable as false");
+        assertFalse(savedResource.isReusable(), "Saved resource should have useable as false");
         verify(resourceRepository, times(1)).save(resourceToSave);
     }
 
