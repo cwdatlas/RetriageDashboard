@@ -97,7 +97,7 @@ export default function EventCreation() {
         const newPool: PatientPoolTmp = {
             queueSize: 0,
             poolType: poolType,
-            processTime: parseInt(patientProcessTime) || 1,
+            processTime: parseInt(patientProcessTime) * 60000 || 60000,
             usable: true,
             name: poolName,
             poolNumber: 1
