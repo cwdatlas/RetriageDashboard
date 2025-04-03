@@ -16,6 +16,10 @@ public class PatientForm {
     @NotNull(message = "Condition is required")
     private Condition condition;
 
+    @NotNull(message = "BeingProcessed must be either true or false")
+    @NotBlank(message = "BeingProcessed must be either true or false")
+    private boolean beingProcessed;
+
     public PatientForm() {
     }
 }

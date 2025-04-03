@@ -25,6 +25,9 @@ public class Patient {
     @Column(name = "patient_condition")
     private Condition Condition;
 
+    @NotNull(message = "BeingProcessed must be either true or false")
+    private boolean processed;
+
     public Patient() {
     }
 }

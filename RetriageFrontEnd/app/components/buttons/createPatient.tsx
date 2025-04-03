@@ -29,8 +29,9 @@ export default function CreatePatient({getActiveEvent}: { getActiveEvent: () => 
 
         // 1) Construct new Patient with nurse=null (instead of {} as any)
         const newPatient: Patient = {
+            processed: false,
             cardId,
-            condition,
+            condition
         };
 
         // 2) If user selected a Bay pool, attach it
