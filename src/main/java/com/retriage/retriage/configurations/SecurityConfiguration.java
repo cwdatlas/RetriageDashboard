@@ -4,9 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,7 +12,6 @@ import org.springframework.security.saml2.provider.service.authentication.OpenSa
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider.ResponseToken;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
-import org.springframework.security.saml2.provider.service.web.authentication.Saml2WebSsoAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -38,13 +35,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * @PatientPool: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
  */
 @Configuration
-@EnableMethodSecurity
 public class SecurityConfiguration {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
 
     /**
      * configure
@@ -61,6 +52,7 @@ public class SecurityConfiguration {
      */
     @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
+
         // Create a custom authentication provider for SAML 2.0
         OpenSaml4AuthenticationProvider authenticationProvider = new OpenSaml4AuthenticationProvider();
         // Set the custom response authentication converter to handle group/role mapping
@@ -69,27 +61,15 @@ public class SecurityConfiguration {
         //Authentication begins here
         // Configure HTTP security settings
         http
-                .csrf(AbstractHttpConfigurer::disable) // Disables CSRF in favor of using JWT
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        // --- PUBLIC endpoints ---
-                        .requestMatchers("/api/test/public").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/topic/**").permitAll()
-
-                        // --- SECURED endpoints ---
-                        // Endpoints that need specific roles before the general authentication
-                        .requestMatchers("/api/test/secured").hasRole("Director")
-
-                        // --- GENERAL authenticated endpoints ---
-                        .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/active_event/**").authenticated()
-
-                        // -- Fallback for anything outside the scope above ---
+//                        .requestMatchers("/").hasAuthority("Director") // Test to ensure the requestMatchers method works
                         .anyRequest().authenticated() // Require authentication for any request to this application
                 )
-                // Add JWT Auth Filter BEFORE the SAML authentication
-                .addFilterBefore(jwtAuthenticationFilter, Saml2WebSsoAuthenticationFilter.class)
-
                 // Login Settings
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom SAML authentication provider
