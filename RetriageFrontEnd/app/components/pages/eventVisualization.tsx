@@ -1,10 +1,10 @@
-import { Event } from '@/app/models/event'
-import { PoolType } from "@/app/enumerations/poolType";
+import {Event} from '@/app/models/event'
+import {PoolType} from "@/app/enumerations/poolType";
 import BayPanel from "@/app/components/panel/bayPannel";
-import { useState } from "react";
-import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, DragOverlay } from "@dnd-kit/core";
-import { Patient } from "@/app/models/patient";
-import { sendEvent } from "@/app/api/eventWebSocket";
+import {useState} from "react";
+import {DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent} from "@dnd-kit/core";
+import {Patient} from "@/app/models/patient";
+import {sendEvent} from "@/app/api/eventWebSocket";
 import MedServicePanel from "@/app/components/panel/medServicePanel";
 import FloorPanel from "@/app/components/panel/floorPannel";
 import PatientIcon from "@/app/components/panel/patientIcon";
@@ -24,7 +24,6 @@ export default function EventVisualization({ getActiveEvent }: { getActiveEvent:
         setActivePatient(active || null);
         setOriginPoolIdId(null);
     }
-
     function handleDragEnd(event: DragEndEvent) {
         const over = event.over;
         if (over && originPoolId && originPoolId !== over.id) {
@@ -36,29 +35,58 @@ export default function EventVisualization({ getActiveEvent }: { getActiveEvent:
             const originPool = getActiveEvent().pools.find(pool => pool.id === originPoolId);
             if (overPool && originPool) {
                 const patient = originPool.patients.find(patient => patient.id === event.active.id);
+                if (!patient) {
+                    setError("Patient not found");
+                    return;
+                }
+
+                // Prevent moving from a Floor.
                 if (originPool.poolType === PoolType.Floor) {
-                    setError("Cannot assign patients after they are assigned to a bed on a floor.");
-                } else if (overPool.patients.length === overPool.queueSize) {
+                    setError("Cannot move patients from a floor.");
+                    return;
+                }
+
+                // Prevent moving a patient that is currently being processed in a MedService.
+                if (
+                    originPool.poolType === PoolType.MedService &&
+                    originPool.patients.length > 0 &&
+                    originPool.patients[0].id === patient.id &&
+                    !patient.processed
+                ) {
+                    setError("Cannot move a patient that is currently being processed at a service.");
+                    return;
+                }
+                // Remove patient from origin pool and add to destination pool.
+                if (overPool.patients.length === overPool.queueSize) {
                     setError("The maximum number of patients are already assigned.");
-                } else if (!overPool.patients && patient) {
-                    const newPatientArray: Patient[] = [patient];
-                    overPool.patients = newPatientArray;
-                    const index: number = originPool.patients.findIndex(storedPatient => storedPatient.id === patient.id);
+                } else {
+                    // Remove the patient from the origin pool.
+                    const index = originPool.patients.findIndex(storedPatient => storedPatient.id === patient.id);
                     if (index !== -1) {
                         originPool.patients.splice(index, 1);
-                        sendEvent(getActiveEvent());
+                        if(originPool.poolType == PoolType.MedService && index == 0)
+                            overPool.startedProcessingAt = Date.now();
                     } else {
                         setError("Patient not found");
+                        return;
                     }
-                } else if (patient) {
+
+                    // Mark patient as not processed
+                    patient.processed = false;
+
+                    // Add patient to the destination pool.
                     overPool.patients.push(patient);
-                    const index: number = originPool.patients.findIndex(storedPatient => storedPatient.id === patient.id);
-                    if (index !== -1) {
-                        originPool.patients.splice(index, 1);
-                        sendEvent(getActiveEvent());
-                    } else {
-                        setError("Patient not found");
+
+                    // For MedService pools, if after adding the patient becomes the first one and is not processed,
+                    // update the destination pool's startedProcessingAt.
+                    if (overPool.poolType === PoolType.MedService &&
+                        overPool.patients.length > 0 &&
+                        overPool.patients[0].id === patient.id &&
+                        !patient.processed) {
+                        overPool.startedProcessingAt = Date.now();
                     }
+
+                    sendEvent(getActiveEvent());
                 }
             } else {
                 setError("Selected Patient Pool not found.");
