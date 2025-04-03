@@ -2,6 +2,7 @@ package com.retriage.retriage.controllers;
 
 
 import com.retriage.retriage.enums.Role;
+import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.models.Event;
 import com.retriage.retriage.models.User;
@@ -70,6 +71,14 @@ public class EventWebSocketController {
         updatedEvent.setDirector(eventForm.getDirector());
         updatedEvent.setStartTime(eventForm.getStartTime());
         updatedEvent.setRemainingDuration(eventForm.getRemainingDuration());
+        Event oldEvent = eventService.findEventById(eventForm.getId());
+        if(oldEvent == null){
+            errorList.add("Attempted to update event without already existing.");
+        }else if(oldEvent.getStatus() != eventForm.getStatus()){
+            updatedEvent.setTimeOfStatusChange(System.currentTimeMillis());
+        }else{
+            updatedEvent.setTimeOfStatusChange(eventForm.getTimeOfStatusChange());
+        }
 
         eventService.updateEvent(eventForm.getId(), updatedEvent);
 

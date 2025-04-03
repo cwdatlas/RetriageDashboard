@@ -1,7 +1,10 @@
 package com.retriage.retriage.services;
 
+import com.retriage.retriage.enums.PoolType;
 import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.models.Event;
+import com.retriage.retriage.models.Patient;
+import com.retriage.retriage.models.PatientPool;
 import jakarta.transaction.Transactional;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,7 +15,7 @@ public class EventTimerServiceImp implements EventTimerService {
     private final EventService eventService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    EventTimerServiceImp(EventService eventService, SimpMessagingTemplate messagingTemplate){
+    EventTimerServiceImp(EventService eventService, SimpMessagingTemplate messagingTemplate) {
         this.eventService = eventService;
         this.messagingTemplate = messagingTemplate;
     }
@@ -22,20 +25,33 @@ public class EventTimerServiceImp implements EventTimerService {
     @Transactional
     public void updateEventDuration() {
         Event activeEvent = eventService.findActiveEvent();
+        boolean updateEvent = false;
         if (activeEvent != null) {
             long now = System.currentTimeMillis();
-            long startTime = activeEvent.getStartTime();
-            long duration = activeEvent.getDuration(); // original duration in milliseconds
+            long startTime = activeEvent.getTimeOfStatusChange();
+            long duration = activeEvent.getRemainingDuration(); // original duration in milliseconds
             long elapsed = now - startTime;
             long remaining = duration - elapsed;
             if (remaining < 0) {
-                remaining = 0;
+                activeEvent.setRemainingDuration(0);
                 activeEvent.setStatus(Status.Ended);
+            } else {
+                // Checking if there is a patient that has spent enough time in the queue to be processed.
+                for (PatientPool pool : activeEvent.getPools()) {
+                    if (pool.getPoolType() == PoolType.MedService && !pool.getPatients().isEmpty()) {
+                        long poolElapsed = now - pool.getStartedProcessingAt();
+                        Patient patient = pool.getPatients().getFirst();
+                        long processedTime = pool.getProcessTime();
+                        if(poolElapsed > processedTime && !patient.isProcessed()){
+                            patient.setProcessed(true);
+                            updateEvent = true;
+                        }
+                    }
+                }
             }
-            // You can store remaining duration in a dedicated field, e.g. setRemainingDuration(remaining)
-            activeEvent.setRemainingDuration(remaining);
-            eventService.updateEvent(activeEvent.getId(), activeEvent);
-            if(activeEvent.getStatus() == Status.Ended || activeEvent.getRemainingDuration() % 30 == 0){
+
+            if (activeEvent.getStatus() == Status.Ended || updateEvent) {
+                eventService.updateEvent(activeEvent.getId(), activeEvent);
                 broadcastEventUpdates();
             }
         }
@@ -49,8 +65,8 @@ public class EventTimerServiceImp implements EventTimerService {
             Event errorReturnEvent = new Event();
             errorReturnEvent.setName("NoEventFound");
             messagingTemplate.convertAndSend("/topic/event_updates", errorReturnEvent);
-        }else{
-            messagingTemplate.convertAndSend("/topic/event_updates", activeEvent);;
+        } else {
+            messagingTemplate.convertAndSend("/topic/event_updates", activeEvent);
         }
     }
 }
