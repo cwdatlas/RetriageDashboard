@@ -64,6 +64,14 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-test"); //likely redundant
 	// Spring Security Test for testing Spring Security functionalities
 	implementation("org.springframework.security:spring-security-test");
+	// Spring Security SAML 2.0 Service Provider dependency
+	implementation ("org.springframework.security:spring-security-saml2-service-provider")
+
+	// JWT Token Dependency
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5") // Supports JSON serialization
+
 
 	// Dependency constraints to enforce specific versions of OpenSAML libraries
 	constraints {
@@ -71,8 +79,6 @@ dependencies {
 		implementation ("org.opensaml:opensaml-saml-api:4.1.1")
 		implementation ("org.opensaml:opensaml-saml-impl:4.1.1")
 	}
-	// Spring Security SAML 2.0 Service Provider dependency
-	implementation ("org.springframework.security:spring-security-saml2-service-provider")
 }
 
 tasks.withType<Test> {

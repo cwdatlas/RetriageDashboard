@@ -158,7 +158,6 @@ public class EventController {
             logger.warn("getActiveEvent - Event find failed: No active event found.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        logger.info("getActiveEvent - Active event found.");
         return ResponseEntity.ok(event);
     }
 
