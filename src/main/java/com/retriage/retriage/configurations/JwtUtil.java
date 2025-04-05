@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -73,12 +75,29 @@ public class JwtUtil {
      */
     public List<String> extractRoles(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey()) // Retrieves the signing key for parsing.
+                .setSigningKey(getSigningKey())
                 .build()
-                .parseClaimsJws(token) // Parses and validates the JWT.
+                .parseClaimsJws(token)
                 .getBody();
 
-        return claims.get("roles", List.class); // Extracts the "roles" claim as a List of Strings.
+        Object rolesClaim = claims.get("roles");
+        if (rolesClaim instanceof List<?>) {
+            List<?> rawList = (List<?>) rolesClaim;
+            List<String> roles = new ArrayList<>();
+            for (Object item : rawList) {
+                if (item instanceof String) {
+                    roles.add((String) item);
+                } else {
+                    // Handle the case where an item is not a String.
+                    // You might want to log an error, throw an exception,
+                    // or skip the invalid item depending on your requirements.
+                    System.err.println("Warning: Non-string role found in JWT: " + item);
+                    // Or: throw new ClassCastException("Invalid role type in JWT");
+                }
+            }
+            return roles;
+        }
+        return Collections.emptyList(); // Or handle the case where "roles" claim is not a List
     }
 
     /**
