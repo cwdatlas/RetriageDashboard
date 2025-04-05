@@ -92,9 +92,6 @@ public class SecurityConfiguration {
                         .contentTypeOptions(withDefaults()) // Prevent MIME sniffing
                         .referrerPolicy(referrer -> referrer
                                 .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER))
-//                        .contentSecurityPolicy(csp -> csp
-//                                .policyDirectives("default-src 'self' https://*.okta.com; script-src 'self' https://*.okta.com; connect-src 'self' https://*.okta.com; frame-src 'self' https://*.okta.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.okta.com") // CSP restricts loading external resources
-//                )
                 );
 
         return http.build(); // Build and return the configured SecurityFilterChain
