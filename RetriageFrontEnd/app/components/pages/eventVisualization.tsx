@@ -1,13 +1,14 @@
 import {Event} from '@/app/models/event'
 import {PoolType} from "@/app/enumerations/poolType";
 import BayPanel from "@/app/components/panel/bayPannel";
-import {useState} from "react";
+import React, {useState} from "react";
 import {DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent} from "@dnd-kit/core";
 import {Patient} from "@/app/models/patient";
 import {sendEvent} from "@/app/api/eventWebSocket";
 import MedServicePanel from "@/app/components/panel/medServicePanel";
 import FloorPanel from "@/app/components/panel/floorPannel";
 import PatientIcon from "@/app/components/panel/patientIcon";
+import ErrorMessage from "@/app/components/modals/errorMessage";
 
 export default function EventVisualization({ getActiveEvent }: { getActiveEvent: () => Event }) {
     const event = getActiveEvent();
@@ -109,7 +110,7 @@ export default function EventVisualization({ getActiveEvent }: { getActiveEvent:
     return (
         <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart} onDragOver={handleDragOver}>
             <h2>{event.name}</h2>
-            {error && <p>{error}</p>}
+            <ErrorMessage errorMessage={error}/>
             <div className="row">
                 {/* First Column: Bay Panels */}
                 <div className="col">
