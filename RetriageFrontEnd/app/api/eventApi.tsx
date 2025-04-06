@@ -1,6 +1,5 @@
 import {Event} from "./../models/event";
 import {EventTmp} from "@/app/models/eventTmp";
-import {STATUS_CODES} from 'http';
 
 export const dynamic = 'force-static'
 
@@ -87,14 +86,16 @@ export async function getActiveEvent(setEvent: (event: Event | null) => void, se
             "Content-Type": "application/json",
         },
     });
-    if (res.statusText == STATUS_CODES[404]) {
-        setError('No active event found');
+    if (res.status == 404) {
+        console.log('No active event found');
         setEvent(null);
     } else if (!res.ok) {
         setError('Failed to fetch event');
+    }else{
+        const activeEvent: Event = await res.json();
+        setEvent(activeEvent);
     }
-    const activeEvent: Event = await res.json();
-    setEvent(activeEvent);
+
 }
 
 
