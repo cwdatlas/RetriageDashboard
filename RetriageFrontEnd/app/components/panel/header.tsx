@@ -1,14 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import {GetCookies} from "@/app/api/cookieApi";
+import { GetCookies } from "@/app/api/cookieApi";
 import LogoutButton from "@/app/components/buttons/logoutButton";
 
 export default function Header() {
-    const username = GetCookies("firstName") + " " + GetCookies("lastName");
-    const role = GetCookies("role");
-    const job = GetCookies("job");
+    // Set initial values to empty strings so that during the first render (hydration) they match.
+    const [username, setUsername] = useState("");
+    const [role, setRole] = useState("");
+    const [job, setJob] = useState("");
+
+    useEffect(() => {
+        // Now that we are on the client, read the cookies.
+        const firstName = GetCookies("firstName");
+        const lastName = GetCookies("lastName");
+        setUsername(firstName + " " + lastName);
+        setRole(GetCookies("role"));
+        setJob(GetCookies("job"));
+    }, []);
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
@@ -17,13 +27,13 @@ export default function Header() {
                 <Link className="navbar-brand" href="/">
                     <img
                         src="/images/shield.png"
-                        alt="Carroll College Sheild"
+                        alt="Carroll College Shield"
                         style={{
                             width: "50px",
                             height: "50px",
                             display: "block",
                             margin: "0 auto",
-                            borderRadius: "50%"
+                            borderRadius: "50%",
                         }}
                     />
                 </Link>
@@ -38,8 +48,9 @@ export default function Header() {
                     aria-expanded="false"
                     aria-label="Toggle navigation"
                 >
-                    <span className="navbar-toggler-icon"/>
+                    <span className="navbar-toggler-icon" />
                 </button>
+
                 {/* Navbar links and user info */}
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
@@ -58,7 +69,7 @@ export default function Header() {
             <span className="navbar-text me-3">
               {username} | {role} {job && `| ${job}`}
             </span>
-                        <LogoutButton/>
+                        <LogoutButton />
                     </div>
                 </div>
             </div>
