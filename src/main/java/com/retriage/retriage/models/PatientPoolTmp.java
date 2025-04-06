@@ -2,7 +2,6 @@ package com.retriage.retriage.models;
 
 import com.retriage.retriage.enums.PoolType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.checkerframework.common.aliasing.qual.Unique;
 
