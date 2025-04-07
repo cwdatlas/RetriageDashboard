@@ -21,19 +21,19 @@ export default function EventNavBar({
 
     // When activeEvent updates, immediately recalc time left.
     useEffect(() => {
-        if (activeEvent && activeEvent.status === Status.Running && activeEvent.startTime) {
+        if (activeEvent && activeEvent.status === Status.Running && activeEvent.timeOfStatusChange) {
             const now = Date.now();
-            const start = new Date(activeEvent.startTime).getTime();
+            const start = new Date(activeEvent.timeOfStatusChange).getTime();
             setTimeLeft(Math.max(activeEvent.remainingDuration - (now - start), 0));
         }
     }, [activeEvent]);
 
-    // Recalculate the time left every second using the startTime.
+    // Recalculate the time left every second using the onStatusChange.
     useEffect(() => {
-        if (activeEvent && activeEvent.status === Status.Running && activeEvent.startTime) {
+        if (activeEvent && activeEvent.status === Status.Running && activeEvent.timeOfStatusChange) {
             const interval = setInterval(() => {
                 const now = Date.now();
-                const start = new Date(activeEvent.startTime).getTime();
+                const start = new Date(activeEvent.timeOfStatusChange).getTime();
                 const calculated = activeEvent.remainingDuration - (now - start);
                 setTimeLeft(calculated > 0 ? calculated : 0);
             }, 1000);
