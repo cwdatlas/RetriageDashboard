@@ -19,7 +19,7 @@ public class PatientPoolTmp {
 
     private Long processTime;
 
-    private boolean reusable;
+    private boolean autoDischarge;
 
     private PoolType poolType;
 

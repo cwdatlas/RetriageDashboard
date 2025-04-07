@@ -13,8 +13,8 @@ public class PatientPoolTmpForm {
     @NotNull
     private Long processTime;
 
-    @NotNull(message = "Must include true or false for useable attribute")
-    private boolean reusable;
+    @NotNull(message = "Must include true or false for autoDischarge attribute")
+    private boolean autoDischarge;
 
     @NotNull(message = "Must set poolType to either 'Bay' or 'MedicalService'")
     private PoolType poolType;

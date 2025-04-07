@@ -7,7 +7,7 @@ export interface PatientPool {
     processTime: number;
     patients: Patient[];
     startedProcessingAt: number;
-    reusable: boolean;
+    autoDischarge: boolean;
     poolType: PoolType;
     queueSize: number;
     icon: string;

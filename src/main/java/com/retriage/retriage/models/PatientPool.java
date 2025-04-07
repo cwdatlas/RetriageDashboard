@@ -21,7 +21,7 @@ public class PatientPool {
 
     private Long startedProcessingAt;
 
-    private boolean reusable;
+    private boolean autoDischarge;
     //Owner
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "pool_id")

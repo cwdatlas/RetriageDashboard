@@ -21,7 +21,7 @@ public class PatientPoolForm {
 
     private Long startedProcessingAt;
 
-    private boolean reusable;
+    private boolean autoDischarge;
 
     private List<Patient> patients;
 

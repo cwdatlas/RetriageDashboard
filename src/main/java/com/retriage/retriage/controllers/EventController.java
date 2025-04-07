@@ -1,7 +1,6 @@
 package com.retriage.retriage.controllers;
 
 import com.retriage.retriage.enums.PoolType;
-import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.exceptions.SuccessResponse;
@@ -58,7 +57,7 @@ public class EventController {
                 for (int i = 1; i <= poolTmp.getPoolNumber(); i++) {
                     PatientPool patientPool = new PatientPool();
                     patientPool.setPoolType(poolTmp.getPoolType());
-                    patientPool.setReusable(poolTmp.isReusable());
+                    patientPool.setAutoDischarge(poolTmp.isAutoDischarge());
                     patientPool.setQueueSize(poolTmp.getQueueSize());
                     patientPool.setIcon(poolTmp.getIcon());
                     if (poolTmp.getPoolType() == PoolType.Bay) {

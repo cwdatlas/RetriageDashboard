@@ -4,7 +4,7 @@ export interface PatientPoolTmp {
     id?: number;
     name: string;
     processTime: number;
-    usable: boolean;
+    autoDischarge: boolean;
     poolType: PoolType;
     poolNumber: number;
     queueSize: number;
