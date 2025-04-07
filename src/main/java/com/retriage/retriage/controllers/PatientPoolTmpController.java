@@ -44,6 +44,7 @@ public class PatientPoolTmpController {
         newPool.setProcessTime(poolForm.getProcessTime());
         newPool.setPoolType(poolForm.getPoolType());
         newPool.setQueueSize(poolForm.getQueueSize());
+        newPool.setIcon(poolForm.getIcon());
 
         boolean saved = poolService.savePoolTmp(newPool);
         if (saved) {
