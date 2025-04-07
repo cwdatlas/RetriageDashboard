@@ -7,21 +7,20 @@ import { useDroppable } from "@dnd-kit/core";
 import { Event } from "@/app/models/event";
 import { PoolType } from "@/app/enumerations/poolType";
 
-export default function MedServicePanel({
-                                            service,
-                                            getActiveEvent,
-                                        }: {
-    service: PatientPool;
-    getActiveEvent: () => Event;
+export default function MedServicePanel({service, getActiveEvent}: {
+    service: PatientPool,
+    getActiveEvent: () => Event
 }) {
-    const { isOver, setNodeRef } = useDroppable({
+    const {isOver, setNodeRef} = useDroppable({
         id: service.id || 0,
     });
     const style = {
-        color: isOver ? "green" : undefined,
+        color: isOver ? 'green' : undefined,
     };
 
-    // Assume the first patient in the array is the one being processed.
+    // Determine if there is a currently processing patient.
+    // Here, we assume that if there's a patient at index 0 and they are not yet marked as processed,
+    // then that patient is the one being processed.
     const currentlyProcessing =
         service.poolType === PoolType.MedService && service.patients.length > 0
             ? service.patients[0]
@@ -51,7 +50,7 @@ export default function MedServicePanel({
                 <div className="d-flex align-items-center">
                     {/* Patients container (rendered in reverse order) */}
                     <div className="d-flex align-items-center row row-cols-6">
-                        {[...service.patients].reverse().map((patient, idx) => (
+                        {service.patients.map((patient, idx) => (
                             <div key={idx} className="col mb-2">
                                 <PatientIcon
                                     patient={patient}

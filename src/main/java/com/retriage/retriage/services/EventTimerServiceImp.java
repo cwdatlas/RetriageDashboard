@@ -50,6 +50,10 @@ public class EventTimerServiceImp implements EventTimerService {
                         if(poolElapsed > processedTime && !patient.isProcessed()){
                             patient.setProcessed(true);
                             updateEvent = true;
+                            if(pool.isAutoDischarge()){
+                                pool.getPatients().remove(patient);
+                                pool.setStartedProcessingAt(System.currentTimeMillis());
+                            }
                         }
                     }
                 }

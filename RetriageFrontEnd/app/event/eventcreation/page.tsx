@@ -33,6 +33,8 @@ export default function EventCreation() {
     const [poolName, setPoolName] = useState("");
     const [poolType, setPoolType] = useState(PoolType.MedService);
     const [patientProcessTime, setPatientProcessTime] = useState("");
+    // New state for autoDischarge – only used when poolType is Medical Service.
+    const [autoDischarge, setAutoDischarge] = useState(true);
 
     // Director + Pools for this new event
     const director: User = {
@@ -112,7 +114,7 @@ export default function EventCreation() {
             queueSize: 1,
             poolType: poolType,
             processTime: parseInt(patientProcessTime) * 60000 || 60000,
-            usable: true,
+            autoDischarge: poolType === PoolType.MedService ? autoDischarge : false,
             name: poolName,
             poolNumber: 1,
             icon: poolType === PoolType.MedService ? icon : "",
@@ -359,9 +361,7 @@ export default function EventCreation() {
                                             checked={poolType === PoolType.MedService}
                                             onChange={() => setPoolType(PoolType.MedService)}
                                         />
-                                        <label className="form-check-label">
-                                            Medical Service
-                                        </label>
+                                        <label className="form-check-label">Medical Service</label>
                                     </div>
                                     <div className="form-check form-check-inline">
                                         <input
@@ -390,6 +390,18 @@ export default function EventCreation() {
                                             onChange={(e) => setPatientProcessTime(e.target.value)}
                                             required
                                         />
+                                    </div>
+                                    <div className="form-check mb-3">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id="autoDischarge"
+                                            checked={autoDischarge}
+                                            onChange={(e) => setAutoDischarge(e.target.checked)}
+                                        />
+                                        <label className="form-check-label" htmlFor="autoDischarge">
+                                            Auto Discharge
+                                        </label>
                                     </div>
                                     <ImageSelector icon={icon} setIcon={setIcon} />
                                 </>
