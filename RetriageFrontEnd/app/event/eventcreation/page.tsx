@@ -1,20 +1,22 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import Header from "@/app/components/panel/header";
 import Footer from "@/app/components/panel/footer";
-import {createPoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpApi";
-import {createEvent} from "@/app/api/eventApi";
-import {User} from "@/app/models/user";
-import {GetCookies} from "@/app/api/cookieApi";
-import {Role} from "@/app/enumerations/role";
-import {PoolType} from "@/app/enumerations/poolType";
-import {PatientPoolTmp} from "@/app/models/patientPoolTmp";
-import {EventTmp} from "@/app/models/eventTmp";
+import { createPoolTemplate, getAllPoolTemplates } from "@/app/api/patientPoolTmpApi";
+import { createEvent } from "@/app/api/eventApi";
+import { User } from "@/app/models/user";
+import { GetCookies } from "@/app/api/cookieApi";
+import { Role } from "@/app/enumerations/role";
+import { PoolType } from "@/app/enumerations/poolType";
+import { PatientPoolTmp } from "@/app/models/patientPoolTmp";
+import { EventTmp } from "@/app/models/eventTmp";
 import UploadImagePanel from "@/app/components/panel/uploadImagePanel";
 import ErrorMessage from "@/app/components/modals/errorMessage";
+import ImageSelector from "@/app/components/panel/imageSelector";
+import StatusMessage from "@/app/components/modals/statusMessage";
 
 export default function EventCreation() {
     const router = useRouter();
@@ -22,7 +24,10 @@ export default function EventCreation() {
     // Main Event Form Fields
     const [name, setName] = useState("");
     const [duration, setDuration] = useState("");
+    // Initialize with a default image so that if the user does not change it, a valid image is passed.
+    const [icon, setIcon] = useState("ambulance.png");
     const [error, setError] = useState<string | null>(null);
+    const [status, setStatus] = useState("");
 
     // PatientPool Saving Handles
     const [poolName, setPoolName] = useState("");
@@ -85,6 +90,24 @@ export default function EventCreation() {
 
     async function handleSubmitPool(e: React.FormEvent) {
         e.preventDefault();
+
+        // For Medical Service pools, enforce a unique name and that an icon is selected.
+        if (poolType === PoolType.MedService) {
+            const duplicate = allTemplates.find(
+                (t) =>
+                    t.poolType === PoolType.MedService &&
+                    t.name.toLowerCase() === poolName.toLowerCase()
+            );
+            if (duplicate) {
+                setError("A medical service pool with this name already exists.");
+                return;
+            }
+            if (!icon) {
+                setError("Please select an icon for the Medical Service pool.");
+                return;
+            }
+        }
+
         const newPool: PatientPoolTmp = {
             queueSize: 1,
             poolType: poolType,
@@ -92,10 +115,12 @@ export default function EventCreation() {
             usable: true,
             name: poolName,
             poolNumber: 1,
+            icon: poolType === PoolType.MedService ? icon : "",
         };
 
         try {
             await createPoolTemplate(newPool);
+            setStatus("Successfully created " + newPool.name);
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message || "An error occurred");
@@ -118,6 +143,7 @@ export default function EventCreation() {
                     </div>
                     <div className="card-body">
                         <ErrorMessage errorMessage={error} />
+                        <StatusMessage statusMessage={status} />
                         <form onSubmit={handleSubmitEvent}>
                             <div className="mb-3">
                                 <label htmlFor="eventName" className="form-label">
@@ -169,8 +195,9 @@ export default function EventCreation() {
                                     const currentPoolNumber = existing?.poolNumber ?? 0;
                                     const currentQueueSize = existing?.queueSize ?? 0;
                                     return (
+                                        // Use a composite key so that keys are unique.
                                         <li
-                                            key={template.name ?? idx}
+                                            key={`${template.name}-${idx}`}
                                             className="list-group-item d-flex justify-content-between align-items-center"
                                         >
                                             <div>
@@ -181,7 +208,7 @@ export default function EventCreation() {
                                                     <strong>Type:</strong> {template.poolType}
                                                 </div>
                                             </div>
-                                            <div className="d-flex align-items-center">
+                                            <div className="d-flex align-items-center flex-grow-1">
                                                 <div className="me-2">
                                                     <label className="form-label mb-0 me-1">
                                                         Pool Number:
@@ -204,6 +231,7 @@ export default function EventCreation() {
                                                                         ...template,
                                                                         poolNumber: newNumber,
                                                                         queueSize: existing?.queueSize ?? 0,
+                                                                        icon: template.icon, // keep the saved icon value
                                                                     };
                                                                     if (existingIndex === -1) {
                                                                         return [...prev, updatedTemplate];
@@ -265,6 +293,20 @@ export default function EventCreation() {
                                                         ))}
                                                     </select>
                                                 </div>
+                                                {/* Display the pool's icon on the far right if it is a Medical Service */}
+                                                {template.poolType === PoolType.MedService && template.icon && (
+                                                    <div className="ms-auto">
+                                                        <img
+                                                            src={`/images/${template.icon}`}
+                                                            alt={template.name}
+                                                            style={{
+                                                                width: "40px",
+                                                                height: "40px",
+                                                                objectFit: "contain",
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </li>
                                     );
@@ -317,7 +359,9 @@ export default function EventCreation() {
                                             checked={poolType === PoolType.MedService}
                                             onChange={() => setPoolType(PoolType.MedService)}
                                         />
-                                        <label className="form-check-label">Medical Service</label>
+                                        <label className="form-check-label">
+                                            Medical Service
+                                        </label>
                                     </div>
                                     <div className="form-check form-check-inline">
                                         <input
@@ -333,19 +377,22 @@ export default function EventCreation() {
                                 </div>
                             </div>
                             {poolType === PoolType.MedService && (
-                                <div className="mb-3">
-                                    <label htmlFor="patientProcessTime" className="form-label">
-                                        Patient Process Time (minutes):
-                                    </label>
-                                    <input
-                                        id="patientProcessTime"
-                                        type="number"
-                                        className="form-control"
-                                        value={patientProcessTime}
-                                        onChange={(e) => setPatientProcessTime(e.target.value)}
-                                        required
-                                    />
-                                </div>
+                                <>
+                                    <div className="mb-3">
+                                        <label htmlFor="patientProcessTime" className="form-label">
+                                            Patient Process Time (minutes):
+                                        </label>
+                                        <input
+                                            id="patientProcessTime"
+                                            type="number"
+                                            className="form-control"
+                                            value={patientProcessTime}
+                                            onChange={(e) => setPatientProcessTime(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <ImageSelector icon={icon} setIcon={setIcon} />
+                                </>
                             )}
                             <button type="submit" className="btn btn-primary">
                                 Create Pool
