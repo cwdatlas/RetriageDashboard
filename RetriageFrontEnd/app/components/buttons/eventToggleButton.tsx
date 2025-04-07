@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from "react";
+import React from "react";
 import {Event} from "@/app/models/event";
 import {Status} from "@/app/enumerations/status";
 
@@ -12,24 +12,17 @@ import {Status} from "@/app/enumerations/status";
 export default function ToggleEvent({event, onStatusChange,}: {
     event: Event; onStatusChange?: (UpdatedEvent: Event) => void;
 }) {
-    // Keep track of the status in local state
-    const [localStatus, setLocalStatus] = useState(event.status);
-
-    // Decide how to flip the status
-    const isPaused = localStatus === Status.Paused;
 
     // Function to handle button clicks
     function handleToggle() {
         // Compute the new status
-        const newStatus = isPaused ? Status.Running : Status.Paused;
-
-        // 1) Update our local (front‐end) state so the UI is immediate
-        setLocalStatus(newStatus);
+        const newStatus = event.status === Status.Running ? Status.Paused : Status.Running;
 
         // 2) Optionally notify our parent or call an API from the parent
         //    This passes the event ID + new status back upstream
         if (onStatusChange && event.id != null) {
             event.status = newStatus;
+            event.timeOfStatusChange = Date.now();
             onStatusChange(event);
         }
     }
@@ -37,7 +30,10 @@ export default function ToggleEvent({event, onStatusChange,}: {
     return (
         <main style={{border: "1px solid #ccc", padding: "1rem", margin: "1rem 0"}}>
             <button onClick={handleToggle}>
-                {isPaused ? "Start Running" : "Pause Event"}
+                {event.status === Status.Running && ("Pause")}
+                {event.status === Status.Created && ("Start")}
+                {event.status === Status.Paused && ("Resume")}
+                {event.status === Status.Ended && ("Restart")}
             </button>
         </main>
     );
