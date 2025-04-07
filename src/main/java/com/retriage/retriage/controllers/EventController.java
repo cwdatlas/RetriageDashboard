@@ -86,7 +86,7 @@ public class EventController {
             Event newEvent = new Event();
             newEvent.setName(eventform.getName());
             newEvent.setPools(pools);
-            newEvent.setStatus(Status.Paused);
+            newEvent.setStatus(Status.Created);
             newEvent.setStartTime(System.currentTimeMillis());
             newEvent.setDuration(eventform.getDuration());
             newEvent.setRemainingDuration(eventform.getDuration());
