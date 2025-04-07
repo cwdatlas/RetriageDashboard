@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Link from "next/link";
-import { GetCookies } from "@/app/api/cookieApi";
+import {GetCookies} from "@/app/api/cookieApi";
 import LogoutButton from "@/app/components/buttons/logoutButton";
 
 export default function Header() {
@@ -48,7 +48,7 @@ export default function Header() {
                     aria-expanded="false"
                     aria-label="Toggle navigation"
                 >
-                    <span className="navbar-toggler-icon" />
+                    <span className="navbar-toggler-icon"/>
                 </button>
 
                 {/* Navbar links and user info */}
@@ -69,7 +69,7 @@ export default function Header() {
             <span className="navbar-text me-3">
               {username} | {role} {job && `| ${job}`}
             </span>
-                        <LogoutButton />
+                        <LogoutButton/>
                     </div>
                 </div>
             </div>

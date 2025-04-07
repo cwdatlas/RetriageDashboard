@@ -3,6 +3,8 @@ package com.retriage.retriage.services;
 import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.models.Event;
 import com.retriage.retriage.repositories.EventRepo;
+import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -117,15 +119,19 @@ public class EventServiceImp implements EventService {
     }
 
     @Override
+    @Transactional
     public Event findActiveEvent() {
         List<Event> events = eventRepository.findByStatus(Status.Running);
-        Event returnEvent = null;
+        Event returnEvent = new Event();
         if (events.isEmpty()) {
             logger.debug("getActiveEvent: Checked for active events, none found.");
+            returnEvent = null;
         } else if (events.size() > 1) {
             logger.error("getActiveEvent: More than one running event found!");
+            returnEvent = null;
         } else {
             returnEvent = events.getFirst();
+
         }
         return returnEvent;
     }
@@ -144,14 +150,6 @@ public class EventServiceImp implements EventService {
         if (event.getName() == null || event.getName().trim().isEmpty()) {
             logger.warn("validateEvent - Event name is null or empty.");
             throw new IllegalArgumentException("Event name cannot be null or empty.");
-        }
-        if (event.getDirector() == null) {
-            logger.warn("validateEvent - Director is null.");
-            throw new IllegalArgumentException("Director cannot be null.");
-        }
-        if (event.getNurses() == null) {
-            logger.warn("validateEvent - Nurses list is null");
-            throw new IllegalArgumentException("Event must be initialized");
         }
         if (event.getPools() == null || event.getPools().isEmpty()) {
             logger.warn("validateEvent - Resources list is null or empty.");

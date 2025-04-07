@@ -65,12 +65,12 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
-                        .requestMatchers("/topic/**").permitAll()
-                        .requestMatchers("/active_event/**").authenticated()
+                                .requestMatchers("/api/**").permitAll()
+                                .requestMatchers("/ws/**").permitAll()
+                                .requestMatchers("/topic/**").permitAll()
+                                .requestMatchers("/active_event/**").authenticated()
 //                        .requestMatchers("/").hasAuthority("Director") // Test to ensure the requestMatchers method works
-                        .anyRequest().authenticated() // Require authentication for any request to this application
+                                .anyRequest().authenticated() // Require authentication for any request to this application
                 )
                 // Login Settings
                 .saml2Login(saml2 -> saml2

@@ -43,7 +43,6 @@ public class UserController {
         newUser.setLastName(userForm.getLastName());
         newUser.setEmail(userForm.getEmail());
         newUser.setRole(userForm.getRole());
-        newUser.setCreatedPatients(userForm.getCreatedPatients());
 
         User saved = userService.saveUser(newUser);
         logger.info("createUser - User created successfully with ID: {}", saved.getId());

@@ -47,18 +47,6 @@ public class EventController {
     @PreAuthorize("hasAuthority('ADMIN')") //Restricts to ADMIN role only
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventTmpForm eventform) {
         List<String> errorList = new ArrayList<>();
-        // Validate Director
-        if (eventform.getDirector() == null || eventform.getDirector().getEmail() == null) {
-            errorList.add("Director must be added to event with a valid email.");
-            logger.warn("createEvent - Director validation failed: Invalid director data.");
-        } else {
-            String directorEmail = eventform.getDirector().getEmail();
-            User director = userService.getUserByEmail(directorEmail);
-            if (director == null || director.getRole() != Role.Director) {
-                errorList.add("Director does not exist or is not authorized.");
-                logger.warn("createEvent - Director validation failed: Director not found or unauthorized.");
-            }
-        }
         // Patient Pool Template validation
         List<PatientPool> pools = new ArrayList<>();
         if (eventform.getPoolTmps().isEmpty()) {
@@ -70,7 +58,7 @@ public class EventController {
                 for (int i = 1; i <= poolTmp.getPoolNumber(); i++) {
                     PatientPool patientPool = new PatientPool();
                     patientPool.setPoolType(poolTmp.getPoolType());
-                    patientPool.setReusable(poolTmp.isUseable());
+                    patientPool.setReusable(poolTmp.isReusable());
                     patientPool.setQueueSize(poolTmp.getQueueSize());
                     if (poolTmp.getPoolType() == PoolType.Bay) {
                         patientPool.setProcessTime(eventform.getDuration());
@@ -96,9 +84,6 @@ public class EventController {
         } else if (errorList.isEmpty()) {
             Event newEvent = new Event();
             newEvent.setName(eventform.getName());
-            User director = userService.getUserByEmail(eventform.getDirector().getEmail());
-            newEvent.setDirector(director);
-            newEvent.setNurses(new ArrayList<>());
             newEvent.setPools(pools);
             newEvent.setStatus(Status.Paused);
             newEvent.setStartTime(System.currentTimeMillis());
@@ -181,23 +166,6 @@ public class EventController {
     @PutMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> updateEvent(@Valid @RequestBody EventForm eventForm) {
         List<String> errorList = new ArrayList<>();
-        List<User> nurseList = new ArrayList<>();
-        // Validate Director
-        for (User nurse : eventForm.getNurses()) {
-            if (nurse.getEmail() == null) {
-                errorList.add("Nurse must have a valid email.");
-                logger.warn("updateEvent - Nurse validation failed: Invalid email.");
-            } else {
-                String nurseEmail = nurse.getEmail();
-                User savedNurse = userService.getUserByEmail(nurseEmail);
-                if (savedNurse == null || savedNurse.getRole() == Role.Guest) {
-                    errorList.add("Nurse not found or is a Guest.");
-                    logger.warn("updateEvent - Nurse validation failed: Nurse not found or Guest.");
-                } else {
-                    nurseList.add(savedNurse);
-                }
-            }
-        }
 
         Event updatedEvent = new Event();
         updatedEvent.setName(eventForm.getName());
@@ -205,14 +173,12 @@ public class EventController {
         updatedEvent.setDuration(eventForm.getDuration());
         updatedEvent.setPools(eventForm.getPools());
         updatedEvent.setStatus(eventForm.getStatus());
-        updatedEvent.setNurses(nurseList);
-        updatedEvent.setDirector(eventForm.getDirector());
         updatedEvent.setStartTime(eventForm.getStartTime());
         updatedEvent.setRemainingDuration(eventForm.getRemainingDuration());
         Event oldEvent = eventService.findEventById(eventForm.getId());
-        if(oldEvent == null){
+        if (oldEvent == null) {
             errorList.add("Attempted to update event without already existing.");
-        }else if(oldEvent.getStatus() == eventForm.getStatus()){
+        } else if (oldEvent.getStatus() == eventForm.getStatus()) {
             updatedEvent.setTimeOfStatusChange(eventForm.getTimeOfStatusChange());
         }
         logger.debug("updateEvent - Updated Event object created: {}", updatedEvent);

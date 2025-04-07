@@ -7,8 +7,8 @@ import java.util.List;
  * Used to send authentication details back to the client after successful login.
  */
 public class AuthResponse {
-    private String token; // JWT authentication token.
-    private List<String> roles; // List of user roles associated with the token.
+    private final String token; // JWT authentication token.
+    private final List<String> roles; // List of user roles associated with the token.
 
     /**
      * Constructor for AuthResponse.

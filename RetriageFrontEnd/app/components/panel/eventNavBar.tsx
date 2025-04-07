@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { GetCookies } from "@/app/api/cookieApi";
-import { Role } from "@/app/enumerations/role";
-import { Event } from "@/app/models/event";
-import { Status } from "@/app/enumerations/status";
+import {useEffect, useState} from "react";
+import {GetCookies} from "@/app/api/cookieApi";
+import {Role} from "@/app/enumerations/role";
+import {Event} from "@/app/models/event";
+import {Status} from "@/app/enumerations/status";
 import ToggleButton from "@/app/components/buttons/toggleButton";
 import CreatePatient from "@/app/components/buttons/createPatient";
 import Link from "next/link";
@@ -50,12 +50,12 @@ export default function EventNavBar({
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-secondary sticky-top" style={{ zIndex: 1050 }}>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-secondary sticky-top" style={{zIndex: 1050}}>
             <div className="container-fluid">
                 {/* Left side: toggle event section button */}
                 {role === Role.Director && (
                     <div className="d-flex">
-                        <ToggleButton onToggle={toggleEventView} label={"Toggle Event Section"} />
+                        <ToggleButton onToggle={toggleEventView} label={"Toggle Event Section"}/>
                     </div>
                 )}
                 {/* Center: countdown timer */}
@@ -70,7 +70,7 @@ export default function EventNavBar({
                 <div className="d-flex">
                     {activeEvent && activeEvent.status === Status.Running && (
                         <div className="me-2">
-                            {role !== Role.Guest && <CreatePatient getActiveEvent={getActiveEvent} />}
+                            {role !== Role.Guest && <CreatePatient getActiveEvent={getActiveEvent}/>}
                         </div>
                     )}
                     <div>

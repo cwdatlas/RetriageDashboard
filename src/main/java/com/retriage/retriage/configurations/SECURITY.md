@@ -1,6 +1,7 @@
 # SECURITY
 
 ## How Security Works
+
 1. When a User logs in, they get directed to Okta for authentication
 2. Okta returns a SAML assertion to the back end
 3. Spring then extracts user details from that assertion

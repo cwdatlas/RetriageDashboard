@@ -18,9 +18,6 @@ public class Event {
 
     private String name;
 
-    //Owner of director
-    @ManyToOne
-    private User director;
 
     private Long startTime;
 
@@ -32,10 +29,6 @@ public class Event {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "event_id")
     private List<PatientPool> pools;
-
-    //Owner
-    @ManyToMany
-    private List<User> nurses;
 
     @NotNull(message="Duration Left must be not null. At least 0.")
     private long remainingDuration;

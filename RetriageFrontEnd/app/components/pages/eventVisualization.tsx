@@ -10,7 +10,7 @@ import FloorPanel from "@/app/components/panel/floorPannel";
 import PatientIcon from "@/app/components/panel/patientIcon";
 import ErrorMessage from "@/app/components/modals/errorMessage";
 
-export default function EventVisualization({ getActiveEvent }: { getActiveEvent: () => Event }) {
+export default function EventVisualization({getActiveEvent}: { getActiveEvent: () => Event }) {
     const event = getActiveEvent();
     const [originPoolId, setOriginPoolIdId] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -25,6 +25,7 @@ export default function EventVisualization({ getActiveEvent }: { getActiveEvent:
         setActivePatient(active || null);
         setOriginPoolIdId(null);
     }
+
     function handleDragEnd(event: DragEndEvent) {
         const over = event.over;
         if (over && originPoolId && originPoolId !== over.id) {
@@ -65,7 +66,7 @@ export default function EventVisualization({ getActiveEvent }: { getActiveEvent:
                     const index = originPool.patients.findIndex(storedPatient => storedPatient.id === patient.id);
                     if (index !== -1) {
                         originPool.patients.splice(index, 1);
-                        if(originPool.poolType == PoolType.MedService && index == 0)
+                        if (originPool.poolType == PoolType.MedService && index == 0)
                             overPool.startedProcessingAt = Date.now();
                     } else {
                         setError("Patient not found");
@@ -117,7 +118,7 @@ export default function EventVisualization({ getActiveEvent }: { getActiveEvent:
                     {event.pools.map((template, idx) =>
                         template.poolType === PoolType.Bay ? (
                             <div key={idx}>
-                                <BayPanel bay={template} getActiveEvent={getActiveEvent} />
+                                <BayPanel bay={template} getActiveEvent={getActiveEvent}/>
                             </div>
                         ) : null
                     )}
@@ -127,20 +128,20 @@ export default function EventVisualization({ getActiveEvent }: { getActiveEvent:
                     {event.pools.map((template, idx) =>
                         template.poolType === PoolType.MedService ? (
                             <div key={idx}>
-                                <MedServicePanel service={template} getActiveEvent={getActiveEvent} />
+                                <MedServicePanel service={template} getActiveEvent={getActiveEvent}/>
                             </div>
                         ) : null
                     )}
                 </div>
                 {/* Horizontal separator */}
                 <div className="row content-center">Floors</div>
-                <hr />
+                <hr/>
                 {/* Third Section: Floor Panels in three columns */}
                 <div className="row row-cols-3">
                     {event.pools.map((template, idx) =>
                         template.poolType === PoolType.Floor ? (
                             <div key={idx} className="col">
-                                <FloorPanel floor={template} getActiveEvent={getActiveEvent} />
+                                <FloorPanel floor={template} getActiveEvent={getActiveEvent}/>
                             </div>
                         ) : null
                     )}

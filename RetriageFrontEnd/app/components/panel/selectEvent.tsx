@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Event } from "@/app/models/event";
-import { getAllEvents } from "@/app/api/eventApi";
+import React, {useEffect, useState} from "react";
+import {Event} from "@/app/models/event";
+import {getAllEvents} from "@/app/api/eventApi";
 import ToggleEvent from "@/app/components/buttons/eventToggleButton";
-import { sendEvent } from "@/app/api/eventWebSocket";
+import {sendEvent} from "@/app/api/eventWebSocket";
 import ErrorMessage from "@/app/components/modals/errorMessage";
 
-export default function SelectEvent({ eventViewToggle }: { eventViewToggle: () => void }) {
+export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => void }) {
     const [allEvents, setAllEvents] = useState<Event[]>([]);
     const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +24,7 @@ export default function SelectEvent({ eventViewToggle }: { eventViewToggle: () =
                 }
             }
         }
+
         fetchEvents();
     }, []);
 
@@ -39,7 +40,7 @@ export default function SelectEvent({ eventViewToggle }: { eventViewToggle: () =
                     <h3 className="mb-0">All Created Events</h3>
                 </div>
                 <div className="card-body">
-                    <ErrorMessage errorMessage={error} />
+                    <ErrorMessage errorMessage={error}/>
                     {allEvents.length === 0 ? (
                         <p className="text-muted">No Events Found</p>
                     ) : (
@@ -57,11 +58,12 @@ export default function SelectEvent({ eventViewToggle }: { eventViewToggle: () =
                                             <strong>Creation Date:</strong> {new Date(event.startTime).toDateString()}
                                         </div>
                                         <div>
-                                            <strong>Runtime Left:</strong> {(event.remainingDuration / 60000).toFixed(2)} Minutes
+                                            <strong>Runtime
+                                                Left:</strong> {(event.remainingDuration / 60000).toFixed(2)} Minutes
                                         </div>
                                     </div>
                                     <div className="mt-2">
-                                        <ToggleEvent event={event} onStatusChange={onStatusChange} />
+                                        <ToggleEvent event={event} onStatusChange={onStatusChange}/>
                                     </div>
                                 </li>
                             ))}

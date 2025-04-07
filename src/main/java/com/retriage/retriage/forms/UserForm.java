@@ -29,8 +29,6 @@ public class UserForm {
     @Size(min = 1, message = "At least one role must be assigned")
     private Role role;
 
-    private List<Patient> createdPatients;
-
     public UserForm() {
     }
 }

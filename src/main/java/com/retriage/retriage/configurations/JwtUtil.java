@@ -1,11 +1,12 @@
 package com.retriage.retriage.configurations;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,8 +82,7 @@ public class JwtUtil {
                 .getBody();
 
         Object rolesClaim = claims.get("roles");
-        if (rolesClaim instanceof List<?>) {
-            List<?> rawList = (List<?>) rolesClaim;
+        if (rolesClaim instanceof List<?> rawList) {
             List<String> roles = new ArrayList<>();
             for (Object item : rawList) {
                 if (item instanceof String) {

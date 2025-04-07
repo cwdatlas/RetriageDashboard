@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 
-export default function ErrorMessage({errorMessage} : {errorMessage : string | null}){
+export default function ErrorMessage({errorMessage}: { errorMessage: string | null }) {
     const [visible, setVisible] = useState<boolean>(true);
 
     // Reset visibility if a new error message is received.
@@ -16,7 +16,7 @@ export default function ErrorMessage({errorMessage} : {errorMessage : string | n
     return (
         <div
             className="position-fixed top-50 start-50 translate-middle"
-            style={{ zIndex: 1050 }}
+            style={{zIndex: 1050}}
         >
             <div className="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
                 <span>{errorMessage}</span>

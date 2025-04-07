@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 
 import Header from "@/app/components/panel/header";
 import Footer from "@/app/components/panel/footer";
-import { createPoolTemplate, getAllPoolTemplates } from "@/app/api/patientPoolTmpApi";
-import { createEvent } from "@/app/api/eventApi";
-import { User } from "@/app/models/user";
-import { GetCookies } from "@/app/api/cookieApi";
-import { Role } from "@/app/enumerations/role";
-import { PoolType } from "@/app/enumerations/poolType";
-import { PatientPoolTmp } from "@/app/models/patientPoolTmp";
-import { EventTmp } from "@/app/models/eventTmp";
+import {createPoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpApi";
+import {createEvent} from "@/app/api/eventApi";
+import {User} from "@/app/models/user";
+import {GetCookies} from "@/app/api/cookieApi";
+import {Role} from "@/app/enumerations/role";
+import {PoolType} from "@/app/enumerations/poolType";
+import {PatientPoolTmp} from "@/app/models/patientPoolTmp";
+import {EventTmp} from "@/app/models/eventTmp";
 import UploadImagePanel from "@/app/components/panel/uploadImagePanel";
 import ErrorMessage from "@/app/components/modals/errorMessage";
 
@@ -67,7 +67,6 @@ export default function EventCreation() {
         }
         const newEvent: EventTmp = {
             name: name,
-            director: director,
             poolTmps: selectedPools,
             duration: parseInt(duration) * 60000,
         };

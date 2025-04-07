@@ -20,7 +20,7 @@ export default function BayPanel({bay, getActiveEvent}: { bay: PatientPool, getA
                     <img
                         src="/images/bed.png"
                         alt="Bed Icon"
-                        style={{ width: "24px", height: "24px", marginRight: "4px" }}
+                        style={{width: "24px", height: "24px", marginRight: "4px"}}
                     />
                     <span>{bay.queueSize - bay.patients.length}</span>
                 </div>

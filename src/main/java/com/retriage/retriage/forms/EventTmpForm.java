@@ -15,9 +15,6 @@ public class EventTmpForm {
     @NotBlank(message = "Event name is required")
     private String name;
 
-    @NotNull(message = "Must contain at least one Director")
-    private User director;
-
     @NotNull(message = "End time is required")
     private Long duration;
 

@@ -1,22 +1,20 @@
 'use client'
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, {useEffect, useState} from "react";
 
 import Header from "@/app/components/panel/header";
 import Footer from "@/app/components/panel/footer";
 import SelectEvent from "@/app/components/panel/selectEvent";
 import NurseWaitPage from "@/app/components/pages/nurseWaitPage";
 import GuestWaitPage from "@/app/components/pages/guestWaitPage";
-import { Event } from "@/app/models/event";
-import { sendEvent, useConnectEventWebSocket } from "@/app/api/eventWebSocket";
-import { getActiveEvent as getCurrentActiveEvent } from "@/app/api/eventApi";
-import { User } from "@/app/models/user";
+import {Event} from "@/app/models/event";
+import {getActiveEvent as getCurrentActiveEvent} from "@/app/api/eventApi";
 import EventVisualization from "@/app/components/pages/eventVisualization";
 import EventNavBar from "@/app/components/panel/eventNavBar";
 import ErrorMessage from "@/app/components/modals/errorMessage";
-import { GetCookies } from "@/app/api/cookieApi";
-import { Role } from "@/app/enumerations/role";
+import {GetCookies} from "@/app/api/cookieApi";
+import {Role} from "@/app/enumerations/role";
+import {useConnectEventWebSocket} from "@/app/api/eventWebSocket";
 
 export default function EventViewer() {
     // Instead of reading the cookie immediately, we use local state.
@@ -34,26 +32,6 @@ export default function EventViewer() {
     useEffect(() => {
         getCurrentActiveEvent(setActiveEvent, setError);
     }, []);
-
-    // When activeEvent updates, check if the current user is in the nurses list.
-    useEffect(() => {
-        console.log("Active event initialized:", activeEvent != null);
-        if (activeEvent && role) {
-            const currentEmail = GetCookies("email");
-            const user = activeEvent.nurses.find((user) => user.email === currentEmail);
-            console.log("User exists:", user != null);
-            if (!user) {
-                const newUser: User = {
-                    email: currentEmail,
-                    firstName: GetCookies("firstName"),
-                    lastName: GetCookies("lastName"),
-                    role: role,
-                };
-                activeEvent.nurses.push(newUser);
-                sendEvent(activeEvent);
-            }
-        }
-    }, [activeEvent, role]);
 
     // Connect the WebSocket for real-time updates.
     useConnectEventWebSocket(setActiveEvent);

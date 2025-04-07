@@ -33,11 +33,6 @@ public class User {
     @NotNull(message = "Role cannot be null") // Validation: Not null
     private Role role;
 
-    //Not Owner
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private List<Patient> createdPatients;
-
     public User() {
     }
 }

@@ -40,7 +40,7 @@ public class PatientPoolTmpController {
     public ResponseEntity<?> createPool(@Valid @RequestBody PatientPoolTmpForm poolForm) {
         PatientPoolTmp newPool = new PatientPoolTmp();
         newPool.setName(poolForm.getName());
-        newPool.setUseable(poolForm.isUseable());
+        newPool.setReusable(poolForm.isReusable());
         newPool.setProcessTime(poolForm.getProcessTime());
         newPool.setPoolType(poolForm.getPoolType());
         newPool.setQueueSize(poolForm.getQueueSize());

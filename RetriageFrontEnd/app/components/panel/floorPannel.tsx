@@ -1,12 +1,12 @@
 'use client'
 
-import { PatientPool } from "@/app/models/patientPool";
+import {PatientPool} from "@/app/models/patientPool";
 import PatientIcon from "@/app/components/panel/patientIcon";
-import { useDroppable } from "@dnd-kit/core";
-import { Event } from "@/app/models/event";
+import {useDroppable} from "@dnd-kit/core";
+import {Event} from "@/app/models/event";
 
-export default function FloorPanel({ floor, getActiveEvent }: { floor: PatientPool, getActiveEvent: () => Event }) {
-    const { isOver, setNodeRef } = useDroppable({
+export default function FloorPanel({floor, getActiveEvent}: { floor: PatientPool, getActiveEvent: () => Event }) {
+    const {isOver, setNodeRef} = useDroppable({
         id: floor.id || 0,
     });
     const style = {
@@ -21,7 +21,7 @@ export default function FloorPanel({ floor, getActiveEvent }: { floor: PatientPo
                     <img
                         src="/images/bed.png"
                         alt="Bed Icon"
-                        style={{ width: "24px", height: "24px", marginRight: "4px" }}
+                        style={{width: "24px", height: "24px", marginRight: "4px"}}
                     />
                     <span>{floor.queueSize - floor.patients.length}</span>
                 </div>
