@@ -23,11 +23,9 @@ import java.util.List;
 public class EventWebSocketController {
     private static final Logger logger = LoggerFactory.getLogger(EventWebSocketController.class);
     private final EventService eventService;
-    private final UserService userService;
 
-    EventWebSocketController(EventService eventService, UserService userService) {
+    EventWebSocketController(EventService eventService) {
         this.eventService = eventService;
-        this.userService = userService;
     }
 
     @Transactional

@@ -6,6 +6,8 @@ import com.retriage.retriage.models.Event;
 import com.retriage.retriage.models.Patient;
 import com.retriage.retriage.models.PatientPool;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 public class EventTimerServiceImp implements EventTimerService {
     private final EventService eventService;
     private final SimpMessagingTemplate messagingTemplate;
+    private static final Logger logger = LoggerFactory.getLogger(EventTimerServiceImp.class);
+
 
     EventTimerServiceImp(EventService eventService, SimpMessagingTemplate messagingTemplate) {
         this.eventService = eventService;
@@ -27,6 +31,7 @@ public class EventTimerServiceImp implements EventTimerService {
         Event activeEvent = eventService.findActiveEvent();
         boolean updateEvent = false;
         if (activeEvent != null) {
+            logger.debug("updateEventDuration: activeEvent {} is currently active with {} seconds remaining.", activeEvent.getName(), activeEvent.getRemainingDuration()/6000);
             long now = System.currentTimeMillis();
             long startTime = activeEvent.getTimeOfStatusChange();
             long duration = activeEvent.getRemainingDuration(); // original duration in milliseconds
