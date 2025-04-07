@@ -27,6 +27,8 @@ public class PatientPoolTmpForm {
     @Min(0)
     private int queueSize;
 
+    private String icon;
+
     public PatientPoolTmpForm() {
     }
 }

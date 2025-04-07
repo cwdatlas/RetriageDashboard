@@ -10,4 +10,5 @@ export interface PatientPool {
     reusable: boolean;
     poolType: PoolType;
     queueSize: number;
+    icon: string;
 }

@@ -60,6 +60,7 @@ public class EventController {
                     patientPool.setPoolType(poolTmp.getPoolType());
                     patientPool.setReusable(poolTmp.isReusable());
                     patientPool.setQueueSize(poolTmp.getQueueSize());
+                    patientPool.setIcon(poolTmp.getIcon());
                     if (poolTmp.getPoolType() == PoolType.Bay) {
                         patientPool.setProcessTime(eventform.getDuration());
                         logger.debug("createEvent - Bay Pool created, process time set to event duration: {}", eventform.getDuration());

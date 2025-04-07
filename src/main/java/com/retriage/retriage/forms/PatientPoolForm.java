@@ -29,6 +29,8 @@ public class PatientPoolForm {
 
     private int queueSize;
 
+    private String icon;
+
     public PatientPoolForm() {
     }
 }

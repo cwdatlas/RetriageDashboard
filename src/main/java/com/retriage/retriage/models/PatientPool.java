@@ -31,6 +31,8 @@ public class PatientPool {
 
     private int queueSize;
 
+    private String icon;
+
     public PatientPool() {
     }
 }

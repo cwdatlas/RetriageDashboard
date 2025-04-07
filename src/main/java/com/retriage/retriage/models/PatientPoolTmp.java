@@ -27,6 +27,8 @@ public class PatientPoolTmp {
 
     private int queueSize;
 
+    private String icon;
+
     public PatientPoolTmp() {
     }
 }
