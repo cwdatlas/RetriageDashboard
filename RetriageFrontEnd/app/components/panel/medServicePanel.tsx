@@ -56,6 +56,7 @@ export default function MedServicePanel({service, getActiveEvent}: {
                         </div>
                     ))}
                 </div>
+                {service.icon !== null && (
                 <div>
                     <img
                         src={"/images/" + service.icon}
@@ -63,6 +64,7 @@ export default function MedServicePanel({service, getActiveEvent}: {
                         style={{width: "24px", height: "24px", marginRight: "4px"}}
                     />
                 </div>
+                    )}
             </div>
         </div>
     );
