@@ -25,7 +25,7 @@ export default function EventCreation() {
     const [name, setName] = useState("");
     const [duration, setDuration] = useState("");
     // Initialize with a default image so that if the user does not change it, a valid image is passed.
-    const [icon, setIcon] = useState("ambulance.png");
+    const [icon, setIcon] = useState("nurse.png");
     const [error, setError] = useState<string | null>(null);
     const [status, setStatus] = useState("");
 
