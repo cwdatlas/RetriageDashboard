@@ -5,6 +5,8 @@ import {PatientPool} from "@/app/models/patientPool";
 import {useDroppable} from "@dnd-kit/core";
 import {Event} from "@/app/models/event";
 import {PoolType} from "@/app/enumerations/poolType";
+import React from "react";
+import Image from "next/image";
 
 export default function MedServicePanel({service, getActiveEvent}: {
     service: PatientPool,
@@ -53,6 +55,13 @@ export default function MedServicePanel({service, getActiveEvent}: {
                                          getActiveEvent={getActiveEvent}/>
                         </div>
                     ))}
+                </div>
+                <div>
+                    <img
+                        src={"/images/" + service.icon}
+                        alt={service.name}
+                        style={{width: "24px", height: "24px", marginRight: "4px"}}
+                    />
                 </div>
             </div>
         </div>
