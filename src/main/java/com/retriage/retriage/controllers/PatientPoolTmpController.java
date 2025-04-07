@@ -19,7 +19,7 @@ import java.util.Optional;
 @CrossOrigin
 @RequestMapping("/api/pools/templates")
 public class PatientPoolTmpController {
-    private static final Logger log = LoggerFactory.getLogger(PatientPoolTmpController.class);
+    private static final Logger logger = LoggerFactory.getLogger(PatientPoolTmpController.class);
     /**
      *
      */
@@ -48,10 +48,10 @@ public class PatientPoolTmpController {
 
         boolean saved = poolService.savePoolTmp(newPool);
         if (saved) {
-            log.info("createPool - Pool template created successfully with ID: {}", newPool.getId());
+            logger.info("createPool - Pool template created successfully with ID: {}", newPool.getId());
             return ResponseEntity.created(URI.create("/templates/" + newPool.getId())).body(newPool);
         } else {
-            log.error("createPool - Pool template creation failed.");
+            logger.error("createPool - Pool template creation failed.");
             ErrorResponse errorResponse = new ErrorResponse(
                     List.of("Unable to save pool template."),
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -68,7 +68,7 @@ public class PatientPoolTmpController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<PatientPoolTmp>> getAllPools() {
         List<PatientPoolTmp> pools = poolService.findAllPoolTmp();
-        log.info("getAllPools - Retrieved {} pool templates.", pools.size());
+        logger.info("getAllPools - Retrieved {} pool templates.", pools.size());
         return ResponseEntity.ok(pools);
     }
 
@@ -80,10 +80,10 @@ public class PatientPoolTmpController {
     public ResponseEntity<?> findPoolByID(@PathVariable Long id) {
         Optional<PatientPoolTmp> optionalPool = poolService.findPoolTmpById(id);
         if (optionalPool.isPresent()) {
-            log.info("findPoolByID - Pool template found with ID: {}", id);
+            logger.info("findPoolByID - Pool template found with ID: {}", id);
             return ResponseEntity.ok(optionalPool.get());
         } else {
-            log.warn("findPoolByID - Pool template find failed: Pool template with id {} not found.", id);
+            logger.warn("findPoolByID - Pool template find failed: Pool template with id {} not found.", id);
             ErrorResponse errorResponse = new ErrorResponse(
                     List.of("Template with id " + id + " not found."),
                     HttpStatus.NOT_FOUND.value(),
@@ -100,17 +100,17 @@ public class PatientPoolTmpController {
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deletePool(@PathVariable Long id) {
         if (poolService.findPoolTmpById(id).isEmpty()) {
-            log.warn("deletePool - Pool template delete failed: Pool template with id {} not found.", id);
-            ErrorResponse errorResponse = new ErrorResponse(
-                    List.of("Template with id " + id + " not found."),
-                    HttpStatus.NOT_FOUND.value(),
-                    "POOL_TEMPLATE_NOT_FOUND"
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            logger.warn("deletePool - Pool template delete failed: Pool template with id {} not found.", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         poolService.deletePoolTmpById(id);
-        log.info("deletePool - Pool template deleted with ID: {}", id);
-        return ResponseEntity.noContent().build();
+        if (findPoolByID(id) != null) {
+            logger.info("deletePoolTmp - PoolTmp failed to delete with id: {}", id);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } else {
+            logger.info("deletePoolTmp - PoolTmp deleted with id: {}", id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
     }
 }
