@@ -20,4 +20,6 @@ public interface EventService {
     void deleteEventById(Long id);
 
     Event findActiveEvent();
+
+    Event resetEventById(Event event);
 }

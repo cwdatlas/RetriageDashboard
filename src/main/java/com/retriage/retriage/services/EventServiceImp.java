@@ -2,6 +2,7 @@ package com.retriage.retriage.services;
 
 import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.models.Event;
+import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.repositories.EventRepo;
 import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -134,6 +136,17 @@ public class EventServiceImp implements EventService {
 
         }
         return returnEvent;
+    }
+
+    @Override
+    public Event resetEventById(Event event) {
+        if(event == null) return null;
+        for(PatientPool pool : event.getPools()){
+            pool.setPatients(new ArrayList<>());
+        }
+        event.setStartTime(System.currentTimeMillis());
+        event.setRemainingDuration(event.getDuration());
+        return event;
     }
 
     /**
