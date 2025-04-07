@@ -76,6 +76,11 @@ export default function EventVisualization({getActiveEvent}: { getActiveEvent: (
                     // Mark patient as not processed
                     patient.processed = false;
 
+                    // update the origin pool's startedProcessingAt.
+                    if (originPool.poolType === PoolType.MedService &&
+                        index == 0 && originPool.patients.length > 0) {
+                        originPool.startedProcessingAt = Date.now();
+                    }
                     // Add patient to the destination pool.
                     overPool.patients.push(patient);
 
