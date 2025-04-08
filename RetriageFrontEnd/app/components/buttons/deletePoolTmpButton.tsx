@@ -1,23 +1,13 @@
 'use client'
 
-import {useState} from "react";
-import {deletePoolTemplate} from "@/app/api/patientPoolTmpApi";
 
-export default function DeletePoolTmpButton({id} : {id : number}){
-    const [error, setError] = useState<string | null>(null);
-
-    function deleteHandler() {
-        deletePoolTemplate(id, setError);
-        setError("button pressed");
+export default function DeletePoolTmpButton({id, deletePoolHandler} : {id: number, deletePoolHandler: (id : number) => void}) {
+    function handler(){
+        deletePoolHandler(id)
     }
-
     return (
         <main>
-            {error && (<div className="alert alert-danger" role="alert">
-                    {error}
-                </div>
-            )}
-            <button type="button" className={"btn btn-primary"} onClick={deleteHandler}>Delete</button>
+            <button type="button" className={"btn btn-primary"} onClick={handler}>Delete</button>
         </main>
     )
 }
