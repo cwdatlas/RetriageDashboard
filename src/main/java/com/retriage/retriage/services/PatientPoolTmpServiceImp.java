@@ -73,14 +73,16 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
      * @return The pool you're looking for
      */
     @Override
-    public Optional<PatientPoolTmp> findPoolTmpById(Long id) {
+    public PatientPoolTmp findPoolTmpById(Long id) {
         Optional<PatientPoolTmp> poolOptional = poolTemplateRepository.findById(id);
         if (poolOptional.isPresent()) {
             logger.info("findPoolByIdTmp - PatientPoolTmp found with ID: {}", id);
+            return poolOptional.get();
         } else {
             logger.warn("findPoolByIdTmp - No pool template found with ID: {}", id);
+            return null;
         }
-        return poolOptional;
+
     }
 
     /**

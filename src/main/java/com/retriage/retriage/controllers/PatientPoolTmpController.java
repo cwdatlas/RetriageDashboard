@@ -78,10 +78,10 @@ public class PatientPoolTmpController {
      */
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> findPoolByID(@PathVariable Long id) {
-        Optional<PatientPoolTmp> optionalPool = poolService.findPoolTmpById(id);
-        if (optionalPool.isPresent()) {
+        PatientPoolTmp optionalPool = poolService.findPoolTmpById(id);
+        if (optionalPool != null) {
             logger.info("findPoolByID - Pool template found with ID: {}", id);
-            return ResponseEntity.ok(optionalPool.get());
+            return ResponseEntity.ok(optionalPool);
         } else {
             logger.warn("findPoolByID - Pool template find failed: Pool template with id {} not found.", id);
             ErrorResponse errorResponse = new ErrorResponse(
@@ -99,7 +99,7 @@ public class PatientPoolTmpController {
      */
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deletePool(@PathVariable Long id) {
-        if (poolService.findPoolTmpById(id).isEmpty()) {
+        if (poolService.findPoolTmpById(id) == null) {
             logger.warn("deletePool - Pool template delete failed: Pool template with id {} not found.", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

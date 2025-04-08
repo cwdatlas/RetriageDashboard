@@ -14,7 +14,7 @@ public interface PatientPoolTmpService {
 
     List<PatientPoolTmp> findAllPoolTmp();
 
-    Optional<PatientPoolTmp> findPoolTmpById(Long id);
+    PatientPoolTmp findPoolTmpById(Long id);
 
     void deletePoolTmpById(Long id);
 }
