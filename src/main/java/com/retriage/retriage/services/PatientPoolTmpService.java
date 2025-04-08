@@ -3,7 +3,6 @@ package com.retriage.retriage.services;
 import com.retriage.retriage.models.PatientPoolTmp;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  *

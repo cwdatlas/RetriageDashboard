@@ -5,7 +5,6 @@ import com.retriage.retriage.models.Event;
 import com.retriage.retriage.models.PatientPool;
 import com.retriage.retriage.repositories.EventRepo;
 import jakarta.transaction.Transactional;
-import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -142,8 +141,8 @@ public class EventServiceImp implements EventService {
 
     @Override
     public Event resetEventById(Event event) {
-        if(event == null) return null;
-        for(PatientPool pool : event.getPools()){
+        if (event == null) return null;
+        for (PatientPool pool : event.getPools()) {
             pool.setPatients(new ArrayList<>());
         }
         event.setStartTime(System.currentTimeMillis());

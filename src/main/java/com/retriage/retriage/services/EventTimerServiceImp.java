@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EventTimerServiceImp implements EventTimerService {
+    private static final Logger logger = LoggerFactory.getLogger(EventTimerServiceImp.class);
     private final EventService eventService;
     private final SimpMessagingTemplate messagingTemplate;
-    private static final Logger logger = LoggerFactory.getLogger(EventTimerServiceImp.class);
 
 
     EventTimerServiceImp(EventService eventService, SimpMessagingTemplate messagingTemplate) {
@@ -31,7 +31,7 @@ public class EventTimerServiceImp implements EventTimerService {
         Event activeEvent = eventService.findActiveEvent();
         boolean updateEvent = false;
         if (activeEvent != null) {
-            logger.debug("updateEventDuration: activeEvent {} is currently active with {} seconds remaining.", activeEvent.getName(), activeEvent.getRemainingDuration()/6000);
+            logger.debug("updateEventDuration: activeEvent {} is currently active with {} seconds remaining.", activeEvent.getName(), activeEvent.getRemainingDuration() / 6000);
             long now = System.currentTimeMillis();
             long startTime = activeEvent.getTimeOfStatusChange();
             long duration = activeEvent.getRemainingDuration(); // original duration in milliseconds
@@ -47,10 +47,10 @@ public class EventTimerServiceImp implements EventTimerService {
                         long poolElapsed = now - pool.getStartedProcessingAt();
                         Patient patient = pool.getPatients().getFirst();
                         long processedTime = pool.getProcessTime();
-                        if(poolElapsed > processedTime && !patient.isProcessed()){
+                        if (poolElapsed > processedTime && !patient.isProcessed()) {
                             patient.setProcessed(true);
                             updateEvent = true;
-                            if(pool.isAutoDischarge()){
+                            if (pool.isAutoDischarge()) {
                                 pool.getPatients().remove(patient);
                                 pool.setStartedProcessingAt(System.currentTimeMillis());
                             }
