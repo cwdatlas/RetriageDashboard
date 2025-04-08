@@ -1,13 +1,10 @@
 package com.retriage.retriage.controllers;
 
 
-import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.models.Event;
-import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.EventService;
-import com.retriage.retriage.services.UserService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +44,13 @@ public class EventWebSocketController {
         Event oldEvent = eventService.findEventById(eventForm.getId());
         if (oldEvent == null) {
             errorList.add("Attempted to update event without already existing.");
-        }else if (oldEvent.getStatus() != eventForm.getStatus()) {
-            if(oldEvent.getStatus() == Status.Ended && eventForm.getStatus() == Status.Running){
+        } else if (oldEvent.getStatus() != eventForm.getStatus()) {
+            if (oldEvent.getStatus() == Status.Ended && eventForm.getStatus() == Status.Running) {
                 updatedEvent = eventService.resetEventById(oldEvent);
                 updatedEvent.setStatus(Status.Running);
             }
             updatedEvent.setTimeOfStatusChange(System.currentTimeMillis());
-        }else {
+        } else {
             updatedEvent.setTimeOfStatusChange(eventForm.getTimeOfStatusChange());
         }
 

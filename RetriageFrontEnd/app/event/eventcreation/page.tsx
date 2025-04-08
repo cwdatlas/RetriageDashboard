@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 
 import Header from "@/app/components/panel/header";
 import Footer from "@/app/components/panel/footer";
 import {createPoolTemplate, deletePoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpApi";
-import { createEvent } from "@/app/api/eventApi";
-import { User } from "@/app/models/user";
-import { GetCookies } from "@/app/api/cookieApi";
-import { Role } from "@/app/enumerations/role";
-import { PoolType } from "@/app/enumerations/poolType";
-import { PatientPoolTmp } from "@/app/models/patientPoolTmp";
-import { EventTmp } from "@/app/models/eventTmp";
+import {createEvent} from "@/app/api/eventApi";
+import {User} from "@/app/models/user";
+import {GetCookies} from "@/app/api/cookieApi";
+import {Role} from "@/app/enumerations/role";
+import {PoolType} from "@/app/enumerations/poolType";
+import {PatientPoolTmp} from "@/app/models/patientPoolTmp";
+import {EventTmp} from "@/app/models/eventTmp";
 import UploadImagePanel from "@/app/components/panel/uploadImagePanel";
 import ErrorMessage from "@/app/components/modals/errorMessage";
 import ImageSelector from "@/app/components/panel/imageSelector";
@@ -64,6 +64,7 @@ export default function EventCreation() {
                 }
             }
         }
+
         fetchTemplates();
     }, []);
 
@@ -134,6 +135,7 @@ export default function EventCreation() {
         const data = await getAllPoolTemplates();
         setAllTemplates(data);
     }
+
     async function deleteHandler(id: number) {
         setError(null);
         try {
@@ -154,7 +156,7 @@ export default function EventCreation() {
 
     return (
         <div className="d-flex flex-column min-vh-100">
-            <Header />
+            <Header/>
             <main className="container my-5">
                 {/* Event Creation Card */}
                 <div className="card shadow-sm mb-4">
@@ -162,8 +164,8 @@ export default function EventCreation() {
                         <h2 className="mb-0">Create a New Event</h2>
                     </div>
                     <div className="card-body">
-                        <ErrorMessage errorMessage={error} />
-                        <StatusMessage statusMessage={status} />
+                        <ErrorMessage errorMessage={error}/>
+                        <StatusMessage statusMessage={status}/>
                         <form onSubmit={handleSubmitEvent}>
                             <div className="mb-3">
                                 <label htmlFor="eventName" className="form-label">
@@ -314,8 +316,9 @@ export default function EventCreation() {
                                                     </select>
                                                 </div>
                                                 {template.id && (<div>
-                                                    <DeletePoolTmpButton id={template.id} deletePoolHandler={deleteHandler}/>
-                                                </div>
+                                                        <DeletePoolTmpButton id={template.id}
+                                                                             deletePoolHandler={deleteHandler}/>
+                                                    </div>
                                                 )}
                                                 {/* Display the pool's icon on the far right if it is a Medical Service */}
                                                 {template.poolType === PoolType.MedService && template.icon && (
@@ -425,7 +428,7 @@ export default function EventCreation() {
                                             Auto Discharge
                                         </label>
                                     </div>
-                                    <ImageSelector icon={icon} setIcon={setIcon} />
+                                    <ImageSelector icon={icon} setIcon={setIcon}/>
                                 </>
                             )}
                             <button type="submit" className="btn btn-primary">
@@ -437,10 +440,10 @@ export default function EventCreation() {
 
                 {/* Upload Image Panel */}
                 <div className="mb-4">
-                    <UploadImagePanel />
+                    <UploadImagePanel/>
                 </div>
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 }

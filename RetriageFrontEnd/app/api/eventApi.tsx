@@ -92,7 +92,7 @@ export async function getActiveEvent(setEvent: (event: Event | null) => void, se
         setEvent(null);
     } else if (!res.ok) {
         setError('Failed to fetch event');
-    }else{
+    } else {
         const activeEvent: Event = await res.json();
         setEvent(activeEvent);
     }

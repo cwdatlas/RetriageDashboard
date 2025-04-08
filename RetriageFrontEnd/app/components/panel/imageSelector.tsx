@@ -11,7 +11,7 @@ const imageFiles = [
     "surgical.png"
 ];
 
-export default function ImageSelector({ icon, setIcon }: { icon: string; setIcon: (icon: string) => void }) {
+export default function ImageSelector({icon, setIcon}: { icon: string; setIcon: (icon: string) => void }) {
     return (
         <div className="container my-4">
             <h3 className="mb-3 text-center">Choose an Image</h3>
@@ -24,7 +24,7 @@ export default function ImageSelector({ icon, setIcon }: { icon: string; setIcon
                                 src={`/images/${fileName}`}
                                 className="card-img-top"
                                 alt={fileName}
-                                style={{ objectFit: "cover", height: "150px" }}
+                                style={{objectFit: "cover", height: "150px"}}
                             />
                             <div className="card-body d-flex flex-column justify-content-center">
                                 {/* Using type="button" so clicking does not submit any form.

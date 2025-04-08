@@ -2,10 +2,10 @@
 
 import React from "react";
 import PatientIcon from "@/app/components/panel/patientIcon";
-import { PatientPool } from "@/app/models/patientPool";
-import { useDroppable } from "@dnd-kit/core";
-import { Event } from "@/app/models/event";
-import { PoolType } from "@/app/enumerations/poolType";
+import {PatientPool} from "@/app/models/patientPool";
+import {useDroppable} from "@dnd-kit/core";
+import {Event} from "@/app/models/event";
+import {PoolType} from "@/app/enumerations/poolType";
 
 export default function MedServicePanel({service, getActiveEvent}: {
     service: PatientPool,
@@ -41,7 +41,7 @@ export default function MedServicePanel({service, getActiveEvent}: {
                     <img
                         src="/images/bed.png"
                         alt="Bed Icon"
-                        style={{ width: "24px", height: "24px", marginRight: "4px" }}
+                        style={{width: "24px", height: "24px", marginRight: "4px"}}
                     />
                     <span>{service.queueSize - service.patients.length}</span>
                 </div>

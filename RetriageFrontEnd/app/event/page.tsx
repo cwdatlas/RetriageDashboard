@@ -54,41 +54,41 @@ export default function EventViewer() {
 
     return (
         <main className="d-flex flex-column min-vh-100">
-            <Header />
+            <Header/>
             {/* Mini Nav Bar always visible under header */}
-            <EventNavBar activeEvent={activeEvent} toggleEventView={toggleEventView} getActiveEvent={getActiveEvent} />
-            <ErrorMessage errorMessage={error} />
+            <EventNavBar activeEvent={activeEvent} toggleEventView={toggleEventView} getActiveEvent={getActiveEvent}/>
+            <ErrorMessage errorMessage={error}/>
             {role === Role.Director && (
                 <div className="container mt-3">
-                    {viewEvents && <SelectEvent eventViewToggle={toggleEventView} />}
+                    {viewEvents && <SelectEvent eventViewToggle={toggleEventView}/>}
                     {activeEvent != null && (
                         <div>
-                            <EventVisualization getActiveEvent={getActiveEvent} />
+                            <EventVisualization getActiveEvent={getActiveEvent}/>
                         </div>
                     )}
                 </div>
             )}
             {role === Role.Nurse && (
                 <div className="container mt-3">
-                    {activeEvent == null && <NurseWaitPage />}
+                    {activeEvent == null && <NurseWaitPage/>}
                     {activeEvent != null && (
                         <div>
-                            <EventVisualization getActiveEvent={getActiveEvent} />
+                            <EventVisualization getActiveEvent={getActiveEvent}/>
                         </div>
                     )}
                 </div>
             )}
             {role === Role.Guest && (
                 <div className="container mt-3">
-                    {activeEvent == null && <GuestWaitPage />}
+                    {activeEvent == null && <GuestWaitPage/>}
                     {activeEvent != null && (
                         <div>
-                            <EventVisualization getActiveEvent={getActiveEvent} />
+                            <EventVisualization getActiveEvent={getActiveEvent}/>
                         </div>
                     )}
                 </div>
             )}
-            <Footer />
+            <Footer/>
         </main>
     );
 }

@@ -2,7 +2,6 @@ package com.retriage.retriage.forms;
 
 import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.models.PatientPool;
-import com.retriage.retriage.models.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -31,10 +30,10 @@ public class EventForm {
     @NotNull(message = "End time is required")
     private Long duration;
 
-    @NotNull(message="Duration Left must be not null. At least 0.")
+    @NotNull(message = "Duration Left must be not null. At least 0.")
     private long remainingDuration;
 
-    @NotNull(message="timeOfStatusChange Left must be not null. At least 0.")
+    @NotNull(message = "timeOfStatusChange Left must be not null. At least 0.")
     private long timeOfStatusChange;
 
     public EventForm() {

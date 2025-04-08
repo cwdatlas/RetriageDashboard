@@ -1,7 +1,6 @@
 package com.retriage.retriage.forms;
 
 import com.retriage.retriage.models.PatientPoolTmp;
-import com.retriage.retriage.models.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

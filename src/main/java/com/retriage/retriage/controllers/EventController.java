@@ -6,7 +6,10 @@ import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.exceptions.SuccessResponse;
 import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.forms.EventTmpForm;
-import com.retriage.retriage.models.*;
+import com.retriage.retriage.models.Event;
+import com.retriage.retriage.models.Patient;
+import com.retriage.retriage.models.PatientPool;
+import com.retriage.retriage.models.PatientPoolTmp;
 import com.retriage.retriage.services.EventService;
 import com.retriage.retriage.services.UserService;
 import jakarta.transaction.Transactional;
@@ -160,10 +163,10 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         eventService.deleteEventById(id);
-        if(eventService.findEventById(id) != null){
+        if (eventService.findEventById(id) != null) {
             logger.info("deleteEvent - Event failed to delete with id: {}", id);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }else{
+        } else {
             logger.info("deleteEvent - Event deleted with id: {}", id);
             return ResponseEntity.status(HttpStatus.OK).build();
         }

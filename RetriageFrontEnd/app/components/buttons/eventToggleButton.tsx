@@ -10,7 +10,7 @@ import {Status} from "@/app/enumerations/status";
  *  - onStatusChange?: Optional callback your parent can provide if you want to notify the parent or call an API.
  */
 export default function ToggleEvent({event, onStatusChange, active}: {
-    event: Event; onStatusChange?: (UpdatedEvent: Event) => void; active : boolean
+    event: Event; onStatusChange?: (UpdatedEvent: Event) => void; active: boolean
 }) {
 
     // Function to handle button clicks
@@ -29,7 +29,8 @@ export default function ToggleEvent({event, onStatusChange, active}: {
 
     return (
         <main style={{border: "1px solid #ccc", padding: "1rem", margin: "1rem 0"}}>
-            <button className="btn btn-primary" onClick={handleToggle} disabled={event.status !== Status.Running && active}>
+            <button className="btn btn-primary" onClick={handleToggle}
+                    disabled={event.status !== Status.Running && active}>
                 {event.status === Status.Running && ("Pause")}
                 {event.status === Status.Created && ("Start")}
                 {event.status === Status.Paused && ("Resume")}

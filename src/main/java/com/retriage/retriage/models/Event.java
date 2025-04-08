@@ -30,10 +30,10 @@ public class Event {
     @JoinColumn(name = "event_id")
     private List<PatientPool> pools;
 
-    @NotNull(message="Duration Left must be not null. At least 0.")
+    @NotNull(message = "Duration Left must be not null. At least 0.")
     private long remainingDuration;
 
-    @NotNull(message="timeOfStatusChange Left must be not null. At least 0.")
+    @NotNull(message = "timeOfStatusChange Left must be not null. At least 0.")
     private long timeOfStatusChange;
 
     public Event() {

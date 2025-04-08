@@ -21,9 +21,9 @@ export function useConnectEventWebSocket(setActiveEvent: (event: Event | null) =
                 stompClient.subscribe(TOPIC, (message: IMessage) => {
                     // The server broadcasts Event objects as JSON
                     const eventData: Event = JSON.parse(message.body);
-                    if(eventData && eventData.name == "NoEventFound") {
+                    if (eventData && eventData.name == "NoEventFound") {
                         setActiveEvent(null);
-                    }else if (eventData) {
+                    } else if (eventData) {
                         console.log("Event Sent to front end: " + eventData);
                         setActiveEvent(eventData);
                     }

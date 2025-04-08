@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Event } from "@/app/models/event";
-import { deleteEvent, getAllEvents } from "@/app/api/eventApi";
+import React, {useEffect, useState} from "react";
+import {Event} from "@/app/models/event";
+import {deleteEvent, getAllEvents} from "@/app/api/eventApi";
 import ToggleEvent from "@/app/components/buttons/eventToggleButton";
-import { sendEvent } from "@/app/api/eventWebSocket";
+import {sendEvent} from "@/app/api/eventWebSocket";
 import ErrorMessage from "@/app/components/modals/errorMessage";
 import DeleteEventButton from "@/app/components/buttons/deleteEventButton";
-import { Status } from "@/app/enumerations/status";
+import {Status} from "@/app/enumerations/status";
 
-export default function SelectEvent({ eventViewToggle }: { eventViewToggle: () => void }) {
+export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => void }) {
     const [allEvents, setAllEvents] = useState<Event[]>([]);
     const [active, setActive] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -38,6 +38,7 @@ export default function SelectEvent({ eventViewToggle }: { eventViewToggle: () =
                 }
             }
         }
+
         fetchEvents();
     }, []);
 
@@ -86,7 +87,7 @@ export default function SelectEvent({ eventViewToggle }: { eventViewToggle: () =
                     <h3 className="mb-0">All Created Events</h3>
                 </div>
                 <div className="card-body">
-                    <ErrorMessage errorMessage={error} />
+                    <ErrorMessage errorMessage={error}/>
                     {allEvents.length === 0 ? (
                         <p className="text-muted">No Events Found</p>
                     ) : (
@@ -110,11 +111,11 @@ export default function SelectEvent({ eventViewToggle }: { eventViewToggle: () =
                                         </div>
                                     </div>
                                     <div className="mt-2">
-                                        <ToggleEvent event={event} onStatusChange={onStatusChange} active={active} />
+                                        <ToggleEvent event={event} onStatusChange={onStatusChange} active={active}/>
                                     </div>
                                     {event.id && (
                                         <div className="mt-2">
-                                            <DeleteEventButton id={event.id} deleteHandler={deleteHandler} />
+                                            <DeleteEventButton id={event.id} deleteHandler={deleteHandler}/>
                                         </div>
                                     )}
                                 </li>
