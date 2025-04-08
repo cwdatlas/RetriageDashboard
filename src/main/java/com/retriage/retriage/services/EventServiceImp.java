@@ -61,10 +61,12 @@ public class EventServiceImp implements EventService {
         Event event = eventOptional.orElse(null);
         if (event != null) {
             logger.info("findEventById - Found event with ID: {}", id);
+            return event;
         } else {
             logger.warn("findEventById - No event found with ID: {}", id);
+            return null;
         }
-        return event;
+
     }
 
     /**
