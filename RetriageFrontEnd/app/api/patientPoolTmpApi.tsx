@@ -44,7 +44,7 @@ export async function createPoolTemplate(pool: PatientPoolTmp): Promise<PatientP
  * Optionally, delete a event
  */
 export async function deletePoolTemplate(id: number, setError: (error: string) => void): Promise<void> {
-    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + `${id}`, {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + "/" + `${id}`, {
         method: "DELETE",
     });
     if (!res.ok) {

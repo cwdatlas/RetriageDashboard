@@ -57,7 +57,7 @@ export async function getEventById(id: number): Promise<Event> {
  * Optionally, delete a event
  */
 export async function deleteEvent(id: number, setError: (error: string) => void): Promise<void> {
-    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + `${id}`, {
+    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + "/" + `${id}`, {
         method: "DELETE",
     });
     if (!res.ok) {
