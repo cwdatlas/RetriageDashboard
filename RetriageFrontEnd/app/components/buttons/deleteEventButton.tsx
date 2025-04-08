@@ -7,7 +7,7 @@ export default function DeleteEventButton({id, deleteHandler} : {id: number, del
     }
     return (
         <main>
-            <button className={"btn btn-primary"} onClick={clickHandle}>Delete</button>
+            <button className={"btn btn-outline-primary"} onClick={clickHandle}>Delete</button>
         </main>
     )
 }

@@ -7,7 +7,7 @@ export default function DeletePoolTmpButton({id, deletePoolHandler} : {id: numbe
     }
     return (
         <main>
-            <button type="button" className={"btn btn-primary"} onClick={handler}>Delete</button>
+            <button type="button" className={"btn btn-outline-primary"} onClick={handler}>Delete</button>
         </main>
     )
 }
