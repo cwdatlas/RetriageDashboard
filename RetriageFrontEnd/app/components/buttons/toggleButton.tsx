@@ -8,7 +8,7 @@ interface ToggleButtonProps {
 
 export default function ToggleButton({onToggle, label}: ToggleButtonProps) {
     return (
-        <button onClick={onToggle}>
+        <button className="btn btn-primary" onClick={onToggle}>
             {label}
         </button>
     );
