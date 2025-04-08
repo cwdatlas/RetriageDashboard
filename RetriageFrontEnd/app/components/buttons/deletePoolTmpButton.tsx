@@ -3,7 +3,7 @@
 import {useState} from "react";
 import {deletePoolTemplate} from "@/app/api/patientPoolTmpApi";
 
-export default function DeletePoolTmpButton(id : number){
+export default function DeletePoolTmpButton({id} : {id : number}){
     const [error, setError] = useState<string | null>(null);
 
     function deleteHandler() {

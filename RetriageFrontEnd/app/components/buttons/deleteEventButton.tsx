@@ -3,7 +3,7 @@
 import {deleteEvent} from "@/app/api/eventApi";
 import {useState} from "react";
 
-export default function DeleteEventButton(id: number) {
+export default function DeleteEventButton({id} : {id: number}) {
     const [error, setError] = useState<string | null>(null);
 
     function deleteHandler() {
