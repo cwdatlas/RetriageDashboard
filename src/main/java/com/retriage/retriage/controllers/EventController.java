@@ -155,12 +155,12 @@ public class EventController {
      */
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
-        if (findEventByID(id) == null) {
+        if (eventService.findEventById(id) == null) {
             logger.info("deleteEvent - Event delete failed: Event template with id {} not found.", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         eventService.deleteEventById(id);
-        if(findEventByID(id) != null){
+        if(eventService.findEventById(id) != null){
             logger.info("deleteEvent - Event failed to delete with id: {}", id);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }else{

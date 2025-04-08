@@ -105,7 +105,7 @@ public class PatientPoolTmpController {
         }
 
         poolService.deletePoolTmpById(id);
-        if (findPoolByID(id) != null) {
+        if (poolService.findPoolTmpById(id) != null) {
             logger.info("deletePoolTmp - PoolTmp failed to delete with id: {}", id);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } else {
