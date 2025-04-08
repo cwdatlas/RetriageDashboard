@@ -2,11 +2,12 @@
 
 import React, {useEffect, useState} from "react";
 import {Event} from "@/app/models/event";
-import {getAllEvents} from "@/app/api/eventApi";
+import {deleteEvent, getAllEvents} from "@/app/api/eventApi";
 import ToggleEvent from "@/app/components/buttons/eventToggleButton";
 import {sendEvent} from "@/app/api/eventWebSocket";
 import ErrorMessage from "@/app/components/modals/errorMessage";
 import DeleteEventButton from "@/app/components/buttons/deleteEventButton";
+import {deletePoolTemplate} from "@/app/api/patientPoolTmpApi";
 
 export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => void }) {
     const [allEvents, setAllEvents] = useState<Event[]>([]);
@@ -32,6 +33,24 @@ export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => 
     function onStatusChange(event: Event) {
         sendEvent(event);
         eventViewToggle();
+    }
+
+    async function deleteHandler(id: number) {
+        setError(null);
+        try {
+            // Await the API call to delete the pool template.
+            await deleteEvent(id, setError);
+            // Update the state by creating a new array without the deleted template.
+            setAllEvents((events) =>
+                events.filter((event) => event.id !== id)
+            );
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred");
+            }
+        }
     }
 
     return (
@@ -67,7 +86,7 @@ export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => 
                                         <ToggleEvent event={event} onStatusChange={onStatusChange}/>
                                     </div>
                                     {event.id && (<div className={"mt-2"}>
-                                        <DeleteEventButton id={event.id}/>
+                                        <DeleteEventButton id={event.id} deleteHandler={deleteHandler}/>
                                     </div>
                                     )}
                                 </li>

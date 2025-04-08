@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import Header from "@/app/components/panel/header";
 import Footer from "@/app/components/panel/footer";
-import { createPoolTemplate, getAllPoolTemplates } from "@/app/api/patientPoolTmpApi";
+import {createPoolTemplate, deletePoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpApi";
 import { createEvent } from "@/app/api/eventApi";
 import { User } from "@/app/models/user";
 import { GetCookies } from "@/app/api/cookieApi";
@@ -133,6 +133,23 @@ export default function EventCreation() {
         }
         const data = await getAllPoolTemplates();
         setAllTemplates(data);
+    }
+    async function deleteHandler(id: number) {
+        setError(null);
+        try {
+            // Await the API call to delete the pool template.
+            await deletePoolTemplate(id, setError);
+            // Update the state by creating a new array without the deleted template.
+            setAllTemplates((prevTemplates) =>
+                prevTemplates.filter((pool) => pool.id !== id)
+            );
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred");
+            }
+        }
     }
 
     return (
@@ -297,7 +314,7 @@ export default function EventCreation() {
                                                     </select>
                                                 </div>
                                                 {template.id && (<div>
-                                                    <DeletePoolTmpButton id={template.id}/>
+                                                    <DeletePoolTmpButton id={template.id} deletePoolHandler={deleteHandler}/>
                                                 </div>
                                                 )}
                                                 {/* Display the pool's icon on the far right if it is a Medical Service */}
