@@ -17,6 +17,7 @@ import UploadImagePanel from "@/app/components/panel/uploadImagePanel";
 import ErrorMessage from "@/app/components/modals/errorMessage";
 import ImageSelector from "@/app/components/panel/imageSelector";
 import StatusMessage from "@/app/components/modals/statusMessage";
+import DeletePoolTmpButton from "@/app/components/buttons/deletePoolTmpButton";
 
 export default function EventCreation() {
     const router = useRouter();
@@ -295,6 +296,10 @@ export default function EventCreation() {
                                                         ))}
                                                     </select>
                                                 </div>
+                                                {template.id && (<div>
+                                                    <DeletePoolTmpButton id={template.id}/>
+                                                </div>
+                                                )}
                                                 {/* Display the pool's icon on the far right if it is a Medical Service */}
                                                 {template.poolType === PoolType.MedService && template.icon && (
                                                     <div className="ms-auto">

@@ -6,6 +6,7 @@ import {getAllEvents} from "@/app/api/eventApi";
 import ToggleEvent from "@/app/components/buttons/eventToggleButton";
 import {sendEvent} from "@/app/api/eventWebSocket";
 import ErrorMessage from "@/app/components/modals/errorMessage";
+import DeleteEventButton from "@/app/components/buttons/deleteEventButton";
 
 export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => void }) {
     const [allEvents, setAllEvents] = useState<Event[]>([]);
@@ -65,6 +66,10 @@ export default function SelectEvent({eventViewToggle}: { eventViewToggle: () => 
                                     <div className="mt-2">
                                         <ToggleEvent event={event} onStatusChange={onStatusChange}/>
                                     </div>
+                                    {event.id && (<div className={"mt-2"}>
+                                        <DeleteEventButton id={event.id}/>
+                                    </div>
+                                    )}
                                 </li>
                             ))}
                         </ul>
