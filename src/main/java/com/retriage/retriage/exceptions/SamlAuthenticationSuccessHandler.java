@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 /**
@@ -16,7 +18,7 @@ import java.io.IOException;
  */
 @Component
 public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-
+    private static final Logger logger = LoggerFactory.getLogger(SamlAuthenticationSuccessHandler.class);
     private final JwtUtil jwtUtil;
 
     /**
@@ -41,14 +43,17 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        String username = authentication.getName(); // Subject (email) from Okta SAML
-        String jwt = jwtUtil.generateToken(username); // Generate JWT with username as subject
+        String username = authentication.getName();
+        logger.debug("SAML success - Authenticated user: {}", username);
 
-        // Respond with JWT in JSON format
+        // Generate JWT for authenticated user
+        String jwt = jwtUtil.generateToken(username);
+        logger.debug("SAML success - JWT generated successfully for user: {}", username);
+
+        // Return JWT in JSON response
         response.setContentType("application/json");
         response.getWriter().write("{\"token\": \"" + jwt + "\"}");
         response.getWriter().flush();
-
-        // No redirect or default behavior
+        logger.debug("SAML success - JWT returned in JSON response for user: {}", username);
     }
 }
