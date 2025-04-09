@@ -35,7 +35,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * to handle user group/role mapping from SAML attributes to Spring Security authorities.
  *
  * @Author: John Botonakis
- * @PatientPool: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
+ * @Author: Help provided by Matt Raible (<a href="https://developer.okta.com/blog/2022/08/05/spring-boot-saml">...</a>)
  */
 @Configuration
 public class SecurityConfiguration {
@@ -77,7 +77,6 @@ public class SecurityConfiguration {
                                 .requestMatchers("/ws/**").permitAll()
                                 .requestMatchers("/topic/**").permitAll()
                                 .requestMatchers("/active_event/**").authenticated()
-//                        .requestMatchers("/").hasAuthority("Director") // Test to ensure the requestMatchers method works
                                 .anyRequest().authenticated() // Require authentication for any request to this application
                 )
                 // Login Settings
