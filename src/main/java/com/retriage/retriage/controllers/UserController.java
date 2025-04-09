@@ -1,5 +1,6 @@
 package com.retriage.retriage.controllers;
 
+import com.retriage.retriage.configurations.UserDto;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.forms.UserForm;
@@ -154,4 +155,31 @@ public class UserController {
         logger.info("patchUser - User partially updated with ID: {}", updatedUser.getId());
         return ResponseEntity.ok(updatedUser);
     }
+
+
+    @GetMapping(value = "/me", produces = "application/json")
+    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.warn("getCurrentUser - Missing or malformed Authorization header.");
+            return ResponseEntity.badRequest().body(
+                    new ErrorResponse(List.of("Authorization header missing or invalid"), 400, "INVALID_AUTH_HEADER")
+            );
+        }
+
+        try {
+            String token = authHeader.substring(7); // Strip "Bearer "
+            User user = userService.getUserFromToken(token);
+
+            return ResponseEntity.ok(new UserDto(
+                    user.getEmail(),
+                    List.of(user.getRole().name()) // Convert Role enum to String
+            ));
+        } catch (Exception e) {
+            logger.error("getCurrentUser - Failed to parse token or find user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new ErrorResponse(List.of("Unauthorized: " + e.getMessage()), 401, "UNAUTHORIZED")
+            );
+        }
+    }
+
 }
