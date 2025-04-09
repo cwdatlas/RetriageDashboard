@@ -1,26 +1,68 @@
 'use client'
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PatientIcon from "@/app/components/panel/patientIcon";
-import {PatientPool} from "@/app/models/patientPool";
-import {useDroppable} from "@dnd-kit/core";
-import {Event} from "@/app/models/event";
-import {PoolType} from "@/app/enumerations/poolType";
+import { PatientPool } from "@/app/models/patientPool";
+import { useDroppable } from "@dnd-kit/core";
+import { Event } from "@/app/models/event";
+import { PoolType } from "@/app/enumerations/poolType";
 
-export default function MedServicePanel({service, getActiveEvent}: {
+interface ProcessingProgressBarProps {
+    processTime: number; // in milliseconds
+}
+
+const ProcessingProgressBar: React.FC<ProcessingProgressBarProps> = ({ processTime }) => {
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        const startTime = Date.now();
+        const timer = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const newProgress = Math.min((elapsed / processTime) * 100, 100);
+            setProgress(newProgress);
+            if (newProgress >= 100) clearInterval(timer);
+        }, 100);
+        return () => clearInterval(timer);
+    }, [processTime]);
+
+    return (
+        <div
+            className="progress"
+            style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: "100%",
+                opacity: 0.7,
+                zIndex: 10,
+            }}
+        >
+            <div
+                className="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                role="progressbar"
+                style={{ width: `${progress}%` }}
+                aria-valuenow={progress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+            ></div>
+        </div>
+    );
+};
+
+export default function MedServicePanel({ service, getActiveEvent }: {
     service: PatientPool,
     getActiveEvent: () => Event
 }) {
-    const {isOver, setNodeRef} = useDroppable({
+    const { isOver, setNodeRef } = useDroppable({
         id: service.id || 0,
     });
     const style = {
-        color: isOver ? 'green' : undefined,
+        color: isOver ? "green" : undefined,
     };
 
-    // Determine if there is a currently processing patient.
-    // Here, we assume that if there's a patient at index 0 and they are not yet marked as processed,
-    // then that patient is the one being processed.
+    // We assume that when the poolType is MedService and there is at least one patient,
+    // the patient at index 0 (if not marked as processed) is the one currently processing.
     const currentlyProcessing =
         service.poolType === PoolType.MedService && service.patients.length > 0
             ? service.patients[0]
@@ -41,24 +83,44 @@ export default function MedServicePanel({service, getActiveEvent}: {
                     <img
                         src="/images/bed.png"
                         alt="Bed Icon"
-                        style={{width: "24px", height: "24px", marginRight: "4px"}}
+                        style={{ width: "24px", height: "24px", marginRight: "4px" }}
                     />
                     <span>{service.queueSize - service.patients.length}</span>
                 </div>
             </div>
             <div className="card-body">
                 <div className="d-flex align-items-center">
-                    {/* Patients container (rendered in reverse order) */}
+                    {/* Patients container – here we render the patients.
+              If the patient is currently processing, we add a progress bar overlay. */}
                     <div className="d-flex align-items-center row row-cols-6">
-                        {service.patients.map((patient, idx) => (
-                            <div key={idx} className="col mb-2">
-                                <PatientIcon
-                                    patient={patient}
-                                    patientList={service.patients}
-                                    getActiveEvent={getActiveEvent}
-                                />
-                            </div>
-                        ))}
+                        {service.patients.map((patient, idx) => {
+                            const isProcessing =
+                                currentlyProcessing &&
+                                patient.id === currentlyProcessing.id &&
+                                !patient.processed;
+                            if (isProcessing) {
+                                return (
+                                    <div key={patient.id || idx} className="col mb-2" style={{ position: "relative" }}>
+                                        <PatientIcon
+                                            patient={patient}
+                                            patientList={service.patients}
+                                            getActiveEvent={getActiveEvent}
+                                        />
+                                        <ProcessingProgressBar processTime={service.processTime} />
+                                    </div>
+                                );
+                            } else {
+                                return (
+                                    <div key={patient.id || idx} className="col mb-2">
+                                        <PatientIcon
+                                            patient={patient}
+                                            patientList={service.patients}
+                                            getActiveEvent={getActiveEvent}
+                                        />
+                                    </div>
+                                );
+                            }
+                        })}
                     </div>
                     {/* Icon container: fixed size, outlined, aligned to right */}
                     {service.poolType === PoolType.MedService && service.icon && (
@@ -67,6 +129,7 @@ export default function MedServicePanel({service, getActiveEvent}: {
                             style={{
                                 width: "90px",
                                 height: "90px",
+                                border: "1px solid #dee2e6",
                                 borderRadius: "4px",
                                 display: "flex",
                                 alignItems: "center",
