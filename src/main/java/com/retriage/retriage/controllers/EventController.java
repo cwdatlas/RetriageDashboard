@@ -45,9 +45,10 @@ public class EventController {
     /**
      * createEvent
      * Creates a new Event with the given form data
+     * Only accessible to users with the 'Director' role
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    @PreAuthorize("hasAuthority('ADMIN')") //Restricts to ADMIN role only
+    @PreAuthorize("hasRole('Director')") //Restricts to Director roles only
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventTmpForm eventform) {
         List<String> errorList = new ArrayList<>();
         // Patient Pool Template validation
@@ -116,6 +117,7 @@ public class EventController {
      * findEventByID
      */
     @GetMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasAnyRole('Director', 'Nurse')") // Restricts to Director and Nurse roles only
     public ResponseEntity<?> findEventByID(@PathVariable Long id) {
         Event event = eventService.findEventById(id);
         if (event == null) {
@@ -134,6 +136,7 @@ public class EventController {
      * @return The list of every event
      */
     @GetMapping(produces = "application/json")
+    @PreAuthorize("hasRole('Director')") // Restricts to Director Roles only
     public ResponseEntity<?> getAllEvents() {
         List<Event> events = eventService.findAllEvents();
         return new ResponseEntity<>(events, HttpStatus.OK); // Returning 200 OK with the list of events
@@ -158,6 +161,7 @@ public class EventController {
      * @return Returns a confirmation that the event was deleted
      */
     @DeleteMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasRole('Director')") // Restricts to Director Roles only
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
         if (eventService.findEventById(id) == null) {
             logger.info("deleteEvent - Event delete failed: Event template with id {} not found.", id);
