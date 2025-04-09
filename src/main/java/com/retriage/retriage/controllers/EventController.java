@@ -177,43 +177,4 @@ public class EventController {
         }
     }
 
-    /**
-     * updateEvent
-     */
-    @PutMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> updateEvent(@Valid @RequestBody EventForm eventForm) {
-        if(eventForm.getStatus() == Status.Running) {
-            Event activeEvent = eventService.findActiveEvent();
-            if(activeEvent != null && !activeEvent.getId().equals(eventForm.getId())) {
-                return new ResponseEntity<>("Can't submit event of status Running when another event is currently running.", HttpStatus.NOT_FOUND);
-            }
-        }
-
-        List<String> errorList = new ArrayList<>();
-
-        Event updatedEvent = new Event();
-        updatedEvent.setName(eventForm.getName());
-        updatedEvent.setId(eventForm.getId());
-        updatedEvent.setDuration(eventForm.getDuration());
-        updatedEvent.setPools(eventForm.getPools());
-        updatedEvent.setStatus(eventForm.getStatus());
-        updatedEvent.setStartTime(eventForm.getStartTime());
-        updatedEvent.setRemainingDuration(eventForm.getRemainingDuration());
-        Event oldEvent = eventService.findEventById(eventForm.getId());
-        if (oldEvent == null) {
-            errorList.add("Attempted to update event without already existing.");
-        } else if (oldEvent.getStatus() == eventForm.getStatus()) {
-            updatedEvent.setTimeOfStatusChange(eventForm.getTimeOfStatusChange());
-        }
-        logger.debug("updateEvent - Updated Event object created: {}", updatedEvent);
-
-        Event response = eventService.updateEvent(eventForm.getId(), updatedEvent);
-        if (response == null) {
-            logger.warn("updateEvent - Event update failed: Event with id {} not found.", eventForm.getId());
-            ErrorResponse errorResponse = new ErrorResponse(List.of("Event with id " + eventForm.getId() + " unable to be updated."), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
-            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-        }
-        logger.info("updateEvent - Event updated successfully with id: {}", response.getId());
-        return ResponseEntity.ok(new SuccessResponse("Updated event successfully", response.getId())); // Using ResponseEntity.ok for success with JSON
-    }
 }
