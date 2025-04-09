@@ -1,5 +1,6 @@
 package com.retriage.retriage.configurations;
 
+import com.retriage.retriage.exceptions.SamlAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -39,6 +40,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfiguration {
 
+    private final SamlAuthenticationSuccessHandler samlAuthenticationSuccessHandler;
+
+    public SecurityConfiguration(SamlAuthenticationSuccessHandler samlAuthenticationSuccessHandler) {
+        this.samlAuthenticationSuccessHandler = samlAuthenticationSuccessHandler;
+    }
+
+
     /**
      * configure
      * <br></br>
@@ -75,7 +83,7 @@ public class SecurityConfiguration {
                 // Login Settings
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom SAML authentication provider
-                        .defaultSuccessUrl("/", true) // <- Forces redirect to home after successful login)
+                        .successHandler(samlAuthenticationSuccessHandler)
                 )
                 //Logout Settings
                 .saml2Logout(withDefaults())

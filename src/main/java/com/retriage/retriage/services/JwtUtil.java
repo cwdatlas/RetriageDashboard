@@ -89,10 +89,7 @@ public class JwtUtil {
                     roles.add((String) item);
                 } else {
                     // Handle the case where an item is not a String.
-                    // You might want to log an error, throw an exception,
-                    // or skip the invalid item depending on your requirements.
                     System.err.println("Warning: Non-string role found in JWT: " + item);
-                    // Or: throw new ClassCastException("Invalid role type in JWT");
                 }
             }
             return roles;

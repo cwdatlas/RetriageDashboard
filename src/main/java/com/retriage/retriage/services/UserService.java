@@ -21,4 +21,6 @@ public interface UserService {
     void deleteUserById(Long id); // Delete
 
     User getUserByEmail(String email);
+
+    User getUserFromToken(String token);
 }
