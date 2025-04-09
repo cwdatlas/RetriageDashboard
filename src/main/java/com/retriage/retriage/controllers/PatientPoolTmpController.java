@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -36,6 +37,7 @@ public class PatientPoolTmpController {
      * POST /templates
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
+    @PreAuthorize("hasRole('Director')") // Restricts to Director roles only
     public ResponseEntity<?> createPool(@Valid @RequestBody PatientPoolTmpForm poolForm) {
         PatientPoolTmp newPool = new PatientPoolTmp();
         newPool.setName(poolForm.getName());
@@ -65,6 +67,7 @@ public class PatientPoolTmpController {
      * GET /templates
      */
     @GetMapping(produces = "application/json")
+    @PreAuthorize("hasRole('Director')") // Restricts to Director roles only
     public ResponseEntity<List<PatientPoolTmp>> getAllPools() {
         List<PatientPoolTmp> pools = poolService.findAllPoolTmp();
         logger.info("getAllPools - Retrieved {} pool templates.", pools.size());
@@ -76,6 +79,7 @@ public class PatientPoolTmpController {
      * GET /templates/{id}
      */
     @GetMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasRole('Director')") // Restricts to Director roles only
     public ResponseEntity<?> findPoolByID(@PathVariable Long id) {
         PatientPoolTmp optionalPool = poolService.findPoolTmpById(id);
         if (optionalPool != null) {
@@ -97,6 +101,7 @@ public class PatientPoolTmpController {
      * DELETE /templates/{id}
      */
     @DeleteMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasRole('Director')") // Restricts to Director roles only
     public ResponseEntity<?> deletePool(@PathVariable Long id) {
         if (poolService.findPoolTmpById(id) == null) {
             logger.warn("deletePool - Pool template delete failed: Pool template with id {} not found.", id);
