@@ -73,11 +73,12 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers("/api/**").permitAll()
-                                .requestMatchers("/ws/**").permitAll()
-                                .requestMatchers("/topic/**").permitAll()
-                                .requestMatchers("/active_event/**").authenticated()
-                                .anyRequest().authenticated() // Require authentication for any request to this application
+                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/ws/**").permitAll()
+                .requestMatchers("/topic/**").permitAll()
+                .requestMatchers("/api/users/me").permitAll()
+                .requestMatchers("/active_event/**").authenticated()
+                .anyRequest().authenticated() // Require authentication for any request to this application
                 )
                 // Login Settings
                 .saml2Login(saml2 -> saml2
