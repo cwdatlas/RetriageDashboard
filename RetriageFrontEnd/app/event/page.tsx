@@ -34,7 +34,7 @@ export default function EventViewer() {
     }, []);
 
     // Connect the WebSocket for real-time updates.
-    useConnectEventWebSocket(setActiveEvent);
+    useConnectEventWebSocket(setActiveEvent, setError);
 
     function toggleEventView() {
         setViewEvents(!viewEvents);

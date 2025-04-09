@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin
@@ -177,6 +178,13 @@ public class EventController {
      */
     @PutMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> updateEvent(@Valid @RequestBody EventForm eventForm) {
+        if(eventForm.getStatus() == Status.Running) {
+            Event activeEvent = eventService.findActiveEvent();
+            if(activeEvent != null && !activeEvent.getId().equals(eventForm.getId())) {
+                return new ResponseEntity<>("Can't submit event of status Running when another event is currently running.", HttpStatus.NOT_FOUND);
+            }
+        }
+
         List<String> errorList = new ArrayList<>();
 
         Event updatedEvent = new Event();

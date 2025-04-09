@@ -1,6 +1,7 @@
 import {useEffect} from 'react';
 import {Event} from "@/app/models/event";
 import {Client, IMessage} from "@stomp/stompjs";
+import {ResponseWrapper} from "@/app/models/responseWrapper";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "ws://localhost:8080";
 const ENDPOINT = "/active_event";
@@ -8,7 +9,7 @@ const UPDATE_EVENT = "/ws/update";
 const TOPIC = "/topic/event_updates";
 let client: Client;
 
-export function useConnectEventWebSocket(setActiveEvent: (event: Event | null) => void) {
+export function useConnectEventWebSocket(setActiveEvent: (event: Event | null) => void, setError: (error: string) => void): void {
 
     useEffect(() => {
         // Create the STOMP client
@@ -20,12 +21,15 @@ export function useConnectEventWebSocket(setActiveEvent: (event: Event | null) =
                 // Subscribe to /topic/events
                 stompClient.subscribe(TOPIC, (message: IMessage) => {
                     // The server broadcasts Event objects as JSON
-                    const eventData: Event = JSON.parse(message.body);
-                    if (eventData && eventData.name == "NoEventFound") {
+                    const eventData: ResponseWrapper<Event> = JSON.parse(message.body);
+                    if(eventData.httpStatus == 404){
                         setActiveEvent(null);
-                    } else if (eventData) {
-                        console.log("Event Sent to front end: " + eventData);
-                        setActiveEvent(eventData);
+                    }else if(eventData.httpStatus == 400){
+                        console.error(eventData.error);
+                        setError(eventData.error);
+                    } else if (eventData.data) {
+                        console.log("Event Sent to front end: " + eventData.data.name);
+                        setActiveEvent(eventData.data);
                     }
                 });
 
@@ -33,6 +37,7 @@ export function useConnectEventWebSocket(setActiveEvent: (event: Event | null) =
             onStompError: (frame) => {
                 console.error("Broker reported error: " + frame.headers["message"]);
                 console.error("Additional details: " + frame.body);
+                setError("Error when receiving data to server.")
             },
         });
 
@@ -50,7 +55,6 @@ export function useConnectEventWebSocket(setActiveEvent: (event: Event | null) =
 
 // Sends an event to the server
 export function sendEvent(event: Event) {
-    // TODO include error handling
     console.log("Sending event to be saved.");
     client.publish({destination: UPDATE_EVENT, body: JSON.stringify(event)});
 }
