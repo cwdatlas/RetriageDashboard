@@ -18,6 +18,7 @@ public class UserServiceImp implements UserService {
     // Add Logger for keeping track of any errors
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImp.class);
     private final UserRepo userRepository;
+    private final JwtUtil jwtUtil;
 
     /**
      * UserServiceImp
@@ -25,8 +26,9 @@ public class UserServiceImp implements UserService {
      *
      * @param userRepository Repository declared in UserServiceImp
      */
-    public UserServiceImp(UserRepo userRepository) {
+    public UserServiceImp(UserRepo userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -76,6 +78,25 @@ public class UserServiceImp implements UserService {
         }
         return user;
     }
+
+    @Override
+    public User getUserFromToken(String token) {
+        if (!jwtUtil.validateToken(token)) {
+            throw new IllegalArgumentException("Invalid JWT token");
+        }
+
+        String email = jwtUtil.extractUsername(token); // assuming subject = email
+        User user = getUserByEmail(email);
+
+        if (user == null) {
+            logger.warn("getUserFromToken - No user found for token subject: {}", email);
+            throw new IllegalArgumentException("No user found for given token");
+        }
+
+        logger.info("getUserFromToken - User retrieved for token subject: {}", email);
+        return user;
+    }
+
 
     /**
      * updateUser
