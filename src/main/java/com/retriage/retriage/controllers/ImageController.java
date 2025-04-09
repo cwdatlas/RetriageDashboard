@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ public class ImageController {
     private String uploadDir;
 
     @PostMapping("/uploadImage")
+    @PreAuthorize("hasRole('Director')") //Restricts to Director roles only
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             logger.warn("uploadImage - File upload failed: Empty file.");
