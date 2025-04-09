@@ -5,9 +5,11 @@ import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.models.Event;
 import com.retriage.retriage.models.Patient;
 import com.retriage.retriage.models.PatientPool;
+import com.retriage.retriage.models.ResponseWrapper;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -71,11 +73,11 @@ public class EventTimerServiceImp implements EventTimerService {
     public void broadcastEventUpdates() {
         Event activeEvent = eventService.findActiveEvent();
         if (activeEvent == null) {
-            Event errorReturnEvent = new Event();
-            errorReturnEvent.setName("NoEventFound");
-            messagingTemplate.convertAndSend("/topic/event_updates", errorReturnEvent);
+            messagingTemplate.convertAndSend("/topic/event_updates",
+                    new ResponseWrapper<Event>(HttpStatus.NOT_FOUND.value(), "There is not an event running currently.",null ));
         } else {
-            messagingTemplate.convertAndSend("/topic/event_updates", activeEvent);
+            messagingTemplate.convertAndSend("/topic/event_updates",
+                    new ResponseWrapper<Event>(HttpStatus.OK.value(), "Nominal Event Update", activeEvent));
         }
     }
 }
