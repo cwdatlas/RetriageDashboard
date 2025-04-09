@@ -123,7 +123,7 @@ export default function MedServicePanel({ service, getActiveEvent }: {
                         })}
                     </div>
                     {/* Icon container: fixed size, outlined, aligned to right */}
-                    {service.poolType === PoolType.MedService && service.icon && (
+                    {service.icon && (
                         <div
                             className="ms-auto"
                             style={{
