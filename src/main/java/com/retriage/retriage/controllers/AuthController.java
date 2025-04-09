@@ -1,8 +1,8 @@
 package com.retriage.retriage.controllers;
 
-import com.retriage.retriage.configurations.AuthRequest;
-import com.retriage.retriage.configurations.AuthResponse;
-import com.retriage.retriage.configurations.JwtUtil;
+import com.retriage.retriage.models.AuthRequest;
+import com.retriage.retriage.models.AuthResponse;
+import com.retriage.retriage.services.JwtUtil;
 import com.retriage.retriage.exceptions.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

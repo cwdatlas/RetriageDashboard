@@ -1,4 +1,4 @@
-package com.retriage.retriage.configurations;
+package com.retriage.retriage.models;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.retriage.retriage.configurations;
+package com.retriage.retriage.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

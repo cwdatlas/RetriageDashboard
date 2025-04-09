@@ -1,4 +1,4 @@
-package com.retriage.retriage.configurations;
+package com.retriage.retriage.models;
 
 /**
  * Represents the authentication request, containing the JWT token.
