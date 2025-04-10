@@ -3,6 +3,7 @@ package com.retriage.retriage.controllers;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.models.User;
+import com.retriage.retriage.services.JwtUtil;
 import com.retriage.retriage.services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,10 +35,12 @@ import java.util.List;
 public class HomeController {
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
     private final UserService userService;
+    private final JwtUtil jwtUtil;
     AuthenticationPrincipal Saml2AuthenticatedPrincipal;
 
-    HomeController(UserService userService) {
+    HomeController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -113,10 +116,11 @@ public class HomeController {
         }
 
         // Setting cookies using helper method
-        response.addCookie(createCookie("firstName", firstName));
-        response.addCookie(createCookie("lastName", lastName));
-        response.addCookie(createCookie("role", userRole.toString()));
+
+        response.addCookie(createCookie("firstname", firstName));
+        response.addCookie(createCookie("lastname", lastName));
         response.addCookie(createCookie("email", email));
+        response.addCookie(createCookie("role", userRole.toString()));
 
         logger.info("oktaLogin - User authenticated and cookies set for email: {}", email);
         return ResponseEntity.status(HttpStatus.FOUND)
