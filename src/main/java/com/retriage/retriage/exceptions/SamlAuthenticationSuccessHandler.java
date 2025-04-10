@@ -49,7 +49,7 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
 
         // Generate token but don’t write JSON response
         String jwt = jwtUtil.generateToken(username);
-        logger.debug("SAML success - JWT generated for user: {}", username);
+        logger.info("SAML success - JWT generated for user: {}", username);
 
         // Set JWT as cookie
         Cookie tokenCookie = new Cookie("token", jwt);
@@ -60,7 +60,7 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
         tokenCookie.setAttribute("SameSite", "None"); // Explicitly allow cross-origin frontend access
         response.addCookie(tokenCookie);
 
-        // 🚀 Redirect to the frontend app
+        // Redirect to the frontend app
         response.sendRedirect("http://localhost:3000/");
         logger.info("SAML success - Redirecting to frontend at http://localhost:3000/");
     }
