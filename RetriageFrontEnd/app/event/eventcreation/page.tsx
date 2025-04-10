@@ -13,7 +13,6 @@ import {Role} from "@/app/enumerations/role";
 import {PoolType} from "@/app/enumerations/poolType";
 import {PatientPoolTmp} from "@/app/models/patientPoolTmp";
 import {EventTmp} from "@/app/models/eventTmp";
-import UploadImagePanel from "@/app/components/panel/uploadImagePanel";
 import ErrorMessage from "@/app/components/modals/errorMessage";
 import ImageSelector from "@/app/components/panel/imageSelector";
 import StatusMessage from "@/app/components/modals/statusMessage";
@@ -208,7 +207,7 @@ export default function EventCreation() {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="eventDuration" className="form-label">
-                                    Duration (minutes) (max 200):
+                                    Duration (minutes):
                                 </label>
                                 <input
                                     id="eventDuration"
@@ -462,11 +461,6 @@ export default function EventCreation() {
                             </button>
                         </form>
                     </div>
-                </div>
-
-                {/* Upload Image Panel */}
-                <div className="mb-4">
-                    <UploadImagePanel />
                 </div>
             </main>
             <Footer />

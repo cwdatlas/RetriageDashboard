@@ -71,7 +71,7 @@ export default function CreatePatient({getActiveEvent}: { getActiveEvent: () => 
 
     return (
         <div>
-            <button onClick={() => setShowModal(true)}>Add Patient</button>
+            <button className="btn btn-primary" onClick={() => setShowModal(true)}>Add Patient</button>
 
             {showModal && (
                 <div style={styles.overlay}>

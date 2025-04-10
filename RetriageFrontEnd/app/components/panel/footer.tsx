@@ -14,7 +14,7 @@ export default function Footer() {
                 className="text-center p-3"
                 style={{backgroundColor: "rgba(0, 0, 0, 0.2)"}}
             >
-                © {new Date().getFullYear()} ?
+                Made as a class project for the Carroll College Nursing Program
             </div>
         </footer>
     );

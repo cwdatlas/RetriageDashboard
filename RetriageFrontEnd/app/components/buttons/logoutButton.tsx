@@ -11,7 +11,7 @@ export default function LogoutButton() {
                 {/* No content needed, just a form to be submitted */}
             </form>
 
-            <button onClick={handleLogout}>Logout</button>
+            <button className="btn btn-primary" onClick={handleLogout}>Logout</button>
 
         </main>
     )
