@@ -82,7 +82,7 @@ public class UserServiceImp implements UserService {
     @Override
     public User getUserFromToken(String token) {
         if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("Invalid JWT token");
+            throw new IllegalArgumentException("Invalid JWT token " + token);
         }
 
         String email = jwtUtil.extractUsername(token); // assuming subject = email
