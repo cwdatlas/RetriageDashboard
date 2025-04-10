@@ -45,9 +45,10 @@ public class EventController {
     /**
      * createEvent
      * Creates a new Event with the given form data
+     * Only accessible to users with the 'Director' role
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
-    @PreAuthorize("hasAuthority('ADMIN')") //Restricts to ADMIN role only
+    @PreAuthorize("hasRole('Director')") //Restricts to Director roles only
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventTmpForm eventform) {
         List<String> errorList = new ArrayList<>();
         // Patient Pool Template validation
@@ -116,6 +117,7 @@ public class EventController {
      * findEventByID
      */
     @GetMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasAnyRole('Director', 'Nurse')") // Restricts to Director and Nurse roles only
     public ResponseEntity<?> findEventByID(@PathVariable Long id) {
         Event event = eventService.findEventById(id);
         if (event == null) {
@@ -134,6 +136,7 @@ public class EventController {
      * @return The list of every event
      */
     @GetMapping(produces = "application/json")
+    @PreAuthorize("hasRole('Director')") // Restricts to Director Roles only
     public ResponseEntity<?> getAllEvents() {
         List<Event> events = eventService.findAllEvents();
         return new ResponseEntity<>(events, HttpStatus.OK); // Returning 200 OK with the list of events
@@ -158,6 +161,7 @@ public class EventController {
      * @return Returns a confirmation that the event was deleted
      */
     @DeleteMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasRole('Director')") // Restricts to Director Roles only
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
         if (eventService.findEventById(id) == null) {
             logger.info("deleteEvent - Event delete failed: Event template with id {} not found.", id);
@@ -173,43 +177,4 @@ public class EventController {
         }
     }
 
-    /**
-     * updateEvent
-     */
-    @PutMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> updateEvent(@Valid @RequestBody EventForm eventForm) {
-        if(eventForm.getStatus() == Status.Running) {
-            Event activeEvent = eventService.findActiveEvent();
-            if(activeEvent != null && !activeEvent.getId().equals(eventForm.getId())) {
-                return new ResponseEntity<>("Can't submit event of status Running when another event is currently running.", HttpStatus.NOT_FOUND);
-            }
-        }
-
-        List<String> errorList = new ArrayList<>();
-
-        Event updatedEvent = new Event();
-        updatedEvent.setName(eventForm.getName());
-        updatedEvent.setId(eventForm.getId());
-        updatedEvent.setDuration(eventForm.getDuration());
-        updatedEvent.setPools(eventForm.getPools());
-        updatedEvent.setStatus(eventForm.getStatus());
-        updatedEvent.setStartTime(eventForm.getStartTime());
-        updatedEvent.setRemainingDuration(eventForm.getRemainingDuration());
-        Event oldEvent = eventService.findEventById(eventForm.getId());
-        if (oldEvent == null) {
-            errorList.add("Attempted to update event without already existing.");
-        } else if (oldEvent.getStatus() == eventForm.getStatus()) {
-            updatedEvent.setTimeOfStatusChange(eventForm.getTimeOfStatusChange());
-        }
-        logger.debug("updateEvent - Updated Event object created: {}", updatedEvent);
-
-        Event response = eventService.updateEvent(eventForm.getId(), updatedEvent);
-        if (response == null) {
-            logger.warn("updateEvent - Event update failed: Event with id {} not found.", eventForm.getId());
-            ErrorResponse errorResponse = new ErrorResponse(List.of("Event with id " + eventForm.getId() + " unable to be updated."), HttpStatus.NOT_FOUND.value(), "EVENT_NOT_FOUND");
-            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-        }
-        logger.info("updateEvent - Event updated successfully with id: {}", response.getId());
-        return ResponseEntity.ok(new SuccessResponse("Updated event successfully", response.getId())); // Using ResponseEntity.ok for success with JSON
-    }
 }

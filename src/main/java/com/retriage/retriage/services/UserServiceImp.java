@@ -149,7 +149,7 @@ public class UserServiceImp implements UserService {
                 List<User> users = userRepository.findByEmailIgnoreCase(email);
                 if (users.size() == 1) {
                     logger.info("getUserByEmail - User found with email: {}", email);
-                    return users.get(0);
+                    return users.getFirst();
                 } else if (users.size() > 1) {
                     logger.warn("getUserByEmail - Multiple users found with email: {}", email);
                 } else {
@@ -166,7 +166,7 @@ public class UserServiceImp implements UserService {
 
     /**
      * validateUser
-     * Validates a User object has all of it's parameters properly filled out
+     * Validates a User object has all of its parameters properly filled out
      */
     private void validateUser(User user) {
         if (user == null) {

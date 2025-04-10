@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -37,6 +38,7 @@ public class PatientController {
      * Creates a new Patient object from the data provided in the PatientForm
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
+    @PreAuthorize("hasAnyRole('Director', 'Nurse')") // Restricts to Director and Nurse roles only
     public ResponseEntity<?> createPatient(@Valid @RequestBody PatientForm patientForm) {
         List<String> errors = new ArrayList<>();
         //Secondary Validation
@@ -93,6 +95,7 @@ public class PatientController {
      * Deletes a Patient, specified by their ID
      */
     @DeleteMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasAnyRole('Director', 'Nurse')") // Restricts to Director and Nurse roles only
     public ResponseEntity<?> deletePatient(@PathVariable Long id) {
         if (!patientService.getPatientById(id).isPresent()) {
             logger.warn("deletePatient - Patient delete failed: Patient with id {} not found.", id);

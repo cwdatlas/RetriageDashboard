@@ -22,6 +22,11 @@ public class UserDto {
         this.roles = roles;
     }
 
+    @Override
+    public String toString() {
+        return "UserDto{username='%s', roles=%s}".formatted(username, roles);
+    }
+
     // Getters & setters
     public String getUsername() {
         return username;
