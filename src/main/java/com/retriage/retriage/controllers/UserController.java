@@ -1,6 +1,6 @@
 package com.retriage.retriage.controllers;
 
-import com.retriage.retriage.configurations.UserDto;
+import com.retriage.retriage.models.UserDto;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.forms.UserForm;
