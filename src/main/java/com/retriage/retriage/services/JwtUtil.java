@@ -5,6 +5,8 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -26,6 +28,7 @@ public class JwtUtil {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     // Expiration time for the JWT, set to 1 hour (in milliseconds).
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // Expires after 1 hour
+    private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
     /**
      * Generates a JWT for the specified username.
@@ -34,6 +37,7 @@ public class JwtUtil {
      * @return a signed JWT string
      */
     public String generateToken(String username) {
+        log.info("Generating JWT token for user: {}", username);
         return Jwts.builder()
             .setSubject(username) // Store username as the subject
             .setIssuedAt(new Date()) // Issue time = now
