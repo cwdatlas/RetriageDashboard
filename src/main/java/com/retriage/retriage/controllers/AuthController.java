@@ -4,6 +4,7 @@ import com.retriage.retriage.models.AuthRequest;
 import com.retriage.retriage.models.AuthResponse;
 import com.retriage.retriage.services.JwtUtil;
 import com.retriage.retriage.exceptions.ErrorResponse;
+import jakarta.servlet.http.Cookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +44,20 @@ public class AuthController {
             );
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", "http://localhost:3000/")
+                .build();
+    }
 
-        return ResponseEntity.ok(new AuthResponse(token, roles));
+    /**
+     * Helper method to create a cookie with standard settings.
+     */
+    private Cookie createCookie(String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setPath("/");
+        cookie.setDomain("localhost");
+        cookie.setHttpOnly(false);
+        cookie.setSecure(false);
+        return cookie;
     }
 }
