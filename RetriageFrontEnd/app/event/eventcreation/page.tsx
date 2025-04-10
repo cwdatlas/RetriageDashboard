@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation";
 
 import Header from "@/app/components/panel/header";
 import Footer from "@/app/components/panel/footer";
-import {createPoolTemplate, deletePoolTemplate, getAllPoolTemplates} from "@/app/api/patientPoolTmpApi";
+import {createPoolTemplate, deletePoolTemplate, getAllPoolTemplates,} from "@/app/api/patientPoolTmpApi";
 import {createEvent} from "@/app/api/eventApi";
 import {User} from "@/app/models/user";
 import {GetCookies} from "@/app/api/cookieApi";
@@ -34,7 +34,6 @@ export default function EventCreation() {
     const [poolName, setPoolName] = useState("");
     const [poolType, setPoolType] = useState(PoolType.MedService);
     const [patientProcessTime, setPatientProcessTime] = useState("");
-    // New state for autoDischarge – only used when poolType is Medical Service.
     const [autoDischarge, setAutoDischarge] = useState(true);
 
     // Director + Pools for this new event
@@ -45,7 +44,7 @@ export default function EventCreation() {
         role: GetCookies("role") as Role,
     };
 
-    // State to hold *all* pool templates from your API
+    // State to hold all pool templates from your API
     const [allTemplates, setAllTemplates] = useState<PatientPoolTmp[]>([]);
 
     // State for the user-selected Pools (the ones actually going into the event)
@@ -64,20 +63,42 @@ export default function EventCreation() {
                 }
             }
         }
-
         fetchTemplates();
     }, []);
 
+    // If switching away from MedService, reset autoDischarge
+    useEffect(() => {
+        if (poolType !== PoolType.MedService) {
+            setAutoDischarge(false);
+        }
+    }, [poolType]);
+
+    /**
+     *  Create the event by selecting the pools
+     */
     async function handleSubmitEvent(e: React.FormEvent) {
         e.preventDefault();
         if (!director) {
             setError("Director not loaded yet. Please wait or refresh.");
             return;
         }
+        // Basic input validation for event name & duration:
+        // Example of preventing event name from containing suspicious characters
+        if (/['";]/.test(name)) {
+            setError("Event name contains invalid characters.");
+            return;
+        }
+
+        const parsedDuration = parseInt(duration, 10);
+        if (parsedDuration > 200) {
+            setError("Duration cannot exceed 200 minutes.");
+            return;
+        }
+
         const newEvent: EventTmp = {
             name: name,
             poolTmps: selectedPools,
-            duration: parseInt(duration) * 60000,
+            duration: parsedDuration * 60000,
         };
 
         try {
@@ -92,6 +113,9 @@ export default function EventCreation() {
         }
     }
 
+    /**
+     *  Create a new pool template
+     */
     async function handleSubmitPool(e: React.FormEvent) {
         e.preventDefault();
 
@@ -119,7 +143,7 @@ export default function EventCreation() {
             autoDischarge: poolType === PoolType.MedService ? autoDischarge : false,
             name: poolName,
             poolNumber: 1,
-            icon: poolType === PoolType.MedService ? icon : "",
+            icon: (poolType === PoolType.MedService || poolType === PoolType.Floor) ? icon : "",
         };
 
         try {
@@ -132,19 +156,20 @@ export default function EventCreation() {
                 setError("An unknown error occurred");
             }
         }
+
+        // Refresh the template list
         const data = await getAllPoolTemplates();
         setAllTemplates(data);
     }
 
+    /**
+     * Delete a template
+     */
     async function deleteHandler(id: number) {
         setError(null);
         try {
-            // Await the API call to delete the pool template.
             await deletePoolTemplate(id, setError);
-            // Update the state by creating a new array without the deleted template.
-            setAllTemplates((prevTemplates) =>
-                prevTemplates.filter((pool) => pool.id !== id)
-            );
+            setAllTemplates((prevTemplates) => prevTemplates.filter((pool) => pool.id !== id));
         } catch (err) {
             if (err instanceof Error) {
                 setError(err.message);
@@ -156,7 +181,7 @@ export default function EventCreation() {
 
     return (
         <div className="d-flex flex-column min-vh-100">
-            <Header/>
+            <Header />
             <main className="container my-5">
                 {/* Event Creation Card */}
                 <div className="card shadow-sm mb-4">
@@ -164,8 +189,8 @@ export default function EventCreation() {
                         <h2 className="mb-0">Create a New Event</h2>
                     </div>
                     <div className="card-body">
-                        <ErrorMessage errorMessage={error}/>
-                        <StatusMessage statusMessage={status}/>
+                        <ErrorMessage errorMessage={error} />
+                        <StatusMessage statusMessage={status} />
                         <form onSubmit={handleSubmitEvent}>
                             <div className="mb-3">
                                 <label htmlFor="eventName" className="form-label">
@@ -177,12 +202,13 @@ export default function EventCreation() {
                                     className="form-control"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
+                                    // Or do any extra validation check here
                                     required
                                 />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="eventDuration" className="form-label">
-                                    Duration (minutes):
+                                    Duration (minutes) (max 200):
                                 </label>
                                 <input
                                     id="eventDuration"
@@ -209,79 +235,76 @@ export default function EventCreation() {
                         {allTemplates.length === 0 ? (
                             <p>Loading or none found...</p>
                         ) : (
-                            <ul className="list-group">
-                                {allTemplates.map((template, idx) => {
-                                    const existing = selectedPools.find(
-                                        (res) => res.name === template.name
-                                    );
-                                    const currentPoolNumber = existing?.poolNumber ?? 0;
-                                    const currentQueueSize = existing?.queueSize ?? 0;
-                                    return (
-                                        // Use a composite key so that keys are unique.
-                                        <li
-                                            key={`${template.name}-${idx}`}
-                                            className="list-group-item d-flex justify-content-between align-items-center"
-                                        >
-                                            <div>
-                                                <div>
-                                                    <strong>Name:</strong> {template.name}
-                                                </div>
-                                                <div>
-                                                    <strong>Type:</strong> {template.poolType}
-                                                </div>
-                                            </div>
-                                            <div className="d-flex align-items-center flex-grow-1">
-                                                <div className="me-2">
-                                                    <label className="form-label mb-0 me-1">
-                                                        Pool Number:
-                                                    </label>
-                                                    <select
+                            // Here we switch from <ul> to a Bootstrap table
+                            <div className="table-responsive">
+                                <table className="table table-striped align-middle">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Pool #<br />(max 5)</th>
+                                        <th scope="col">Queue Size<br />(max 100)</th>
+                                        <th scope="col">Icon</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {allTemplates.map((template, idx) => {
+                                        const existing = selectedPools.find(
+                                            (res) => res.name === template.name
+                                        );
+                                        const currentPoolNumber = existing?.poolNumber ?? 0;
+                                        const currentQueueSize = existing?.queueSize ?? 0;
+
+                                        return (
+                                            <tr key={`${template.name}-${idx}`}>
+                                                <td>
+                                                    <strong>{template.name}</strong>
+                                                </td>
+                                                <td>{template.poolType}</td>
+                                                <td style={{ maxWidth: "90px" }}>
+                                                    <input
+                                                        type="number"
+                                                        className="form-control form-control-sm"
                                                         value={currentPoolNumber}
-                                                        className="form-select form-select-sm"
                                                         onChange={(e) => {
                                                             const newNumber = parseInt(e.target.value, 10);
-                                                            if (newNumber === 0) {
-                                                                setSelectedPools((prev) =>
-                                                                    prev.filter((res) => res.name !== template.name)
-                                                                );
-                                                            } else {
-                                                                setSelectedPools((prev) => {
-                                                                    const existingIndex = prev.findIndex(
-                                                                        (res) => res.name === template.name
-                                                                    );
-                                                                    const updatedTemplate = {
-                                                                        ...template,
-                                                                        poolNumber: newNumber,
-                                                                        queueSize: existing?.queueSize ?? 0,
-                                                                        icon: template.icon, // keep the saved icon value
-                                                                    };
-                                                                    if (existingIndex === -1) {
-                                                                        return [...prev, updatedTemplate];
-                                                                    } else {
-                                                                        const newArray = [...prev];
-                                                                        newArray[existingIndex] = updatedTemplate;
-                                                                        return newArray;
-                                                                    }
-                                                                });
+                                                            if (newNumber < 0 || newNumber > 5) {
+                                                                setError("Pool number must be between 0 and 5.");
+                                                                return;
                                                             }
+                                                            setSelectedPools((prev) => {
+                                                                const existingIndex = prev.findIndex(
+                                                                    (res) => res.name === template.name
+                                                                );
+                                                                const updatedTemplate = {
+                                                                    ...template,
+                                                                    poolNumber: newNumber,
+                                                                    queueSize: existing?.queueSize ?? 0,
+                                                                    icon: template.icon, // keep the saved icon value
+                                                                };
+                                                                if (existingIndex === -1) {
+                                                                    return [...prev, updatedTemplate];
+                                                                } else {
+                                                                    const newArray = [...prev];
+                                                                    newArray[existingIndex] = updatedTemplate;
+                                                                    return newArray;
+                                                                }
+                                                            });
                                                         }}
-                                                    >
-                                                        {[0, 1, 2, 3, 4, 5].map((num) => (
-                                                            <option key={num} value={num}>
-                                                                {num}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="form-label mb-0 me-1">
-                                                        Queue Size:
-                                                    </label>
-                                                    <select
+                                                    />
+                                                </td>
+                                                <td style={{ maxWidth: "100px" }}>
+                                                    <input
+                                                        type="number"
+                                                        className="form-control form-control-sm"
                                                         value={currentQueueSize}
-                                                        className="form-select form-select-sm"
                                                         onChange={(e) => {
                                                             const newQueueSize = parseInt(e.target.value, 10);
+                                                            if (newQueueSize < 0 || newQueueSize > 100) {
+                                                                setError("Queue size must be between 0 and 100.");
+                                                                return;
+                                                            }
                                                             setSelectedPools((prev) => {
                                                                 const existingIndex = prev.findIndex(
                                                                     (res) => res.name === template.name
@@ -305,24 +328,12 @@ export default function EventCreation() {
                                                                 }
                                                             });
                                                         }}
-                                                    >
-                                                        {[
-                                                            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                                                        ].map((num) => (
-                                                            <option key={num} value={num}>
-                                                                {num}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                {template.id && (<div>
-                                                        <DeletePoolTmpButton id={template.id}
-                                                                             deletePoolHandler={deleteHandler}/>
-                                                    </div>
-                                                )}
-                                                {/* Display the pool's icon on the far right if it is a Medical Service */}
-                                                {template.poolType === PoolType.MedService && template.icon && (
-                                                    <div className="ms-auto">
+                                                    />
+                                                </td>
+                                                <td>
+                                                    {/* Display the pool's icon if it's MedService or floor */}
+                                                    {(template.poolType === PoolType.MedService
+                                                    || template.poolType == PoolType.Floor && template.icon) ? (
                                                         <img
                                                             src={`/images/${template.icon}`}
                                                             alt={template.name}
@@ -332,13 +343,24 @@ export default function EventCreation() {
                                                                 objectFit: "contain",
                                                             }}
                                                         />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
+                                                    ) : (
+                                                        <span className="text-muted">N/A</span>
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {template.id && (
+                                                        <DeletePoolTmpButton
+                                                            id={template.id}
+                                                            deletePoolHandler={deleteHandler}
+                                                        />
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                    </tbody>
+                                </table>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -401,7 +423,7 @@ export default function EventCreation() {
                                     </div>
                                 </div>
                             </div>
-                            {poolType === PoolType.MedService && (
+                            {poolType === PoolType.MedService&& (
                                 <>
                                     <div className="mb-3">
                                         <label htmlFor="patientProcessTime" className="form-label">
@@ -428,9 +450,13 @@ export default function EventCreation() {
                                             Auto Discharge
                                         </label>
                                     </div>
-                                    <ImageSelector icon={icon} setIcon={setIcon}/>
+                                    </>
+                                    )}
+                            {(poolType === PoolType.MedService || poolType === PoolType.Floor) && (
+                                <>
+                                    <ImageSelector icon={icon} setIcon={setIcon} />
                                 </>
-                            )}
+                    )}
                             <button type="submit" className="btn btn-primary">
                                 Create Pool
                             </button>
@@ -440,10 +466,10 @@ export default function EventCreation() {
 
                 {/* Upload Image Panel */}
                 <div className="mb-4">
-                    <UploadImagePanel/>
+                    <UploadImagePanel />
                 </div>
             </main>
-            <Footer/>
+            <Footer />
         </div>
     );
 }
