@@ -2,22 +2,24 @@
 
 import React, {useEffect, useState} from "react";
 import Link from "next/link";
-import {GetCookies} from "@/app/api/cookieApi";
 import LogoutButton from "@/app/components/buttons/logoutButton";
+import {GetCookies} from "@/app/api/cookieApi";
+import {Role} from "@/app/enumerations/role";
 
 export default function Header() {
     // Set initial values to empty strings so that during the first render (hydration) they match.
     const [username, setUsername] = useState("");
     const [role, setRole] = useState("");
-    const [job, setJob] = useState("");
 
     useEffect(() => {
         // Now that we are on the client, read the cookies.
-        const firstName = GetCookies("firstName");
-        const lastName = GetCookies("lastName");
-        setUsername(firstName + " " + lastName);
-        setRole(GetCookies("role"));
-        setJob(GetCookies("job"));
+        const firstname = GetCookies("firstname")
+        const lastname = GetCookies("lastname")
+        const role: Role = GetCookies("role") as Role;
+        if (firstname && lastname && role) {
+            setUsername(firstname + " " + lastname);
+            setRole(role);
+        }
     }, []);
 
     return (
@@ -67,7 +69,7 @@ export default function Header() {
                     </ul>
                     <div className="d-flex align-items-center">
             <span className="navbar-text me-3">
-              {username} | {role} {job && `| ${job}`}
+              {username} | {role}
             </span>
                         <LogoutButton/>
                     </div>

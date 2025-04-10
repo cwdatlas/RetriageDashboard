@@ -84,7 +84,7 @@ public class UserServiceImp implements UserService {
         logger.debug("getUserByToken - Token received: {}", token);
 
         if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("Invalid JWT token");
+            throw new IllegalArgumentException("Invalid JWT token " + token);
         }
 
         String email = jwtUtil.extractUsername(token); // assuming subject = email

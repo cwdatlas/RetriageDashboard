@@ -1,10 +1,10 @@
 package com.retriage.retriage.controllers;
 
-import com.retriage.retriage.models.UserDto;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.forms.UserForm;
 import com.retriage.retriage.models.User;
+import com.retriage.retriage.models.UserDto;
 import com.retriage.retriage.services.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -157,21 +157,24 @@ public class UserController {
     }
 
 
+    @CrossOrigin
     @GetMapping(value = "/me", produces = "application/json")
-    public ResponseEntity<?> getCurrentUser(@CookieValue(name = "token", required = false) String token) {
-        if (token == null) {
-            logger.warn("getCurrentUser - No token cookie found.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new ErrorResponse(List.of("Authorization cookie missing or invalid"), 401, "UNAUTHORIZED")
-            );
+    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null) {
+            logger.warn("getCurrentUser - Missing or malformed Authorization header.");
+            return ResponseEntity.badRequest().body("Authorization header missing or invalid");
         }
 
-        User user = userService.getUserFromToken(token);
+        try {
+            User user = userService.getUserFromToken(authHeader);
 
-        return ResponseEntity.ok(new UserDto(
-                user.getEmail(),
-                List.of(user.getRole().name())
-        ));
+            return ResponseEntity.ok(new UserDto(
+                    user.getEmail(),
+                    user.getRole() // Convert Role enum to String
+            ));
+        } catch (Exception e) {
+            logger.error("getCurrentUser - Failed to parse token or find user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: " + e.getMessage());
+        }
     }
-
 }

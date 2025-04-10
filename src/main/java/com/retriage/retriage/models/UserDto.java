@@ -1,47 +1,33 @@
 package com.retriage.retriage.models;
 
-import java.util.List;
+import com.retriage.retriage.enums.Role;
+import lombok.Data;
 
 /**
  * A Data Transfer Object (DTO) representing a simplified view of a User.
  * This is used primarily for returning user identity and role information
  * to the frontend without exposing full internal model details.
  */
+@Data
 public class UserDto {
     private String username;
-    private List<String> roles;
+    private Role role;
 
     /**
      * Constructs a UserDto with the provided username and roles.
      *
      * @param username The user's unique identifier (usually email).
-     * @param roles    The list of roles assigned to the user.
+     * @param role     The role assigned to the user.
      */
-    public UserDto(String username, List<String> roles) {
+    public UserDto(String username, Role role) {
         this.username = username;
-        this.roles = roles;
+        this.role = role;
     }
 
     @Override
     public String toString() {
-        return "UserDto{username='%s', roles=%s}".formatted(username, roles);
+        return "UserDto{username='%s', roles=%s}".formatted(username, role);
     }
 
-    // Getters & setters
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
 
 }
