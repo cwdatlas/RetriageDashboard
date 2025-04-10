@@ -22,12 +22,12 @@ import java.util.List;
 /**
  * HomeController.java
  * <br></br>
- * Controller for handling requests to the home page after successful SAML authentication.
+ * Controller for handling requests to the home page after successåful SAML authentication.
  * This controller is responsible for displaying user information retrieved from the
  * {@link Saml2AuthenticatedPrincipal} after the user has been authenticated via SAML.
  *
  * @Author: John Botonakis
- * @PatientPool: With help provided by Matt Raible (https://developer.okta.com/blog/2022/08/05/spring-boot-saml)
+ * @Author: With help provided by Matt Raible (<a href="https://developer.okta.com/blog/2022/08/05/spring-boot-saml">...</a>)
  */
 @Controller
 @CrossOrigin
