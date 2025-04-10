@@ -1,6 +1,7 @@
 package com.retriage.retriage.configurations;
 
 import com.retriage.retriage.exceptions.SamlAuthenticationSuccessHandler;
+//import com.retriage.retriage.services.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -39,26 +40,27 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 @Configuration
 public class SecurityConfiguration {
-
     private final SamlAuthenticationSuccessHandler samlAuthenticationSuccessHandler;
 
+    /**
+     * Constructor to inject the custom SAML authentication success handler.
+     *
+     * @param samlAuthenticationSuccessHandler the success handler for SAML login
+     */
     public SecurityConfiguration(SamlAuthenticationSuccessHandler samlAuthenticationSuccessHandler) {
         this.samlAuthenticationSuccessHandler = samlAuthenticationSuccessHandler;
     }
 
 
+
     /**
-     * configure
-     * <br></br>
-     * Configures the Spring Security filter chain for handling SAML authentication and authorization.
-     * <p>
-     * This method defines the security rules and sets up the SAML 2.0 login and logout processes.
-     * It also configures a custom {@link OpenSaml4AuthenticationProvider} with a {@link #groupsConverter()}
-     * to map SAML attributes to Spring Security GrantedAuthorities.
+     * Configures Spring Security filter chain for SAML authentication.
+     * Sets up access rules, login/logout behavior, security headers, and
+     * a custom authentication provider with group mapping.
      *
      * @param http the {@link HttpSecurity} to configure
-     * @return a {@link SecurityFilterChain} that is configured for SAML 2.0 security
-     * @throws Exception if an error occurs during configuration
+     * @return configured {@link SecurityFilterChain}
+     * @throws Exception if configuration fails
      */
     @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -68,100 +70,94 @@ public class SecurityConfiguration {
         // Set the custom response authentication converter to handle group/role mapping
         authenticationProvider.setResponseAuthenticationConverter(groupsConverter());
 
-        //Authentication begins here
         // Configure HTTP security settings
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // Disables CSRF for API access
                 .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/api/**").permitAll() // Allows unauthenticated access
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/topic/**").permitAll()
                 .requestMatchers("/api/users/me").permitAll()
-                .requestMatchers("/active_event/**").authenticated()
-                .anyRequest().authenticated() // Require authentication for any request to this application
+                .requestMatchers("/active_event/**").authenticated() // Requires login
+                .anyRequest().authenticated() // All other endpoints require authentication
                 )
                 // Login Settings
                 .saml2Login(saml2 -> saml2
-                        .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom SAML authentication provider
-                        .successHandler(samlAuthenticationSuccessHandler)
+                        .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom provider
+//                        .successHandler(samlAuthenticationSuccessHandler) // Redirect or process after login
                 )
-                //Logout Settings
-                .saml2Logout(withDefaults())
+                // Logout Settings
+                .saml2Logout(withDefaults()) // Enable default SAML logout handling
                 .logout(logout -> logout
-                        .logoutUrl("/logout") // This is where Spring Security listens for logout requests
-                        .logoutSuccessUrl("/") // Redirect to HOME after logout
-                        .invalidateHttpSession(true) // Invalidates the http session, makes user have to log in again
-                        .clearAuthentication(true) // Clears all authentication on logout
-                        .deleteCookies("JSESSIONID")
+                        .logoutUrl("/logout") // Path to trigger logout
+                        .logoutSuccessUrl("/") // Redirect here after logout
+                        .invalidateHttpSession(true) // Clear session
+                        .clearAuthentication(true) // Clear auth context
+                        .deleteCookies("JSESSIONID") // Clear session cookie
                 )
-                // ✅ Security Headers
+                // Security Headers
                 .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny) // Prevent clickjacking
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny) // Clickjacking protection
                         .contentTypeOptions(withDefaults()) // Prevent MIME sniffing
                         .referrerPolicy(referrer -> referrer
-                                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER))
+                        .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)) // Hide reefer
                 );
+
+
 
         return http.build(); // Build and return the configured SecurityFilterChain
     }
 
     /**
-     * Define a CorsConfigurationSource bean that allows CORS requests from any origin.
-     * For production, consider restricting origins and methods as needed.
+     * Defines a global CORS policy allowing all origins, headers, and methods.
+     * Should be restricted for production environments.
+     *
+     * @return a {@link CorsConfigurationSource} with open policy
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Allow all origins. You can restrict this by listing specific origins.
-        configuration.addAllowedOriginPattern("*");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true); // Allow cookies/credentials if needed
+        configuration.addAllowedOriginPattern("*"); // Allow all origins
+        configuration.addAllowedHeader("*");        // Allow all headers
+        configuration.addAllowedMethod("*");        // Allow all HTTP methods
+        configuration.setAllowCredentials(true);    // Allow credentials (cookies, etc.)
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // Apply to all endpoints
         return source;
     }
 
     /**
-     * Converter
-     * <br></br>
-     * Creates a custom converter to map SAML attributes (specifically "groups") to Spring Security GrantedAuthorities.
-     * <p>
-     * This converter is used by the {@link OpenSaml4AuthenticationProvider} to process SAML responses.
-     * It extracts the "groups" attribute from the SAML assertion and converts each group name into a {@link SimpleGrantedAuthority}.
-     * If the "groups" attribute is not present, it falls back to the default authorities provided by the SAML authentication.
+     * Maps the "groups" SAML attribute to a list of {@link GrantedAuthority} objects.
+     * If "groups" is absent, falls back to default authorities from the SAML provider.
      *
-     * @return a {@link Converter} that maps {@link ResponseToken} to {@link Saml2Authentication},
-     * extracting group information from SAML attributes to populate authorities.
+     * @return a converter from {@link ResponseToken} to {@link Saml2Authentication}
      */
     private Converter<OpenSaml4AuthenticationProvider.ResponseToken, Saml2Authentication> groupsConverter() {
-        // Create a default ResponseToken to Saml2Authentication converter as a base
+        // Base converter from ResponseToken to Saml2Authentication
         Converter<ResponseToken, Saml2Authentication> delegate =
                 OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter();
 
-        // Return a lambda converter that enhances the default conversion
         return (responseToken) -> {
-            // Perform the default conversion to get basic Saml2Authentication
+            // Default conversion
             Saml2Authentication authentication = delegate.convert(responseToken);
-            assert authentication != null; // Assertion to ensure authentication is not null after default conversion
-            // Get the principal from the authentication, which is a Saml2AuthenticatedPrincipal
+            assert authentication != null; // Ensure authentication isn't null
+            // Get user details from SAML response
             Saml2AuthenticatedPrincipal principal = (Saml2AuthenticatedPrincipal) authentication.getPrincipal();
-            // Extract the "groups" attribute from the principal's attributes. Expecting a List of group names.
-            List<String> groups = principal.getAttribute("groups");
-            // Initialize a Set to hold GrantedAuthorities (roles/permissions)
+            List<String> groups = principal.getAttribute("groups"); // Extract "groups" from attributes
+
             Set<GrantedAuthority> authorities = new HashSet<>();
-            // If groups attribute is present in the SAML response
             if (groups != null) {
-                // Stream through each group name, map it to a SimpleGrantedAuthority, and add to the authorities set
+                // Convert group names to Spring Security authorities
                 groups.stream()
-                        .map(SimpleGrantedAuthority::new) // Convert each group name to SimpleGrantedAuthority
-                        .forEach(authorities::add);       // Add to the set of authorities
+                        .map(SimpleGrantedAuthority::new)
+                        .forEach(authorities::add);
             } else {
-                // If "groups" attribute is not present, use the default authorities from SAML authentication
+                // Use default authorities if no group info is provided
                 authorities.addAll(authentication.getAuthorities());
             }
-            // Return a new Saml2Authentication object, with the same principal and SAML response, but with the custom authorities set.
+
+            // Return new authentication with custom authorities
             return new Saml2Authentication(principal, authentication.getSaml2Response(), authorities);
         };
     }
