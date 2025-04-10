@@ -950,3 +950,4 @@ RetriageFrontEnd/*.pem
 /node_modules/esniff/lib/ws.js
 /node_modules/esniff/lib/ws-eol.js
 /node_modules/esniff/lib/ws-inline.js
+/src/main/resources/static/

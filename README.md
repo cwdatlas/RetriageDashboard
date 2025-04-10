@@ -12,7 +12,7 @@
 
 - Linux Version: Ubuntu Server 24.04.1 LTS
 - Next.js Version: 15
-- React Version: 19
+- React Version: 19.0.1
 - TypeScript Version: 5.7.3
 - ESLint Version: 9.20
 - Spring Framework Version: 3.4.2
@@ -31,3 +31,15 @@ Open a terminal and run the following command to create a docker container:
 Open a terminal and run the following command to create a Podman container:  
 `podman run --detach -p 3306:3306 --name retriage_database -e MYSQL_ROOT_PASSWORD=secretPass -e MYSQL_DATABASE=retriageDashboard -e MYSQL_USER=backend -e MYSQL_PASSWORD=secretPass -d mysql:9.2.0`
 
+### Static Files
+Navigate to /RetriageFrontEnd 
+`cd RetriageFrontEnd`
+
+Run the build process that creates all static files.
+`npm run build`
+
+Now you are ready to start the spring backend. 
+`java -jar /build/libs/retriage-0.0.1-SNAPSHOT.jar`
+
+Connect to localhost:8080, login and have fun.
+crtl^c to stop application

@@ -45,7 +45,7 @@ public class AuthController {
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", "http://localhost:3000/")
+                .header("Location", "/index.html")
                 .build();
     }
 
