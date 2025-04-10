@@ -1,6 +1,7 @@
 package com.retriage.retriage.configurations;
 
 import com.retriage.retriage.exceptions.SamlAuthenticationSuccessHandler;
+//import com.retriage.retriage.services.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -83,7 +84,7 @@ public class SecurityConfiguration {
                 // Login Settings
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom provider
-                        .successHandler(samlAuthenticationSuccessHandler) // Redirect or process after login
+//                        .successHandler(samlAuthenticationSuccessHandler) // Redirect or process after login
                 )
                 // Logout Settings
                 .saml2Logout(withDefaults()) // Enable default SAML logout handling
@@ -99,8 +100,10 @@ public class SecurityConfiguration {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny) // Clickjacking protection
                         .contentTypeOptions(withDefaults()) // Prevent MIME sniffing
                         .referrerPolicy(referrer -> referrer
-                                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)) // Hide reefer
+                        .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)) // Hide reefer
                 );
+
+
 
         return http.build(); // Build and return the configured SecurityFilterChain
     }
