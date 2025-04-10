@@ -13,33 +13,40 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * JwtUtil
+ * <br><br>
+ * Utility class for generating, validating, and parsing JSON Web Tokens (JWT).
+ * Uses HS256 symmetric signing and stores roles/username in token claims.
+ * @Author: John Botonakis
+ */
 @Service
 public class JwtUtil {
-    // Secret key used to sign the JWT. It's generated using HS256 algorithm.
+    // Secret key used to sign abd verify the JWT. It's generated using HS256 algorithm.
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     // Expiration time for the JWT, set to 1 hour (in milliseconds).
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // Expires after 1 hour
 
     /**
-     * Generates a JWT (JSON Web Token) for the given username.
+     * Generates a JWT for the specified username.
      *
-     * @param username The username to be included in the JWT subject.
-     * @return The generated JWT as a String.
+     * @param username the user to include as the subject
+     * @return a signed JWT string
      */
     public String generateToken(String username) {
-        return Jwts.builder() //Starts building the JWT
-                .setSubject(username) // Sets the subject (usually the user identifier).
-                .setIssuedAt(new Date()) // Sets the issue time of the token.
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Sets the expiration time.
-                .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // Signs the JWT with the secret key and HS256 algorithm.
-                .compact(); // Compresses the JWT into a URL-safe string.
+        return Jwts.builder()
+            .setSubject(username) // Store username as the subject
+            .setIssuedAt(new Date()) // Issue time = now
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expire in 1 hour
+            .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // Sign using secret key and HS256
+            .compact(); // Finalize token string
     }
 
     /**
-     * Validates a JWT.
+     * Validates the structure and signature of a JWT.
      *
-     * @param token The JWT to validate.
-     * @return True if the token is valid, false otherwise.
+     * @param token the JWT string to validate
+     * @return true if valid; false otherwise
      */
     public boolean validateToken(String token) {
         try {
@@ -69,10 +76,10 @@ public class JwtUtil {
     }
 
     /**
-     * Extracts the roles from a JWT token.
+     * Extracts a list of roles from the "roles" claim in the JWT.
      *
-     * @param token The JWT token to extract roles from.
-     * @return A list of roles extracted from the token's claims.
+     * @param token the JWT string
+     * @return a list of roles, or empty list if none found
      */
     public List<String> extractRoles(String token) {
         Claims claims = Jwts.parserBuilder()
@@ -81,6 +88,7 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
 
+        // Ensure roles claim is a list and contains only strings
         Object rolesClaim = claims.get("roles");
         if (rolesClaim instanceof List<?> rawList) {
             List<String> roles = new ArrayList<>();
@@ -98,12 +106,12 @@ public class JwtUtil {
     }
 
     /**
-     * Retrieves the signing key used to verify the JWT.
+     * Retrieves the secret signing key used for both signing and verification.
      *
-     * @return The signing key as a Key object.
+     * @return the shared symmetric key
      */
     private Key getSigningKey() {
         byte[] keyBytes = SECRET_KEY.getEncoded();
-        return Keys.hmacShaKeyFor(keyBytes); // Creates an HMAC SHA key from the decoded bytes.
+        return Keys.hmacShaKeyFor(keyBytes); // Reconstruct from raw bytes
     }
 }
