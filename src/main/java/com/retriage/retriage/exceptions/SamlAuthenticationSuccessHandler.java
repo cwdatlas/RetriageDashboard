@@ -2,6 +2,7 @@ package com.retriage.retriage.exceptions;
 
 import com.retriage.retriage.services.JwtUtil;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -44,16 +45,24 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         String username = authentication.getName();
-        logger.debug("SAML success - Authenticated user: {}", username);
+        logger.info("SAML success - Authenticated user: {}", username);
 
-        // Generate JWT for authenticated user
+        // Generate token but don’t write JSON response
         String jwt = jwtUtil.generateToken(username);
-        logger.debug("SAML success - JWT generated successfully for user: {}", username);
+        logger.debug("SAML success - JWT generated for user: {}", username);
 
-        // Return JWT in JSON response
-        response.setContentType("application/json");
-        response.getWriter().write("{\"token\": \"" + jwt + "\"}");
-        response.getWriter().flush();
-        logger.debug("SAML success - JWT returned in JSON response for user: {}", username);
+        // Set JWT as cookie
+        Cookie tokenCookie = new Cookie("token", jwt);
+        tokenCookie.setHttpOnly(true);
+        tokenCookie.setSecure(true); // Required if you're using HTTPS (or localhost w/ secure context)
+        tokenCookie.setPath("/");
+        tokenCookie.setMaxAge(60 * 60);
+        tokenCookie.setAttribute("SameSite", "None"); // Explicitly allow cross-origin frontend access
+        response.addCookie(tokenCookie);
+
+        // 🚀 Redirect to the frontend app
+        response.sendRedirect("http://localhost:3000/");
+        logger.info("SAML success - Redirecting to frontend at http://localhost:3000/");
     }
+
 }

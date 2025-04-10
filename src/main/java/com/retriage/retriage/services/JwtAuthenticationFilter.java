@@ -3,6 +3,7 @@ package com.retriage.retriage.services;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -60,59 +61,64 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull  FilterChain chain
+            @NonNull FilterChain chain
     ) throws ServletException, IOException {
-        // Get the Authorization header
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = null;
 
-        // Check if header is missing or does not contain a Bearer token
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.debug("doFilterInternal - No Bearer token found in request header.");
-            chain.doFilter(request, response); // Continue filter chain without setting auth
+        // 1. Try to get token from Authorization header
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+            logger.debug("doFilterInternal - Token extracted from Authorization header.");
+        }
+
+        // 2. If not in header, try to get token from cookie
+        if (token == null && request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    logger.debug("doFilterInternal - Token extracted from cookie.");
+                    break;
+                }
+            }
+        }
+
+        // 3. If no token found, continue without setting authentication
+        if (token == null) {
+            logger.debug("doFilterInternal - No token found in header or cookies.");
+            chain.doFilter(request, response);
             return;
         }
 
-        // Extract token string (remove "Bearer" prefix)
-        final String token = authHeader.substring(7);
-
+        // 4. Validate and set authentication
         try {
-            // Validate the token
             if (jwtUtil.validateToken(token)) {
-                // Extract username and roles
                 String username = jwtUtil.extractUsername(token);
-                String role = String.valueOf(jwtUtil.extractRoles(token));
+                List<String> roles = jwtUtil.extractRoles(token);
 
-                // Convert role to a GrantedAuthority (required by Spring Security)
-                List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                List<SimpleGrantedAuthority> authorities = roles.stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                        .toList();
 
-                // Create a Spring Security user object
                 User user = new User(username, "", authorities);
-
-                // Wrap it in an authentication token
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(user, null, authorities);
-
-                // Add web-specific details to the token
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // Set the authentication into the SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
                 logger.debug("doFilterInternal - JWT token validated for user: {}", username);
             }
         } catch (ExpiredJwtException e) {
-            // Token is expired
             logger.warn("doFilterInternal - JWT token expired.");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token has expired.");
             return;
         } catch (Exception e) {
-            // Token is invalid or other error occurred
             logger.error("doFilterInternal - JWT token validation failed: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token.");
             return;
         }
 
-        // Continue filter chain
+        // 5. Continue filter chain
         chain.doFilter(request, response);
     }
 }
