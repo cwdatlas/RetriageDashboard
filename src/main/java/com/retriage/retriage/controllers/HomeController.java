@@ -124,7 +124,7 @@ public class HomeController {
 
         logger.info("oktaLogin - User authenticated and cookies set for email: {}", email);
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", "/index.html")
+                .header("Location", "http://localhost:3000/")
                 .build();
     }
 
