@@ -44,28 +44,34 @@ export async function createUser(user: Omit<User, "id">): Promise<User> {
 /**
  * Optionally, get a single user by ID
  */
-export async function getUserByToken(setUser: (user: UserDto) => void, setError: (error: string) => void): Promise<void> {
-    const jwt = GetCookies('JWT');
-    const res = await fetch(`${API_BASE_URL}` + endpoint + "/me", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": jwt
-        },
-    });
-    if (res.ok) {
-        console.log("User credentials received from backend.")
-        const user: UserDto = await res.json();
-        console.log(user)
-        setUser(user)
-    } else if (res.status == 401) {
-        console.log("User token invalid.")
-        setError("User token invalid.")
-    } else {
-        console.error("Failed to fetch user credentials");
-        setError("Failed to fetch user credentials")
+export async function getUserByToken(
+    setUser: (user: UserDto) => void,
+    setError: (error: string) => void
+): Promise<void> {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/users/me`, {
+            method: "GET",
+            credentials: "include", //  Crucial: sends token cookie
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (res.ok) {
+            const user: UserDto = await res.json();
+            console.log("User received via token cookie:", user);
+            setUser(user);
+        } else if (res.status === 401) {
+            setError("User token invalid or missing.");
+        } else {
+            setError(`Unexpected error (${res.status})`);
+        }
+    } catch (err: any) {
+        console.error("Error fetching user via token cookie:", err);
+        setError("Failed to fetch user credentials.");
     }
 }
+
 
 /**
  * Optionally, delete a user
