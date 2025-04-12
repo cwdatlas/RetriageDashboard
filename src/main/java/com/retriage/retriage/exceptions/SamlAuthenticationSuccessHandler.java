@@ -61,7 +61,7 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
         response.addCookie(tokenCookie);
 
         // Redirect to the frontend app
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("/index.html");
         logger.info("SAML success - Redirecting to frontend at http://localhost:3000/");
     }
 
