@@ -84,7 +84,7 @@ public class SecurityConfiguration {
                 // Login Settings
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom provider
-//                        .successHandler(samlAuthenticationSuccessHandler) // Redirect or process after login
+                        .successHandler(samlAuthenticationSuccessHandler) // Redirect or process after login
                 )
                 // Logout Settings
                 .saml2Logout(withDefaults()) // Enable default SAML logout handling

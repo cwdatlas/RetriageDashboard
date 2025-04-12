@@ -39,11 +39,11 @@ public class JwtUtil {
     public String generateToken(String username) {
         log.info("Generating JWT token for user: {}", username);
         return Jwts.builder()
-            .setSubject(username) // Store username as the subject
-            .setIssuedAt(new Date()) // Issue time = now
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expire in 1 hour
-            .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // Sign using secret key and HS256
-            .compact(); // Finalize token string
+                .setSubject(username) // Store username as the subject
+                .setIssuedAt(new Date()) // Issue time = now
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expire in 1 hour
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // Sign using secret key and HS256
+                .compact(); // Finalize token string
     }
 
     /**
