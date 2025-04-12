@@ -6,6 +6,7 @@ import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.JwtUtil;
 import com.retriage.retriage.services.UserService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
@@ -127,6 +129,34 @@ public class HomeController {
                 .header("Location", "/index.html")
                 .build();
     }
+
+    @GetMapping("/api/users/me")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+        // Extract token from cookies
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        for (Cookie cookie : cookies) {
+            if ("token".equals(cookie.getName())) {
+                token = cookie.getValue();
+                break;
+            }
+        }
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No token cookie");
+        }
+
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+
+        String email = jwtUtil.extractUsername(token);
+        return ResponseEntity.ok("Token is valid for: " + email);
+    }
+
+
+
+
 
     /**
      * Helper method to create a cookie with standard settings.
