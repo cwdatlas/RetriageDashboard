@@ -178,10 +178,10 @@ public class HomeController {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setDomain("localhost");
-        cookie.setHttpOnly(false);
-        cookie.setSecure(false);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setMaxAge(60 * 60);
-        cookie.setAttribute("SameSite", "Lax"); // 👈 allows cookie to be sent during navigation
+        cookie.setAttribute("SameSite", "None"); // 👈 allows cookie to be sent during navigation
         return cookie;
     }
 

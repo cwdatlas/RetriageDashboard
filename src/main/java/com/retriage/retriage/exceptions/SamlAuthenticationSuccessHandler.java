@@ -54,11 +54,13 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
         // Set JWT as cookie
         Cookie tokenCookie = new Cookie("token", jwt);
         tokenCookie.setHttpOnly(true);
-        tokenCookie.setSecure(true); // Required if you're using HTTPS (or localhost w/ secure context)
+        // Required if you're using HTTPS (or localhost w/ secure context)
+        tokenCookie.setSecure(true); // Locally Turned off for testing.
         tokenCookie.setPath("/");
         tokenCookie.setMaxAge(60 * 60);
         tokenCookie.setAttribute("SameSite", "None"); // Explicitly allow cross-origin frontend access
         response.addCookie(tokenCookie);
+
 
         // Redirect to the frontend app
         response.sendRedirect("/index.html");
