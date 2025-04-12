@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * HomeController.java
@@ -181,7 +182,10 @@ public class HomeController {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setMaxAge(60 * 60);
-        cookie.setAttribute("SameSite", "None"); // 👈 allows cookie to be sent during navigation
+        cookie.setAttribute("SameSite", "None"); //  Allows cookie to be sent during navigation
+        if (Objects.equals(name, "token")){
+            logger.info("SAML success - JWT generated for user: {}", value);
+        }
         return cookie;
     }
 

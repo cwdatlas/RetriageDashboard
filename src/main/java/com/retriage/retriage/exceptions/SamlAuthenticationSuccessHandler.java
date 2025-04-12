@@ -46,22 +46,6 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
                                         Authentication authentication) throws IOException, ServletException {
         String username = authentication.getName();
         logger.info("SAML success - Authenticated user: {}", username);
-
-        // Generate token but don’t write JSON response
-        String jwt = jwtUtil.generateToken(username);
-        logger.info("SAML success - JWT generated for user: {}", username);
-
-        // Set JWT as cookie
-        Cookie tokenCookie = new Cookie("token", jwt);
-        tokenCookie.setHttpOnly(true);
-        // Required if you're using HTTPS (or localhost w/ secure context)
-        tokenCookie.setSecure(true); // Locally Turned off for testing.
-        tokenCookie.setPath("/");
-        tokenCookie.setMaxAge(60 * 60);
-        tokenCookie.setAttribute("SameSite", "None"); // Explicitly allow cross-origin frontend access
-        response.addCookie(tokenCookie);
-
-
         // Redirect to the frontend app
         response.sendRedirect("/index.html");
         logger.info("SAML success - Redirecting to frontend at http://localhost:3000/");
