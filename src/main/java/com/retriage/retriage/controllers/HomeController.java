@@ -123,6 +123,8 @@ public class HomeController {
         response.addCookie(createCookie("lastname", lastName));
         response.addCookie(createCookie("email", email));
         response.addCookie(createCookie("role", userRole.toString()));
+        String jwt = jwtUtil.generateToken(email);
+        response.addCookie(createCookie("token", jwt));
 
         logger.info("oktaLogin - User authenticated and cookies set for email: {}", email);
         return ResponseEntity.status(HttpStatus.FOUND)
@@ -156,6 +158,17 @@ public class HomeController {
 
 
 
+    @GetMapping("/api/debug/cookies")
+    public ResponseEntity<?> showCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return ResponseEntity.ok("No cookies received.");
+
+        StringBuilder sb = new StringBuilder();
+        for (Cookie cookie : cookies) {
+            sb.append(cookie.getName()).append(" = ").append(cookie.getValue()).append("\n");
+        }
+        return ResponseEntity.ok(sb.toString());
+    }
 
 
     /**
@@ -167,6 +180,8 @@ public class HomeController {
         cookie.setDomain("localhost");
         cookie.setHttpOnly(false);
         cookie.setSecure(false);
+        cookie.setMaxAge(60 * 60);
+        cookie.setAttribute("SameSite", "Lax"); // 👈 allows cookie to be sent during navigation
         return cookie;
     }
 
