@@ -48,101 +48,24 @@ public class HomeController {
         this.jwtUtil = jwtUtil;
     }
 
-    /**
-     * home Mapping
-     * <br></br>
-     * Handles requests to the root path ("/") and displays the home page with user information.
-     * <p>
-     * This method is invoked when a user accesses the application's root URL. It retrieves the
-     * {@link Saml2AuthenticatedPrincipal} representing the authenticated user, extracts user details
-     * such as name, email address, and all attributes from the principal, and adds them to the
-     * model for rendering in the "home" view.
-     *
-     * @param principal The {@link Saml2AuthenticatedPrincipal} representing the authenticated SAML user.
-     *                  This is injected by Spring Security based on the current authentication context.
-     * @param response  The Spring {@link HttpServletResponse} object used to add cookies.
-     * @return A {@link ResponseEntity} that either redirects to the frontend or returns an error.
-     */
     @RequestMapping("/")
-    public ResponseEntity<?> oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal, HttpServletResponse response) {
-        if (principal == null) {
-            logger.info("No SAML principal — redirecting to index page.");
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .header("Location", "/index.html")
-                    .build();
-        }
-        List<String> roles = null;
-        try {
-            roles = principal.getAttribute("groups");
-        } catch (NullPointerException e) {
-            logger.warn("oktaLogin - User logged in without role: {}", principal != null ? principal.getName() : "UNKNOWN_USER_GROUP");
-        }
+    public ResponseEntity<?> oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal,
+                                       HttpServletRequest request,
+                                       HttpServletResponse response) {
 
-        Role userRole = Role.Guest;
-        List<String> errors = new ArrayList<>();
-
-        if (roles == null) {
-            logger.warn("oktaLogin - Access denied: Missing role.");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(List.of("Access denied due to missing role."), HttpStatus.FORBIDDEN.value(), "ACCESS_DENIED"));
-        } else {
-            for (Role role : Role.values()) {
-                if (roles.contains(role.toString())) {
-                    userRole = role;
-                    break;
+        // If token cookie already exists, skip everything
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    logger.info("oktaLogin - Token cookie already exists. Redirecting to /index.html");
+                    return ResponseEntity.status(HttpStatus.FOUND)
+                            .header("Location", "/index.html")
+                            .build();
                 }
             }
         }
 
-        String firstName = principal.getFirstAttribute("firstname");
-        String lastName = principal.getFirstAttribute("lastname");
-        String email = principal.getFirstAttribute("email");
-
-        if (firstName == null) {
-            errors.add("First name not provided.");
-            firstName = "Guesty";
-        }
-        if (lastName == null) {
-            errors.add("Last name not provided.");
-            lastName = "McGuestFace";
-        }
-        if (email == null) {
-            errors.add("Email not provided.");
-            logger.warn("oktaLogin - Authentication failed: Missing email.");
-            return new ResponseEntity<>(new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "MISSING_EMAIL"), HttpStatus.UNAUTHORIZED);
-        }
-
-        if (userService.getUserByEmail(email) == null) {
-            User newUser = new User();
-            newUser.setEmail(email);
-            newUser.setFirstName(firstName);
-            newUser.setLastName(lastName);
-            newUser.setRole(userRole);
-            userService.saveUser(newUser);
-            logger.info("oktaLogin - New user saved with email: {}", email);
-        }
-
-        if (!errors.isEmpty()) {
-            logger.warn("oktaLogin - Authentication failed: Validation errors.");
-            return new ResponseEntity<>(new ErrorResponse(errors, HttpStatus.UNAUTHORIZED.value(), "AUTHENTICATION_ERROR"), HttpStatus.UNAUTHORIZED);
-        }
-
-        // Setting cookies using helper method
-
-        response.addCookie(createCookie("firstname", firstName));
-        response.addCookie(createCookie("lastname", lastName));
-        response.addCookie(createCookie("email", email));
-        Role role = userService.getUserByEmail(email).getRole();
-        if (role != null) {
-            response.addCookie(createCookie("role", role.toString()));
-        } else {
-            logger.warn("⚠️ User {} has no role assigned — skipping role cookie.", role);
-        }
-        String jwt = jwtUtil.generateToken(email);
-        response.addCookie(createCookie("token", jwt));
-
-        logger.info("Set cookies: {}, {}, {}, {}", firstName, lastName, email, userRole);
-
-        logger.info("oktaLogin - User authenticated and cookies set for email: {}", email);
+        logger.info("oktaLogin - No token cookie found. Redirecting to /index.html without changes.");
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", "/index.html")
                 .build();
@@ -153,31 +76,42 @@ public class HomeController {
         // Extract token from cookies
         Cookie[] cookies = request.getCookies();
         String token = null;
+
+        if (cookies == null) {
+            logger.warn("getCurrentUser - No cookies recieved");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error","No cookies recieved"));
+        }
         for (Cookie cookie : cookies) {
+            logger.info("getCurrentUser - Found cookie: {}={}", cookie.getName(), cookie.getValue());
             if ("token".equals(cookie.getName())) {
                 token = cookie.getValue();
                 break;
             }
         }
 
-        if (token == null || !jwtUtil.validateToken(token)) {
+        if (token == null) {
+            logger.warn("getCurrentUser - Token not found in cookies");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Invalid or missing token"));
+                    .body(Map.of("error", "Missing token"));
         }
 
+
         if (!jwtUtil.validateToken(token)) {
+            logger.warn("getCurrentUser - Token failed validation: {}", token);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
 
-        String email = jwtUtil.extractUsername(token);
-        System.out.println("Raw token: " + token);
-        System.out.println("Token valid: " + jwtUtil.validateToken(token));
 
+        String email = jwtUtil.extractUsername(token);
         User user = userService.getUserByEmail(email);
-        return ResponseEntity.ok(new UserDto(email, user.getRole()));
+        return ResponseEntity.ok(new UserDto(
+                email,
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRole()
+        ));
 
     }
-
 
 
     @GetMapping("/api/debug/cookies")
@@ -191,25 +125,5 @@ public class HomeController {
         }
         return ResponseEntity.ok(sb.toString());
     }
-
-
-    /**
-     * Helper method to create a cookie with standard settings.
-     */
-    private Cookie createCookie(String name, String value) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setDomain("localhost");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setMaxAge(60 * 60);
-        cookie.setAttribute("SameSite", "None"); //  Allows cookie to be sent during navigation
-        if (Objects.equals(name, "token")){
-            logger.info("SAML success - JWT generated for user: {}", value);
-            return cookie;
-        }
-        return cookie;
-    }
-
 
 }
