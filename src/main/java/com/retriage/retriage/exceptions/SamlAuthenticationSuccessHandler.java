@@ -103,15 +103,31 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
         response.sendRedirect("/index.html");
     }
 
+    /**
+     * Creates a secure, HTTP-only cookie with the specified name and value.
+     * <p>
+     * This cookie is configured for use in cross-site contexts with the following settings:
+     * - Path: "/" to make it available across the entire app
+     * - Domain: "localhost" (adjust in production)
+     * - HttpOnly: true to prevent JavaScript access
+     * - Secure: true to ensure it is only sent over HTTPS
+     * - MaxAge: 1 hour (3600 seconds)
+     * - SameSite: "None" to allow cross-site requests (required for cookies with Secure flag)
+     *
+     * @param name  the name of the cookie
+     * @param value the value to store in the cookie
+     * @return a configured {@link Cookie} instance
+     */
     private Cookie createCookie(String name, String value) {
         Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setDomain("localhost");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setMaxAge(60 * 60);
-        cookie.setAttribute("SameSite", "None");
+        cookie.setPath("/");                       // Allow cookie access across all paths
+        cookie.setDomain("localhost");             // Domain for which the cookie is valid //TODO: (change in production)
+        cookie.setHttpOnly(true);                  // Prevent JavaScript access (XSS protection)
+        cookie.setSecure(true);                    // Transmit only over HTTPS
+        cookie.setMaxAge(60 * 60);                 // Set expiration time to 1 hour
+        cookie.setAttribute("SameSite", "None");   // Allow cross-site cookie usage (required for Secure + third-party)
         return cookie;
     }
+
 
 }
