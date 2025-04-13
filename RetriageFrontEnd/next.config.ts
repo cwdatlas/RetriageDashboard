@@ -1,3 +1,4 @@
+import withExportImages from 'next-export-optimize-images'
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -5,4 +6,4 @@ const nextConfig: NextConfig = {
     distDir: "../src/main/resources/static/",
 };
 
-export default nextConfig;
+export default withExportImages(nextConfig);
