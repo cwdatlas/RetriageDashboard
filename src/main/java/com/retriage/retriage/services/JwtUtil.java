@@ -32,21 +32,6 @@ public class JwtUtil {
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // Expires after 1 hour
     private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
-    /**
-     * Generates a JWT for the specified username.
-     *
-     * @param username the user to include as the subject
-     * @return a signed JWT string
-     */
-    public String generateToken(String username) {
-        log.info("Generating JWT token for user: {}", username);
-        return Jwts.builder()
-            .setSubject(username) // Store username as the subject
-            .setIssuedAt(new Date()) // Issue time = now
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expire in 1 hour
-            .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // Sign using secret key and HS256
-            .compact(); // Finalize token string
-    }
 
     /**
      * Generates a JWT for the specified username and roles.
