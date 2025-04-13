@@ -170,7 +170,9 @@ public class UserController {
 
             return ResponseEntity.ok(new UserDto(
                     user.getEmail(),
-                    user.getRole() // Convert Role enum to String
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getRole()
             ));
         } catch (Exception e) {
             logger.error("getCurrentUser - Failed to parse token or find user: {}", e.getMessage());
