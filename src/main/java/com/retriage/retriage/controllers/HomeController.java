@@ -154,6 +154,9 @@ public class HomeController {
         }
 
         String email = jwtUtil.extractUsername(token);
+        System.out.println("Raw token: " + token);
+        System.out.println("Token valid: " + jwtUtil.validateToken(token));
+
         return ResponseEntity.ok("Token is valid for: " + email);
     }
 
