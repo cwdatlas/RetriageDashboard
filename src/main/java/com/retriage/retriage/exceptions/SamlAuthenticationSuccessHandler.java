@@ -1,17 +1,23 @@
 package com.retriage.retriage.exceptions;
 
+import com.retriage.retriage.enums.Role;
+import com.retriage.retriage.models.User;
 import com.retriage.retriage.services.JwtUtil;
+import com.retriage.retriage.services.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
+
 /**
  * Handles successful SAML2 authentication by generating a JWT for the authenticated user.
  * This class overrides the default success handler behavior to return a JSON response
@@ -21,14 +27,16 @@ import java.io.IOException;
 public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     private static final Logger logger = LoggerFactory.getLogger(SamlAuthenticationSuccessHandler.class);
     private final JwtUtil jwtUtil;
+    private final UserService userService;
 
     /**
      * Constructor for injecting the JWT utility used for token generation.
      *
      * @param jwtUtil The JwtUtil instance used to generate JWT tokens.
      */
-    public SamlAuthenticationSuccessHandler(JwtUtil jwtUtil) {
+    public SamlAuthenticationSuccessHandler(JwtUtil jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     /**
@@ -44,11 +52,66 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        String username = authentication.getName();
-        logger.info("SAML success - Authenticated user: {}", username);
-        // Redirect to the frontend app
+        Saml2AuthenticatedPrincipal principal = (Saml2AuthenticatedPrincipal) authentication.getPrincipal();
+
+        String email = principal.getFirstAttribute("email");
+        String firstname = principal.getFirstAttribute("firstname");
+        String lastname = principal.getFirstAttribute("lastname");
+        List<String> groups = principal.getAttribute("groups");
+
+        if (email == null) {
+            logger.warn("onAuthenticationSuccess - Missing email attribute. Cannot continue.");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing email.");
+            return;
+        }
+
+        if (firstname == null) firstname = "Guesty";
+        if (lastname == null) lastname = "McGuestFace";
+        if (groups == null || groups.isEmpty()) groups = List.of("Guest");
+
+        // Convert first matching group to Role
+        Role userRole = Role.Guest;
+        for (Role role : Role.values()) {
+            if (groups.contains(role.name())) {
+                userRole = role;
+                break;
+            }
+        }
+
+        // Save user if not already in DB
+        if (userService.getUserByEmail(email) == null) {
+            User user = new User();
+            user.setEmail(email);
+            user.setFirstName(firstname);
+            user.setLastName(lastname);
+            user.setRole(userRole);
+            userService.saveUser(user);
+            logger.info("New user saved: {}", email);
+        }
+
+        // Generate JWT with role info
+        String jwt = jwtUtil.generateToken(email, List.of(userRole.name()));
+
+        // Set cookies
+        response.addCookie(createCookie("firstname", firstname));
+        response.addCookie(createCookie("lastname", lastname));
+        response.addCookie(createCookie("email", email));
+        response.addCookie(createCookie("role", userRole.name()));
+        response.addCookie(createCookie("token", jwt));
+
+        logger.info("SAML success - Cookies set for {}", email);
         response.sendRedirect("/index.html");
-        logger.info("SAML success - Redirecting to frontend at /index.html");
+    }
+
+    private Cookie createCookie(String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setPath("/");
+        cookie.setDomain("localhost");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setMaxAge(60 * 60);
+        cookie.setAttribute("SameSite", "None");
+        return cookie;
     }
 
 }
