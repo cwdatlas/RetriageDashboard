@@ -38,22 +38,6 @@ export async function createEvent(event: EventTmp): Promise<EventTmp> {
 }
 
 /**
- * Optionally, get a single event by ID
- */
-export async function getEventById(id: number): Promise<Event> {
-    const res = await fetch(`${API_BASE_URL}` + ENDPOINT + "/" + `${id}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    if (!res.ok) {
-        throw new Error(`Failed to fetch event`);
-    }
-    return res.json();
-}
-
-/**
  * Optionally, delete a event
  */
 export async function deleteEvent(id: number, setError: (error: string) => void): Promise<void> {
@@ -63,20 +47,6 @@ export async function deleteEvent(id: number, setError: (error: string) => void)
     if (!res.ok) {
         setError(`Failed to delete event: ${res.statusText}`);
         return
-    }
-}
-
-//TODO fix update event to actually work
-export async function updateEvent(newEvent: Event): Promise<void> {
-    const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newEvent),
-    });
-    if (!res.ok) {
-        throw new Error(`Failed to update event`);
     }
 }
 
