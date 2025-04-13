@@ -79,7 +79,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/topic/**").permitAll()
                 .requestMatchers("/api/users/me").permitAll()
-                .requestMatchers("/active_event/**").authenticated() // Requires login
+                .requestMatchers("/api/events/**").permitAll()
                 .anyRequest().authenticated() // All other endpoints require authentication
                 )
                 // Login Settings
