@@ -1,6 +1,5 @@
 import {UserDto} from "@/app/models/userDto";
 import {User} from "./../models/user";
-import {GetCookies} from "@/app/api/cookieApi";
 
 export const dynamic = 'force-static'
 
@@ -66,7 +65,7 @@ export async function getUserByToken(
         } else {
             setError(`Unexpected error (${res.status})`);
         }
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("Error fetching user via token cookie:", err);
         setError("Failed to fetch user credentials.");
     }
