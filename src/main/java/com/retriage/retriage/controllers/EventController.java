@@ -136,7 +136,6 @@ public class EventController {
      * @return The list of every event
      */
     @GetMapping(produces = "application/json")
-    @PreAuthorize("hasRole('Director')") // Restricts to Director Roles only
     public ResponseEntity<?> getAllEvents() {
         List<Event> events = eventService.findAllEvents();
         return new ResponseEntity<>(events, HttpStatus.OK); // Returning 200 OK with the list of events
