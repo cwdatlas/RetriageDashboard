@@ -3,28 +3,23 @@
 import React, {useEffect, useState} from "react";
 import Link from "next/link";
 import LogoutButton from "@/app/components/buttons/logoutButton";
-import {GetCookies} from "@/app/api/cookieApi";
-import {Role} from "@/app/enumerations/role";
+import {UserDto} from "@/app/models/userDto";
+import {getUserByToken} from "@/app/api/userApi";
+import ErrorMessage from "@/app/components/modals/errorMessage";
 
 export default function Header() {
     // Set initial values to empty strings so that during the first render (hydration) they match.
-    const [username, setUsername] = useState("");
-    const [role, setRole] = useState("");
+    const [user, setUser] = useState<UserDto | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Now that we are on the client, read the cookies.
-        const firstname = GetCookies("firstname")
-        const lastname = GetCookies("lastname")
-        const role: Role = GetCookies("role") as Role;
-        if (firstname && lastname && role) {
-            setUsername(firstname + " " + lastname);
-            setRole(role);
-        }
+        void getUserByToken(setUser, setError);
     }, []);
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
             <div className="container-fluid">
+                <ErrorMessage errorMessage={error}/>
                 {/* Branding */}
                 <Link className="navbar-brand" href="/">
                     <img
@@ -69,7 +64,7 @@ export default function Header() {
                     </ul>
                     <div className="d-flex align-items-center">
             <span className="navbar-text me-3">
-              {username} | {role}
+              {user?.username} | {user?.role}
             </span>
                         <LogoutButton/>
                     </div>
