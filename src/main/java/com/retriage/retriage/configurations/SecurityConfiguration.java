@@ -18,9 +18,9 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+//import org.springframework.web.cors.CorsConfiguration;
+//import org.springframework.web.cors.CorsConfigurationSource;
+//import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.HashSet;
 import java.util.List;
@@ -83,8 +83,8 @@ public class SecurityConfiguration {
                 )
                 // Login Settings
                 .saml2Login(saml2 -> saml2
-                        .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom provider
-                        .successHandler(samlAuthenticationSuccessHandler)
+                        .authenticationManager(new ProviderManager(authenticationProvider)) // Maps SAML groups to Roles
+                        .successHandler(samlAuthenticationSuccessHandler) // Sets JWT after successful login
                 )
                 // Logout Settings
                 .saml2Logout(withDefaults()) // Enable default SAML logout handling
