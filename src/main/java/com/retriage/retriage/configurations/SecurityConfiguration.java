@@ -89,8 +89,7 @@ public class SecurityConfiguration {
                 // Logout Settings
                 .saml2Logout(withDefaults()) // Enable default SAML logout handling
                 .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-                        .logoutSuccessUrl("/index.html") // Redirect here after logout
+                        .logoutSuccessUrl("http://localhost:8080/saml2/authenticate/okta") // Redirect here after logout
                         .invalidateHttpSession(true) // Clear session
                         .clearAuthentication(true) // Clear auth context
                         .deleteCookies("JSESSIONID", "token","firstname","lastname","email") // Clear session cookie
