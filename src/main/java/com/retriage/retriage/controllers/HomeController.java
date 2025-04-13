@@ -3,6 +3,7 @@ package com.retriage.retriage.controllers;
 import com.retriage.retriage.enums.Role;
 import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.models.User;
+import com.retriage.retriage.models.UserDto;
 import com.retriage.retriage.services.JwtUtil;
 import com.retriage.retriage.services.UserService;
 import jakarta.servlet.http.Cookie;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -63,6 +65,12 @@ public class HomeController {
      */
     @RequestMapping("/")
     public ResponseEntity<?> oktaLogin(@AuthenticationPrincipal Saml2AuthenticatedPrincipal principal, HttpServletResponse response) {
+        if (principal == null) {
+            logger.info("No SAML principal — redirecting to index page.");
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", "/index.html")
+                    .build();
+        }
         List<String> roles = null;
         try {
             roles = principal.getAttribute("groups");
@@ -123,9 +131,16 @@ public class HomeController {
         response.addCookie(createCookie("firstname", firstName));
         response.addCookie(createCookie("lastname", lastName));
         response.addCookie(createCookie("email", email));
-        response.addCookie(createCookie("role", userRole.toString()));
+        Role role = userService.getUserByEmail(email).getRole();
+        if (role != null) {
+            response.addCookie(createCookie("role", role.toString()));
+        } else {
+            logger.warn("⚠️ User {} has no role assigned — skipping role cookie.", role);
+        }
         String jwt = jwtUtil.generateToken(email);
         response.addCookie(createCookie("token", jwt));
+
+        logger.info("Set cookies: {}, {}, {}, {}", firstName, lastName, email, userRole);
 
         logger.info("oktaLogin - User authenticated and cookies set for email: {}", email);
         return ResponseEntity.status(HttpStatus.FOUND)
@@ -145,8 +160,9 @@ public class HomeController {
             }
         }
 
-        if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No token cookie");
+        if (token == null || !jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid or missing token"));
         }
 
         if (!jwtUtil.validateToken(token)) {
@@ -157,7 +173,9 @@ public class HomeController {
         System.out.println("Raw token: " + token);
         System.out.println("Token valid: " + jwtUtil.validateToken(token));
 
-        return ResponseEntity.ok("Token is valid for: " + email);
+        User user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(new UserDto(email, user.getRole()));
+
     }
 
 
@@ -188,6 +206,7 @@ public class HomeController {
         cookie.setAttribute("SameSite", "None"); //  Allows cookie to be sent during navigation
         if (Objects.equals(name, "token")){
             logger.info("SAML success - JWT generated for user: {}", value);
+            return cookie;
         }
         return cookie;
     }
