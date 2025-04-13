@@ -5,6 +5,7 @@ import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.forms.UserForm;
 import com.retriage.retriage.models.User;
 import com.retriage.retriage.models.UserDto;
+import com.retriage.retriage.services.JwtUtil;
 import com.retriage.retriage.services.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -25,12 +26,14 @@ import java.util.Optional;
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     /**
      * Constructor injection of the service
      */
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -160,23 +163,40 @@ public class UserController {
     @CrossOrigin
     @GetMapping(value = "/me", produces = "application/json")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+        // If there's no Auth header
         if (authHeader == null) {
             logger.warn("getCurrentUser - Missing or malformed Authorization header.");
             return ResponseEntity.badRequest().body("Authorization header missing or invalid");
         }
+        //  Strip "Bearer " prefix
+        String token = authHeader.substring(7);
 
-        try {
-            User user = userService.getUserFromToken(authHeader);
-
-            return ResponseEntity.ok(new UserDto(
-                    user.getEmail(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getRole()
-            ));
-        } catch (Exception e) {
-            logger.error("getCurrentUser - Failed to parse token or find user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: " + e.getMessage());
+        // Token structurally invalid
+        if (!jwtUtil.validateToken(token)) {
+            logger.warn("getCurrentUser - Token failed validation: {}", token);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
+
+        // Extract username
+        String email = jwtUtil.extractUsername(token);
+        if (email == null || email.isBlank()) {
+            logger.warn("getCurrentUser - Could not extract email from token.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token structure");
+        }
+
+        // Look up user from DB
+        User user = userService.getUserByEmail(email);
+        if (user == null) {
+            logger.warn("getCurrentUser - No user found for email: {}", email);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+        }
+
+        // Return user info
+        return ResponseEntity.ok(new UserDto(
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRole()
+        ));
     }
 }
