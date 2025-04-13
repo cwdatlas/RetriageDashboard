@@ -12,25 +12,22 @@ import {getActiveEvent as getCurrentActiveEvent} from "@/app/api/eventApi";
 import EventVisualization from "@/app/components/pages/eventVisualization";
 import EventNavBar from "@/app/components/panel/eventNavBar";
 import ErrorMessage from "@/app/components/modals/errorMessage";
-import {GetCookies} from "@/app/api/cookieApi";
 import {Role} from "@/app/enumerations/role";
 import {useConnectEventWebSocket} from "@/app/api/eventWebSocket";
+import {UserDto} from "@/app/models/userDto";
+import {getUserByToken} from "@/app/api/userApi";
 
 export default function EventViewer() {
     // Instead of reading the cookie immediately, we use local state.
-    const [role, setRole] = useState<Role | null>(null);
     const [viewEvents, setViewEvents] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeEvent, setActiveEvent] = useState<Event | null>(null);
-
-    // On mount, set the role from cookies.
-    useEffect(() => {
-        setRole(GetCookies("role") as Role);
-    }, []);
+    const [user, setUser] = useState<UserDto | null>(null);
 
     // Fetch the active event when the component mounts.
     useEffect(() => {
         getCurrentActiveEvent(setActiveEvent, setError);
+        void getUserByToken(setUser, setError);
     }, []);
 
     // Connect the WebSocket for real-time updates.
@@ -48,7 +45,7 @@ export default function EventViewer() {
     }
 
     // While waiting for the client to mount and role to be set, return null (or a loading indicator).
-    if (!role) {
+    if (!user?.role) {
         return null;
     }
 
@@ -58,7 +55,7 @@ export default function EventViewer() {
             {/* Mini Nav Bar always visible under header */}
             <EventNavBar activeEvent={activeEvent} toggleEventView={toggleEventView} getActiveEvent={getActiveEvent}/>
             <ErrorMessage errorMessage={error}/>
-            {role === Role.Director && (
+            {user.role === Role.Director && (
                 <div className="container mt-3">
                     {viewEvents && <SelectEvent eventViewToggle={toggleEventView}/>}
                     {activeEvent != null && (
@@ -68,7 +65,7 @@ export default function EventViewer() {
                     )}
                 </div>
             )}
-            {role === Role.Nurse && (
+            {user.role === Role.Nurse && (
                 <div className="container mt-3">
                     {activeEvent == null && <NurseWaitPage/>}
                     {activeEvent != null && (
@@ -78,7 +75,7 @@ export default function EventViewer() {
                     )}
                 </div>
             )}
-            {role === Role.Guest && (
+            {user.role === Role.Guest && (
                 <div className="container mt-3">
                     {activeEvent == null && <GuestWaitPage/>}
                     {activeEvent != null && (

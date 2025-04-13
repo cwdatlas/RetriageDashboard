@@ -7,9 +7,6 @@ import Header from "@/app/components/panel/header";
 import Footer from "@/app/components/panel/footer";
 import {createPoolTemplate, deletePoolTemplate, getAllPoolTemplates,} from "@/app/api/patientPoolTmpApi";
 import {createEvent} from "@/app/api/eventApi";
-import {User} from "@/app/models/user";
-import {GetCookies} from "@/app/api/cookieApi";
-import {Role} from "@/app/enumerations/role";
 import {PoolType} from "@/app/enumerations/poolType";
 import {PatientPoolTmp} from "@/app/models/patientPoolTmp";
 import {EventTmp} from "@/app/models/eventTmp";
@@ -34,14 +31,6 @@ export default function EventCreation() {
     const [poolType, setPoolType] = useState(PoolType.MedService);
     const [patientProcessTime, setPatientProcessTime] = useState("");
     const [autoDischarge, setAutoDischarge] = useState(true);
-
-    // Director + Pools for this new event
-    const director: User = {
-        firstName: GetCookies("firstName"),
-        lastName: GetCookies("lastName"),
-        email: GetCookies("email"),
-        role: GetCookies("role") as Role,
-    };
 
     // State to hold all pool templates from your API
     const [allTemplates, setAllTemplates] = useState<PatientPoolTmp[]>([]);
@@ -77,10 +66,6 @@ export default function EventCreation() {
      */
     async function handleSubmitEvent(e: React.FormEvent) {
         e.preventDefault();
-        if (!director) {
-            setError("Director not loaded yet. Please wait or refresh.");
-            return;
-        }
         // Basic input validation for event name & duration:
         // Example of preventing event name from containing suspicious characters
         if (/['";]/.test(name)) {
@@ -465,5 +450,6 @@ export default function EventCreation() {
             </main>
             <Footer />
         </div>
+
     );
 }

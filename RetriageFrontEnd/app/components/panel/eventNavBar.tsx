@@ -1,11 +1,13 @@
 import {useEffect, useState} from "react";
-import {GetCookies} from "@/app/api/cookieApi";
 import {Role} from "@/app/enumerations/role";
 import {Event} from "@/app/models/event";
 import {Status} from "@/app/enumerations/status";
 import ToggleButton from "@/app/components/buttons/toggleButton";
 import CreatePatient from "@/app/components/buttons/createPatient";
 import Link from "next/link";
+import {UserDto} from "@/app/models/userDto";
+import {getUserByToken} from "@/app/api/userApi";
+import ErrorMessage from "@/app/components/modals/errorMessage";
 
 export default function EventNavBar({
                                         activeEvent,
@@ -17,7 +19,13 @@ export default function EventNavBar({
     getActiveEvent: () => Event;
 }) {
     const [timeLeft, setTimeLeft] = useState<number>(0);
-    const [role] = useState(GetCookies("role") as Role);
+    const [error, setError] = useState<string | null>(null);
+    const [user, setUser] = useState<UserDto | null>(null);
+
+    // Fetch the active event when the component mounts.
+    useEffect(() => {
+        void getUserByToken(setUser, setError);
+    }, []);
 
     // When activeEvent updates, immediately recalc time left.
     useEffect(() => {
@@ -52,8 +60,9 @@ export default function EventNavBar({
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-secondary sticky-top" style={{zIndex: 1050}}>
             <div className="container-fluid">
+                <ErrorMessage errorMessage={error}/>
                 {/* Left side: toggle event section button */}
-                {role === Role.Director && (
+                {user?.role === Role.Director && (
                     <div className="d-flex">
                         <ToggleButton onToggle={toggleEventView} label={"Toggle Event Section"}/>
                     </div>
@@ -70,11 +79,11 @@ export default function EventNavBar({
                 <div className="d-flex">
                     {activeEvent && activeEvent.status === Status.Running && (
                         <div className="me-2">
-                            {role !== Role.Guest && <CreatePatient getActiveEvent={getActiveEvent}/>}
+                            {user?.role !== Role.Guest && <CreatePatient getActiveEvent={getActiveEvent}/>}
                         </div>
                     )}
                     <div>
-                        {role === Role.Director && (
+                        {user?.role === Role.Director && (
                             <Link className="btn btn-primary" href="/event/eventcreation">
                                 Create Event
                             </Link>

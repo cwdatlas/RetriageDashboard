@@ -3,9 +3,10 @@ import {Patient} from "@/app/models/patient";
 import {useDraggable} from "@dnd-kit/core";
 import {Condition} from "@/app/enumerations/condition";
 import {sendEvent} from "@/app/api/eventWebSocket";
-import {GetCookies} from "@/app/api/cookieApi";
 import {Event} from "@/app/models/event";
 import {Role} from "@/app/enumerations/role";
+import {UserDto} from "@/app/models/userDto";
+import {getUserByToken} from "@/app/api/userApi";
 
 // Define a mapping from condition to an image URL.
 const conditionIcons: Record<Condition, string> = {
@@ -39,6 +40,12 @@ export default function PatientIcon({
     const [menuPosition, setMenuPosition] = useState({x: 0, y: 0});
     const [showConditionOptions, setShowConditionOptions] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [user, setUser] = useState<UserDto | null>(null);
+
+    // Fetch the active event when the component mounts.
+    useEffect(() => {
+        void getUserByToken(setUser, setError);
+    }, []);
 
     // Ref for the context menu container
     const menuRef = useRef<HTMLDivElement>(null);
@@ -141,7 +148,7 @@ export default function PatientIcon({
             >
                 Discharge
             </div>
-            {GetCookies("role") === Role.Director && (
+            {user?.role === Role.Director && (
                 <>
                     <div
                         className="dropdown-item"
