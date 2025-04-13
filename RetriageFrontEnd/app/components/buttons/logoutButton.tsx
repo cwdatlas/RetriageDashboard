@@ -1,22 +1,18 @@
+'use client'
+
 export default function LogoutButton() {
-    const handleLogout = async () => {
-        await fetch("/logout", {
-            method: "GET",
-            credentials: "include"
+    const handleLogout = () => {
+        // Nuke cookies manually by expiring them (last resort)
+        document.cookie.split(";").forEach(cookie => {
+            const name = cookie.split("=")[0].trim();
+            document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
         });
 
-        window.location.href = "/index.html";
     };
 
     return (
-        <main>
-            {/* Hidden logout form */}
-            <form id="logoutForm" method="post" action="http://localhost:8080/logout">
-                {/* No content needed, just a form to be submitted */}
-            </form>
-
-            <button className="btn btn-primary" onClick={handleLogout}>Logout</button>
-
-        </main>
-    )
+        <button className="btn btn-primary" onClick={handleLogout}>
+            Logout
+        </button>
+    );
 }
