@@ -25,7 +25,9 @@ import java.util.List;
 @Service
 public class JwtUtil {
     // Secret key used to sign abd verify the JWT. It's generated using HS256 algorithm.
-    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // Replace this with a secure, long key from an environment variable in production
+    private static final String SECRET = System.getenv("JWT_SECRET");
+    private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
     // Expiration time for the JWT, set to 1 hour (in milliseconds).
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // Expires after 1 hour
     private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
@@ -44,6 +46,24 @@ public class JwtUtil {
             .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expire in 1 hour
             .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // Sign using secret key and HS256
             .compact(); // Finalize token string
+    }
+
+    /**
+     * Generates a JWT for the specified username and roles.
+     *
+     * @param username the user to include as the subject
+     * @param roles the list of roles to include as a claim
+     * @return a signed JWT string
+     */
+    public String generateToken(String username, List<String> roles) {
+        log.info("Generating JWT token for user: {} with roles: {}", username, roles);
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("roles", roles)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     /**
@@ -115,7 +135,6 @@ public class JwtUtil {
      * @return the shared symmetric key
      */
     private Key getSigningKey() {
-        byte[] keyBytes = SECRET_KEY.getEncoded();
-        return Keys.hmacShaKeyFor(keyBytes); // Reconstruct from raw bytes
+        return SECRET_KEY;
     }
 }
