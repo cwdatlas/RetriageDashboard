@@ -1,7 +1,11 @@
 export default function LogoutButton() {
-    const handleLogout = () => {
-        const form = document.getElementById("logoutForm") as HTMLFormElement | null;
-        form?.requestSubmit(); // Use requestSubmit() for modern behavior
+    const handleLogout = async () => {
+        await fetch("/logout", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        window.location.href = "/index.html";
     };
 
     return (
