@@ -12,8 +12,7 @@ public class EventWebSocketConfiguration implements WebSocketMessageBrokerConfig
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/active_event")
-                .setAllowedOrigins("http://localhost:3000");
+        registry.addEndpoint("/active_event");
     }
 
     @Override

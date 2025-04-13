@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin
 @Controller
 public class EventWebSocketController {
     private static final Logger logger = LoggerFactory.getLogger(EventWebSocketController.class);

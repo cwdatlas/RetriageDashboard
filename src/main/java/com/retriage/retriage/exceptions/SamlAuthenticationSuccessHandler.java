@@ -48,7 +48,7 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
         logger.info("SAML success - Authenticated user: {}", username);
         // Redirect to the frontend app
         response.sendRedirect("/index.html");
-        logger.info("SAML success - Redirecting to frontend at http://localhost:3000/");
+        logger.info("SAML success - Redirecting to frontend at /index.html");
     }
 
 }

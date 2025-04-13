@@ -75,11 +75,10 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Disables CSRF for API access
                 .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/**").permitAll() // Allows unauthenticated access
-                .requestMatchers("/ws/**").permitAll()
-                .requestMatchers("/topic/**").permitAll()
-                .requestMatchers("/api/users/me").permitAll()
-                .requestMatchers("/api/events/**").permitAll()
+                                .requestMatchers("/api/**").permitAll()
+                                .requestMatchers("/ws/**").permitAll()
+                                .requestMatchers("/topic/**").permitAll()
+                                .requestMatchers("/active_event").permitAll()
                 .anyRequest().authenticated() // All other endpoints require authentication
                 )
                 // Login Settings
@@ -89,8 +88,9 @@ public class SecurityConfiguration {
                 // Logout Settings
                 .saml2Logout(withDefaults()) // Enable default SAML logout handling
                 .logout(logout -> logout
-                        .logoutSuccessUrl("http://localhost:8080/saml2/authenticate/okta") // Redirect here after logout
-                        .invalidateHttpSession(true) // Clear session
+
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+                        .logoutSuccessUrl("/index.html") // Redirect here after logout                        .invalidateHttpSession(true) // Clear session
                         .clearAuthentication(true) // Clear auth context
                         .deleteCookies("JSESSIONID", "token","firstname","lastname","email") // Clear session cookie
                 )
@@ -105,25 +105,6 @@ public class SecurityConfiguration {
 
 
         return http.build(); // Build and return the configured SecurityFilterChain
-    }
-
-    /**
-     * Defines a global CORS policy allowing all origins, headers, and methods.
-     * Should be restricted for production environments.
-     *
-     * @return a {@link CorsConfigurationSource} with open policy
-     */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);    // Allow credentials (cookies, etc.)
-        configuration.addAllowedOriginPattern("*"); // Allow all origins
-        configuration.addAllowedHeader("*");        // Allow all headers
-        configuration.addAllowedMethod("*");        // Allow all HTTP methods
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Apply to all endpoints
-        return source;
     }
 
     /**
