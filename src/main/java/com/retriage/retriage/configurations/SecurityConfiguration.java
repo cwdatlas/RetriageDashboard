@@ -17,6 +17,7 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -84,16 +85,15 @@ public class SecurityConfiguration {
                 // Login Settings
                 .saml2Login(saml2 -> saml2
                         .authenticationManager(new ProviderManager(authenticationProvider)) // Use the custom provider
-//                        .successHandler(samlAuthenticationSuccessHandler) // Redirect or process after login
                 )
                 // Logout Settings
                 .saml2Logout(withDefaults()) // Enable default SAML logout handling
                 .logout(logout -> logout
-                        .logoutUrl("/logout") // Path to trigger logout
-                        .logoutSuccessUrl("/") // Redirect here after logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+                        .logoutSuccessUrl("/index.html") // Redirect here after logout
                         .invalidateHttpSession(true) // Clear session
                         .clearAuthentication(true) // Clear auth context
-                        .deleteCookies("JSESSIONID") // Clear session cookie
+                        .deleteCookies("JSESSIONID", "token","firstname","lastname","email") // Clear session cookie
                 )
                 // Security Headers
                 .headers(headers -> headers
