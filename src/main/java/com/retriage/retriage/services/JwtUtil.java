@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * JwtUtil
@@ -26,7 +23,9 @@ import java.util.List;
 public class JwtUtil {
     // Secret key used to sign abd verify the JWT. It's generated using HS256 algorithm.
     // Replace this with a secure, long key from an environment variable in production
-    private static final String SECRET = System.getenv("JWT_SECRET");
+    private static final String SECRET = Optional.ofNullable(System.getenv("JWT_SECRET"))
+            .orElse("DEV_FAKE_SECRET_BUT_AT_LEAST_32_CHARACTERS_LONG!");
+
     private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
     // Expiration time for the JWT, set to 1 hour (in milliseconds).
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // Expires after 1 hour
