@@ -75,11 +75,12 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Disables CSRF for API access
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers("/api/**").permitAll()
+                                .requestMatchers("/api/debug/**").permitAll()
+                                .requestMatchers("/active_event").permitAll()
                                 .requestMatchers("/ws/**").permitAll()
                                 .requestMatchers("/topic/**").permitAll()
-                                .requestMatchers("/active_event").permitAll()
-                .anyRequest().authenticated() // All other endpoints require authentication
+                        .requestMatchers("/api/users/me").authenticated()
+                        .anyRequest().authenticated() // All other endpoints require authentication
                 )
                 // Login Settings
                 .saml2Login(saml2 -> saml2
