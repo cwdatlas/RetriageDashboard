@@ -17,20 +17,17 @@ export default function Header() {
     }, []);
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
                 <ErrorMessage errorMessage={error}/>
                 {/* Branding */}
                 <Link className="navbar-brand" href="/">
                     <img
-                        src="/images/shield.png"
-                        alt="Carroll College Shield"
+                        src="/images/navBranding.png"
+                        className="img-thumbnail"
+                        alt="Carroll College Nursing Program Logo"
                         style={{
-                            width: "50px",
-                            height: "50px",
-                            display: "block",
-                            margin: "0 auto",
-                            borderRadius: "50%",
+                            height: "50px"
                         }}
                     />
                 </Link>
