@@ -43,7 +43,7 @@ Build the applications jar by typing:
 
 Now you are ready to start the spring backend. 
 **Required Environment Variables**
-DOMAIN example: localhost or 10.0.0.10
+DOMAIN; example: localhost or 10.0.0.10
 `java -jar /build/libs/retriage-0.0.1-SNAPSHOT.jar`
 
 Connect to localhost:8080, login and have fun.
