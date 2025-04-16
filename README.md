@@ -41,7 +41,7 @@ Run the build process that creates all static files.
 Build the applications jar by typing:
 `./gradlew build`
 
-Now you are ready to start the spring backend. 
+Now you are ready to start the spring backend. **Environment variable domain application is running on**
 `java -jar /build/libs/retriage-0.0.1-SNAPSHOT.jar`
 
 Connect to localhost:8080, login and have fun.

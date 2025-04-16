@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -28,6 +29,8 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
     private static final Logger logger = LoggerFactory.getLogger(SamlAuthenticationSuccessHandler.class);
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    @Value("${DOMAIN}")
+    private String domain;
 
     /**
      * Constructor for injecting the JWT utility used for token generation.
@@ -108,7 +111,7 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
      * <p>
      * This cookie is configured for use in cross-site contexts with the following settings:
      * - Path: "/" to make it available across the entire app
-     * - Domain: "localhost" (adjust in production)
+     * - Domain: Passed in as environment variable (adjust in production)
      * - HttpOnly: true to prevent JavaScript access
      * - Secure: true to ensure it is only sent over HTTPS
      * - MaxAge: 1 hour (3600 seconds)
@@ -121,7 +124,7 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
     private Cookie createCookie(String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");                       // Allow cookie access across all paths
-        cookie.setDomain("localhost");             // Domain for which the cookie is valid //TODO: (change in production)
+        cookie.setDomain(domain);             // Domain for which the cookie is valid //TODO: (change in production)
         cookie.setHttpOnly(true);                  // Prevent JavaScript access (XSS protection)
         cookie.setSecure(true);                    // Transmit only over HTTPS
         cookie.setMaxAge(60 * 60);                 // Set expiration time to 1 hour

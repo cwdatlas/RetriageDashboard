@@ -3,7 +3,8 @@ import {Event} from "@/app/models/event";
 import {Client, IMessage} from "@stomp/stompjs";
 import {ResponseWrapper} from "@/app/models/responseWrapper";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "ws://localhost:8080";
+const domain = process.env.DOMAIN || 'localhost'
+const API_BASE_URL = "http://" + domain + ":8080";
 const ENDPOINT = "/active_event";
 const UPDATE_EVENT = "/ws/update";
 const TOPIC = "/topic/event_updates";
