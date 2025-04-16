@@ -1,10 +1,8 @@
 package com.retriage.retriage.controllers;
 
+import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.models.AuthRequest;
 import com.retriage.retriage.services.JwtUtil;
-import com.retriage.retriage.exceptions.ErrorResponse;
-import jakarta.servlet.http.Cookie;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    
+
     private final JwtUtil jwtUtil;
 
     public AuthController(JwtUtil jwtUtil) {

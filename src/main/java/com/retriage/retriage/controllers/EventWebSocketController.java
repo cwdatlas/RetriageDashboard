@@ -6,21 +6,13 @@ import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.models.Event;
 import com.retriage.retriage.models.ResponseWrapper;
 import com.retriage.retriage.services.EventService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +30,9 @@ public class EventWebSocketController {
     @MessageMapping("/update")
     @SendTo("/topic/event_updates")
     public ResponseWrapper WebsocketConnection(EventForm eventForm) {
-        if(eventForm.getStatus() == Status.Running) {
+        if (eventForm.getStatus() == Status.Running) {
             Event activeEvent = eventService.findActiveEvent();
-            if(activeEvent != null && !activeEvent.getId().equals(eventForm.getId())) {
+            if (activeEvent != null && !activeEvent.getId().equals(eventForm.getId())) {
                 return new ResponseWrapper<Void>(HttpStatus.BAD_REQUEST.value(), "Another event is already running.", null);
             }
         }

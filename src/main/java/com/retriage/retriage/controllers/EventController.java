@@ -4,7 +4,6 @@ import com.retriage.retriage.enums.PoolType;
 import com.retriage.retriage.enums.Status;
 import com.retriage.retriage.exceptions.ErrorResponse;
 import com.retriage.retriage.exceptions.SuccessResponse;
-import com.retriage.retriage.forms.EventForm;
 import com.retriage.retriage.forms.EventTmpForm;
 import com.retriage.retriage.models.Event;
 import com.retriage.retriage.models.Patient;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @CrossOrigin

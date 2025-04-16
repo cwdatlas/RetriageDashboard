@@ -74,7 +74,7 @@ public class EventTimerServiceImp implements EventTimerService {
         Event activeEvent = eventService.findActiveEvent();
         if (activeEvent == null) {
             messagingTemplate.convertAndSend("/topic/event_updates",
-                    new ResponseWrapper<Event>(HttpStatus.NOT_FOUND.value(), "There is not an event running currently.",null ));
+                    new ResponseWrapper<Event>(HttpStatus.NOT_FOUND.value(), "There is not an event running currently.", null));
         } else {
             messagingTemplate.convertAndSend("/topic/event_updates",
                     new ResponseWrapper<Event>(HttpStatus.OK.value(), "Nominal Event Update", activeEvent));

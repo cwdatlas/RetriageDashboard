@@ -1,7 +1,5 @@
 package com.retriage.retriage.controllers;
 
-import com.retriage.retriage.models.User;
-import com.retriage.retriage.models.UserDto;
 import com.retriage.retriage.services.JwtUtil;
 import com.retriage.retriage.services.UserService;
 import jakarta.servlet.http.Cookie;
@@ -17,8 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.Map;
 
 /**
  * HomeController.java
@@ -74,58 +70,6 @@ public class HomeController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", "/index.html")
                 .build();
-    }
-
-    /**
-     * Returns user information extracted from a valid token cookie.
-     * If the token is missing or invalid, returns an error response.
-     *
-     * @param request the incoming HTTP request containing cookies
-     * @return the authenticated user's data or error details
-     */
-    @GetMapping("/api/users/me")
-    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = null;
-
-        // No Cookies
-        if (cookies == null) {
-            logger.warn("getCurrentUser - No cookies received");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "No cookies received"));
-        }
-
-        // Lookin for cookies
-        for (Cookie cookie : cookies) {
-            logger.info("getCurrentUser - Found cookie: {}={}", cookie.getName(), cookie.getValue());
-            if ("token".equals(cookie.getName())) {
-                token = cookie.getValue();
-                break;
-            }
-        }
-
-        // JWT Token inside the cookie is not found
-        if (token == null) {
-            logger.warn("getCurrentUser - Token not found in cookies");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Missing token"));
-        }
-
-        // JWT Token failing signature/expiration validation
-        if (!jwtUtil.validateToken(token)) {
-            logger.warn("getCurrentUser - Token failed validation: {}", token);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-        }
-
-        // Extract user info from the jwt token
-        String email = jwtUtil.extractUsername(token);
-        User user = userService.getUserByEmail(email);
-        return ResponseEntity.ok(new UserDto(
-                email,
-                user.getFirstName(),
-                user.getLastName(),
-                user.getRole()
-        ));
-
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.retriage.retriage.configurations;
 
 import com.retriage.retriage.exceptions.SamlAuthenticationSuccessHandler;
-//import com.retriage.retriage.services.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -18,9 +17,6 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-//import org.springframework.web.cors.CorsConfiguration;
-//import org.springframework.web.cors.CorsConfigurationSource;
-//import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +49,6 @@ public class SecurityConfiguration {
     }
 
 
-
     /**
      * Configures Spring Security filter chain for SAML authentication.
      * Sets up access rules, login/logout behavior, security headers, and
@@ -75,11 +70,11 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Disables CSRF for API access
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers("/api/**").permitAll()
-                                .requestMatchers("/ws/**").permitAll()
-                                .requestMatchers("/topic/**").permitAll()
-                                .requestMatchers("/active_event").permitAll()
-                .anyRequest().authenticated() // All other endpoints require authentication
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/topic/**").permitAll()
+                        .requestMatchers("/active_event").permitAll()
+                        .anyRequest().authenticated() // All other endpoints require authentication
                 )
                 // Login Settings
                 .saml2Login(saml2 -> saml2
@@ -93,16 +88,15 @@ public class SecurityConfiguration {
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
                         .logoutSuccessUrl("/index.html") // Redirect here after logout                        .invalidateHttpSession(true) // Clear session
                         .clearAuthentication(true) // Clear auth context
-                        .deleteCookies("JSESSIONID", "token","firstname","lastname","email") // Clear session cookie
+                        .deleteCookies("JSESSIONID", "token", "firstname", "lastname", "email") // Clear session cookie
                 )
                 // Security Headers
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny) // Clickjacking protection
                         .contentTypeOptions(withDefaults()) // Prevent MIME sniffing
                         .referrerPolicy(referrer -> referrer
-                        .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)) // Hide reefer
+                                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)) // Hide reefer
                 );
-
 
 
         return http.build(); // Build and return the configured SecurityFilterChain
