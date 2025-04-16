@@ -33,7 +33,7 @@ public class PatientPoolTmpController {
     }
 
     /**
-     * 1) Create a new PatientPool
+     * Create a new PatientPool
      * POST /templates
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
@@ -63,7 +63,7 @@ public class PatientPoolTmpController {
     }
 
     /**
-     * 2) Get all Patients
+     * Get all Patients
      * GET /templates
      */
     @GetMapping(produces = "application/json")
@@ -75,29 +75,7 @@ public class PatientPoolTmpController {
     }
 
     /**
-     * 3) Get one Patient by ID
-     * GET /templates/{id}
-     */
-    @GetMapping(value = "/{id}", produces = "application/json")
-    @PreAuthorize("hasRole('Director')") // Restricts to Director roles only
-    public ResponseEntity<?> findPoolByID(@PathVariable Long id) {
-        PatientPoolTmp optionalPool = poolService.findPoolTmpById(id);
-        if (optionalPool != null) {
-            logger.info("findPoolByID - Pool template found with ID: {}", id);
-            return ResponseEntity.ok(optionalPool);
-        } else {
-            logger.warn("findPoolByID - Pool template find failed: Pool template with id {} not found.", id);
-            ErrorResponse errorResponse = new ErrorResponse(
-                    List.of("Template with id " + id + " not found."),
-                    HttpStatus.NOT_FOUND.value(),
-                    "TEMPLATE_NOT_FOUND"
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-        }
-    }
-
-    /**
-     * 4) Delete a Patient
+     * Delete a Patient
      * DELETE /templates/{id}
      */
     @DeleteMapping(value = "/{id}", produces = "application/json")

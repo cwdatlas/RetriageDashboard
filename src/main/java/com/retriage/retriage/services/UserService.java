@@ -12,15 +12,5 @@ import java.util.Optional;
 public interface UserService {
     User saveUser(User user); // Create
 
-    List<User> findAllUsers(); // Read
-
-    Optional<User> findUserById(Long id); // Read by ID
-
-    User updateUser(Long id, User user); // Update
-
-    void deleteUserById(Long id); // Delete
-
     User getUserByEmail(String email);
-
-    User getUserFromToken(String token);
 }

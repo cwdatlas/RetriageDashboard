@@ -18,7 +18,6 @@ public class UserServiceImp implements UserService {
     // Add Logger for keeping track of any errors
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImp.class);
     private final UserRepo userRepository;
-    private final JwtUtil jwtUtil;
 
     /**
      * UserServiceImp
@@ -26,9 +25,8 @@ public class UserServiceImp implements UserService {
      *
      * @param userRepository Repository declared in UserServiceImp
      */
-    public UserServiceImp(UserRepo userRepository, JwtUtil jwtUtil) {
+    public UserServiceImp(UserRepo userRepository) {
         this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -47,96 +45,6 @@ public class UserServiceImp implements UserService {
         } catch (IllegalArgumentException e) {
             logger.warn("saveUser - User save failed: {}", e.getMessage());
             return null;
-        }
-    }
-
-    /**
-     * findAllUsers
-     * Finds all currently saved User accounts
-     *
-     * @return Every user account
-     */
-    public List<User> findAllUsers() {
-        List<User> users = userRepository.findAll();
-        logger.info("findAllUsers - Retrieved {} users.", users.size());
-        return users;
-    }
-
-    /**
-     * findUserById
-     * Finds a User via their ID
-     *
-     * @param id The ID of the User you're looking for
-     * @return The User object assigned to the passed in ID
-     */
-    public Optional<User> findUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            logger.info("findUserById - User found with ID: {}", id);
-        } else {
-            logger.warn("findUserById - User find failed: No user found with ID: {}", id);
-        }
-        return user;
-    }
-
-    @Override
-    public User getUserFromToken(String token) {
-        logger.debug("getUserByToken - Token received: {}", token);
-
-        if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("Invalid JWT token " + token);
-        }
-
-        String email = jwtUtil.extractUsername(token); // assuming subject = email
-        User user = getUserByEmail(email);
-
-        if (user == null) {
-            logger.warn("getUserFromToken - No user found for token subject: {}", email);
-            throw new IllegalArgumentException("No user found for given token");
-        }
-
-        logger.info("getUserFromToken - User retrieved for token subject: {}", email);
-        return user;
-    }
-
-
-    /**
-     * updateUser
-     * Updates a user with a new specified ID
-     *
-     * @param id   ID to change to
-     * @param user User to update
-     * @return Saving the newly updated User
-     */
-    public User updateUser(Long id, User user) {
-        if (!userRepository.existsById(id)) {
-            logger.warn("updateUser - User update failed: User with id {} not found.", id);
-            return null;
-        }
-        try {
-            validateUser(user);
-            user.setId(id);
-            User updatedUser = userRepository.save(user);
-            logger.info("updateUser - User updated successfully with ID: {}", updatedUser.getId());
-            return updatedUser;
-        } catch (IllegalArgumentException e) {
-            logger.warn("updateUser - User update failed: {}", e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * deleteUserById
-     * Remove a User from saved list.
-     *
-     * @param id The ID of the director to be deleted
-     */
-    public void deleteUserById(Long id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
-            logger.info("deleteUserById - User deleted successfully with ID: {}", id);
-        } else {
-            logger.warn("deleteUserById - User delete failed: User with ID {} does not exist.", id);
         }
     }
 
