@@ -39,7 +39,8 @@ out/
 ### Authorization stuff ###
 /src/main/resources/local.crt
 /src/main/resources/local.key
-
+/src/main/resources/prod.crt
+/src/main/resources/prod.key
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 # dependencies
