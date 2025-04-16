@@ -95,11 +95,6 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
         // Generate JWT with role info
         String jwt = jwtUtil.generateToken(email, List.of(userRole.name()));
 
-        // Set cookies
-        response.addCookie(createCookie("firstname", firstname));
-        response.addCookie(createCookie("lastname", lastname));
-        response.addCookie(createCookie("email", email));
-        response.addCookie(createCookie("role", userRole.name()));
         response.addCookie(createCookie("token", jwt));
 
         logger.info("SAML success - Cookies set for {}", email);
