@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * HomeController.java
+ * PageController.java
  * <br></br>
  * Controller for handling requests to the home page after successful SAML authentication.
  * This controller is responsible for displaying user information retrieved from the
@@ -28,15 +28,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @CrossOrigin
-public class HomeController {
-    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
-    private final UserService userService;
-    private final JwtUtil jwtUtil;
-    AuthenticationPrincipal Saml2AuthenticatedPrincipal;
+public class PageController {
+    private static final Logger logger = LoggerFactory.getLogger(PageController.class);
 
-    HomeController(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
+    PageController() {
     }
 
     /**
@@ -94,4 +89,16 @@ public class HomeController {
         return ResponseEntity.ok(sb.toString());
     }
 
+    @RequestMapping("/event")
+    public ResponseEntity<?> eventPage() {
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", "/event.html")
+                .build();
+    }
+    @RequestMapping("/event/event_creation")
+    public ResponseEntity<?> eventCreationPage() {
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", "/event/eventcreation.html")
+                .build();
+    }
 }
