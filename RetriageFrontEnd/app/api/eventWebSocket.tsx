@@ -4,7 +4,7 @@ import {Client, IMessage} from "@stomp/stompjs";
 import {ResponseWrapper} from "@/app/models/responseWrapper";
 
 const domain = process.env.DOMAIN || 'localhost'
-const API_BASE_URL = "http://" + domain + ":8080";
+const API_BASE_URL = "https://" + domain + ":8430";
 const ENDPOINT = "/active_event";
 const UPDATE_EVENT = "/ws/update";
 const TOPIC = "/topic/event_updates";

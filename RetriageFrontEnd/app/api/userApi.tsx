@@ -3,7 +3,7 @@ import {UserDto} from "@/app/models/userDto";
 export const dynamic = 'force-static'
 
 const domain = process.env.DOMAIN || 'localhost'
-const API_BASE_URL = "http://" + domain + ":8080";
+const API_BASE_URL = "https://" + domain + ":8430";
 const endpoint = "/api/users"
 
 /**

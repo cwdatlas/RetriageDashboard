@@ -4,7 +4,7 @@ import {EventTmp} from "@/app/models/eventTmp";
 export const dynamic = 'force-static'
 
 const domain = process.env.DOMAIN || 'localhost'
-const API_BASE_URL = "http://" + domain + ":8080";
+const API_BASE_URL = "https://" + domain + ":8430";
 const ENDPOINT = "/api/events"
 
 export async function getAllEvents(): Promise<Event[]> {

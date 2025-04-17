@@ -2,7 +2,7 @@ export const dynamic = 'force-static'
 import {PatientPoolTmp} from "../models/patientPoolTmp";
 
 const domain = process.env.DOMAIN || 'localhost'
-const API_BASE_URL = "http://" + domain + ":8080";
+const API_BASE_URL = "https://" + domain + ":8430";
 const ENDPOINT = "/api/pools/templates"
 
 /**

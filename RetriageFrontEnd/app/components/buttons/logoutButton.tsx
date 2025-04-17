@@ -1,4 +1,5 @@
 export default function LogoutButton() {
+    const domain = process.env.DOMAIN || 'localhost'
     const handleLogout = () => {
         const form = document.getElementById("logoutForm") as HTMLFormElement | null;
         form?.requestSubmit(); // Use requestSubmit() for modern behavior
@@ -7,7 +8,7 @@ export default function LogoutButton() {
     return (
         <main>
             {/* Hidden logout form */}
-            <form id="logoutForm" method="post" action="http://localhost:8080/logout">
+            <form id="logoutForm" method="post" action={"https://" + domain + ":8430/logout"}>
                 {/* No content needed, just a form to be submitted */}
             </form>
 
