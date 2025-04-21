@@ -102,7 +102,7 @@ public class SecurityConfiguration {
                             response.addCookie(jwtCookie);
                         })
                         .logoutSuccessHandler((request, response, authentication) -> {
-                            response.sendRedirect("https://dev-32534403.okta.com/login/signout?fromURI=https://localhost:8430/logged-out.html");
+                            response.sendRedirect("https://dev-32534403.okta.com/login/signout");
                         })
 
 
