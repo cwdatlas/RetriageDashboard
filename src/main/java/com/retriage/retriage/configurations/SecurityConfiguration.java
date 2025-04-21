@@ -80,7 +80,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers("/active_event").permitAll()
-                        .requestMatchers("/logged-out.html", "favicon.ico","/api/debug/cookies").permitAll()
+                        .requestMatchers( "favicon.ico","/api/debug/cookies").permitAll()
                         .requestMatchers("/index.html").authenticated()
                         .anyRequest().authenticated() // All other endpoints require authentication
                 )
