@@ -119,7 +119,7 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
     private Cookie createCookie(String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");                       // Allow cookie access across all paths
-        cookie.setDomain(domain);             // Domain for which the cookie is valid //TODO: (change in production)
+        cookie.setDomain(domain);             // Domain for which the cookie is valid
         cookie.setHttpOnly(true);                  // Prevent JavaScript access (XSS protection)
         cookie.setSecure(true);                    // Transmit only over HTTPS
         cookie.setMaxAge(60 * 60);                 // Set expiration time to 1 hour
