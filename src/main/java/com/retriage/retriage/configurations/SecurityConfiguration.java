@@ -86,7 +86,8 @@ public class SecurityConfiguration {
                 .logout(logout -> logout
 
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-                        .logoutSuccessUrl("/index.html") // Redirect here after logout                        .invalidateHttpSession(true) // Clear session
+                        .logoutSuccessUrl("/index.html") // Redirect here after logout
+                        .invalidateHttpSession(true) // Clear session
                         .clearAuthentication(true) // Clear auth context
                         .deleteCookies("JSESSIONID", "token", "firstname", "lastname", "email") // Clear session cookie
                 )
@@ -95,7 +96,7 @@ public class SecurityConfiguration {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny) // Clickjacking protection
                         .contentTypeOptions(withDefaults()) // Prevent MIME sniffing
                         .referrerPolicy(referrer -> referrer
-                                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)) // Hide reefer
+                        .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)) // Hide reefer
                 );
 
 
