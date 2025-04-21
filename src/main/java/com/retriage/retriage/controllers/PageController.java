@@ -14,6 +14,7 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -30,8 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @CrossOrigin
 public class PageController {
     private static final Logger logger = LoggerFactory.getLogger(PageController.class);
+    private final JwtUtil jwtUtil;
 
-    PageController() {
+    PageController(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -52,12 +55,18 @@ public class PageController {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("token".equals(cookie.getName())) {
-                    logger.info("oktaLogin - Token cookie already exists. Redirecting to /index.html");
-                    return ResponseEntity.status(HttpStatus.FOUND)
-                            .header("Location", "/index.html")
-                            .build();
+                    String token = cookie.getValue();
+                    if (token != null && !token.isBlank() && jwtUtil.validateToken(token)) {
+                        logger.info("oktaLogin - Valid JWT cookie found. Redirecting to /index.html");
+                        return ResponseEntity.status(HttpStatus.FOUND)
+                                .header("Location", "/index.html")
+                                .build();
+                    } else {
+                        logger.info("oktaLogin - Invalid or empty JWT token. Proceeding without redirect.");
+                    }
                 }
             }
+
         }
 
         // If the token cookie is missing, there's nothing to do, so redirect anyway
