@@ -25,24 +25,27 @@ import java.util.stream.Collectors;
  * This class is responsible for handling exceptions that occur across all controllers.
  * It provides a consistent way to manage errors and return meaningful responses to the user,
  * improving error handling and the overall robustness of the application.
- * Currently, it specifically handles {@link MethodArgumentNotValidException} for validation failures.
+ * Currently, it specifically handles {@link MethodArgumentNotValidException} for validation failures,
+ * {@link MaxUploadSizeExceededException} for file upload limits, {@link AccessDeniedException} for authorization issues,
+ * and a generic {@link Exception} fallback for any other unhandled exceptions.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Logger for this exception handler.
+     */
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Handles any unhandled `Exception` that occurs within the application.
-     * This method catches all types of exceptions and returns a standardized
-     * `ErrorResponse` with an HTTP status of 500 (Internal Server Error).
+     * This method serves as a fallback for exceptions not specifically handled by other methods.
+     * It logs the exception and returns a standardized `ErrorResponse` with an HTTP status of 500 (Internal Server Error).
      *
-     * @param ex The `WebRequest` providing context about the current
-     *           HTTP request, used here to obtain the request URI.
-     * @return A `ResponseEntity` containing the `ErrorResponse` object and an
-     * HTTP status code of 500. The `ErrorResponse` includes the
-     * timestamp of the error, the HTTP status code and reason phrase,
-     * the exception message, and the request URI.
+     * @param ex The uncaught `Exception`.
+     * @return A `ResponseEntity` containing a map representing the error details and an
+     * HTTP status code of 500. The map includes a timestamp, status code, error message,
+     * and the exception's message.
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
@@ -63,14 +66,12 @@ public class GlobalExceptionHandler {
      * <p>
      * This method is invoked when data sent in the request body (e.g., using {@code @RequestBody} with {@code @Valid})
      * does not meet the validation rules defined in the associated class (like {@link PatientForm}).
-     * It extracts all the validation error messages from the exception and returns them in a structured response.
+     * It logs the validation errors and returns a standardized error response with an HTTP status of 400 (Bad Request).
      *
      * @param ex The {@link MethodArgumentNotValidException} that was thrown due to validation failure.
-     * @return ResponseEntity<List < String>> Returns a '400 Bad Request' response.
-     * The response body contains a list of error messages,
-     * each describing a specific validation failure.
-     * This list is intended to provide detailed feedback to the client
-     * about what parts of their request were invalid.
+     * @return A {@link ResponseEntity} containing a map representing the error details and an
+     * HTTP status code of 400. The map includes a timestamp, status code, a generic validation error message,
+     * and the exception's message. Specific field errors are logged internally.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST) // Sets HTTP status to 400
@@ -94,7 +95,13 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle file size exceeded exceptions
+     * Handles exceptions thrown when an uploaded file exceeds the configured maximum size limit.
+     * Returns a standardized error response with an HTTP status of 400 (Bad Request).
+     *
+     * @param ex The {@link MaxUploadSizeExceededException} that was thrown.
+     * @return A {@link ResponseEntity} containing a map representing the error details and an
+     * HTTP status code of 400. The map includes a timestamp, status code, an error type,
+     * and a user-friendly message about the file size limit.
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Map<String, Object>> handleFileSizeException(MaxUploadSizeExceededException ex) {
@@ -111,7 +118,13 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle access denied exceptions
+     * Handles exceptions indicating that a user does not have sufficient permissions to access a resource.
+     * Returns a standardized error response with an HTTP status of 403 (Forbidden).
+     *
+     * @param ex The {@link AccessDeniedException} that was thrown.
+     * @return A {@link ResponseEntity} containing an {@link ErrorResponse} object and an
+     * HTTP status code of 403. The error response includes a list of errors,
+     * the status code, and a specific error code ("ACCESS_PERM._DENIED").
      */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
