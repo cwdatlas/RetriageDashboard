@@ -17,15 +17,37 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * WebSocket controller for handling real-time updates related to {@link Event} objects.
+ * Receives event updates from clients and broadcasts the latest active event status
+ * to subscribed clients.
+ */
 @Controller
 public class EventWebSocketController {
     private static final Logger logger = LoggerFactory.getLogger(EventWebSocketController.class);
     private final EventService eventService;
 
+    /**
+     * Constructs an instance of {@code EventWebSocketController}.
+     *
+     * @param eventService The service for managing events.
+     */
     EventWebSocketController(EventService eventService) {
         this.eventService = eventService;
     }
 
+    /**
+     * Handles incoming WebSocket messages to update an event.
+     * Expects an {@link EventForm} containing the updated event details.
+     * Processes the update, checks for conflicts with other running events,
+     * updates the event status (including resetting if changing from Ended to Running),
+     * and broadcasts the currently active event to the {@code /topic/event_updates} destination.
+     *
+     * @param eventForm The form containing the updated event data sent via WebSocket.
+     * @return A {@link ResponseWrapper} containing the updated active {@link Event}
+     * and a status message, or an error response if the update fails or
+     * a conflict occurs (e.g., trying to start an event when another is already running).
+     */
     @Transactional
     @MessageMapping("/update")
     @SendTo("/topic/event_updates")

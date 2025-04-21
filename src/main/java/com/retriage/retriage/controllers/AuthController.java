@@ -12,21 +12,36 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * REST controller for handling authentication-related requests.
+ * This class provides endpoints for user login and potentially other authentication flows,
+ * utilizing JWT for managing user sessions.
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
     private final JwtUtil jwtUtil;
 
+    /**
+     * Constructs an instance of {@code AuthController}.
+     *
+     * @param jwtUtil The utility class for handling JSON Web Tokens.
+     */
     public AuthController(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
     /**
      * Handles user login and generates a JWT token upon successful authentication.
+     * It expects an authentication request body containing a token (presumably from an external
+     * identity provider like Okta). It extracts roles from the token and, if successful,
+     * redirects the user to the index page. If no roles are found, it returns a bad request response.
      *
-     * @param authRequest Contains the username and password (or other authentication details).
-     * @return ResponseEntity containing the JWT token in the AuthResponse object.
+     * @param authRequest Contains the token received from the identity provider.
+     * @return A {@link ResponseEntity} indicating the result of the authentication attempt.
+     * Returns HTTP 303 (See Other) with a Location header on success,
+     * or HTTP 400 (Bad Request) with an {@link ErrorResponse} body if roles are missing.
      */
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody AuthRequest authRequest) {
@@ -42,7 +57,7 @@ public class AuthController {
             );
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntity.status(HttpStatus.FOUND)
+        return ResponseEntity.status(HttpStatus.FOUND) // Using FOUND (302) or SEE OTHER (303) for redirect after POST
                 .header("Location", "/index.html")
                 .build();
     }
