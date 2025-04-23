@@ -19,7 +19,6 @@ import java.util.List;
 @Validated // Enables method validation based on JSR 303/349/380 annotations
 public class UserServiceImp implements UserService {
 
-    // Add Logger for keeping track of any errors
     /**
      * Logger for this service implementation.
      */
