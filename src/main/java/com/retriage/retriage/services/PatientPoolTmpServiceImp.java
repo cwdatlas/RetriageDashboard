@@ -130,7 +130,7 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
             logger.warn("validatePoolTmp - Process time is null or negative.");
             throw new IllegalArgumentException("Process time must be a non-negative value.");
         }
-        if (pool.getPoolNumber() < 1) {
+        if (pool.getPoolNumber() < 0) {
             logger.warn("validatePoolTmp - Pool number is less than 1.");
             throw new IllegalArgumentException("Pool number must be at least 1.");
         }
