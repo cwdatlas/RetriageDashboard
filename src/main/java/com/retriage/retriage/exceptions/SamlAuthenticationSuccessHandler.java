@@ -96,6 +96,14 @@ public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
         String jwt = jwtUtil.generateToken(email, List.of(userRole.name()));
 
         response.addCookie(createCookie("token", jwt));
+        Cookie cookie = new Cookie("domain", domain);
+        cookie.setPath("/");
+        cookie.setDomain(domain);
+        cookie.setHttpOnly(false);
+        cookie.setSecure(true);
+        cookie.setMaxAge(60*60*24);
+        cookie.setAttribute("SameSite", "None");
+        response.addCookie(cookie);
 
         logger.info("SAML success - Cookies set for {}", email);
         response.sendRedirect("/index.html");

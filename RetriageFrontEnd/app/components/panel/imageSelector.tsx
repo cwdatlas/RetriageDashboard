@@ -8,7 +8,11 @@ const imageFiles = [
     "medFloor.png",
     "OR.png",
     "peds.png",
-    "surgical.png"
+    "surgical.png",
+    "helicopter.png",
+    "xray.png",
+    "mri.png",
+    "ct.png"
 ];
 
 export default function ImageSelector({icon, setIcon}: { icon: string; setIcon: (icon: string) => void }) {

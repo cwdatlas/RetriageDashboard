@@ -1,11 +1,16 @@
 import {UserDto} from "@/app/models/userDto";
+import Cookies from "js-cookie";
 
 export const dynamic = 'force-static'
 
-const domain = process.env.DOMAIN || 'localhost'
-const API_BASE_URL = "https://" + domain + ":8430";
+let API_BASE_URL = ""
 const endpoint = "/api/users"
 
+// Helper to resolve the domain safely
+function GetDomain(): void {
+    const domain = Cookies.get("domain") || "localhost"
+    API_BASE_URL = "https://" + domain;
+}
 /**
  * Optionally, get a single user by ID
  */
@@ -13,6 +18,7 @@ export async function getUserByToken(
     setUser: (user: UserDto) => void,
     setError: (error: string) => void
 ): Promise<void> {
+    GetDomain()
     try {
         const res = await fetch(`${API_BASE_URL}` + `${endpoint}` + `/me`, {
             method: "GET",

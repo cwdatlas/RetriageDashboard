@@ -18,7 +18,6 @@ export default function EventVisualization({getActiveEvent}: { getActiveEvent: (
 
     function handleDragStart(event: DragStartEvent) {
         console.log("start", event.active.id);
-        // Find the patient from all pools matching the active id.
         const active = getActiveEvent().pools
             .flatMap(pool => pool.patients)
             .find(patient => patient.id === event.active.id);
@@ -36,19 +35,15 @@ export default function EventVisualization({getActiveEvent}: { getActiveEvent: (
             const overPool = getActiveEvent().pools.find(pool => pool.id === over.id);
             const originPool = getActiveEvent().pools.find(pool => pool.id === originPoolId);
             if (overPool && originPool) {
-                const patient = originPool.patients.find(patient => patient.id === event.active.id);
+                const patient = originPool.patients.find(p => p.id === event.active.id);
                 if (!patient) {
                     setError("Patient not found");
                     return;
                 }
-
-                // Prevent moving from a Floor.
                 if (originPool.poolType === PoolType.Floor) {
                     setError("Cannot move patients from a floor.");
                     return;
                 }
-
-                // Prevent moving a patient that is currently being processed in a MedService.
                 if (
                     originPool.poolType === PoolType.MedService &&
                     originPool.patients.length > 0 &&
@@ -58,41 +53,32 @@ export default function EventVisualization({getActiveEvent}: { getActiveEvent: (
                     setError("Cannot move a patient that is currently being processed at a service.");
                     return;
                 }
-                // Remove patient from origin pool and add to destination pool.
                 if (overPool.patients.length === overPool.queueSize) {
                     setError("The maximum number of patients are already assigned.");
                 } else {
-                    // Remove the patient from the origin pool.
-                    const index = originPool.patients.findIndex(storedPatient => storedPatient.id === patient.id);
+                    const index = originPool.patients.findIndex(sp => sp.id === patient.id);
                     if (index !== -1) {
                         originPool.patients.splice(index, 1);
-                        if (originPool.poolType == PoolType.MedService && index == 0)
+                        if (originPool.poolType === PoolType.MedService && index === 0) {
                             overPool.startedProcessingAt = Date.now();
+                        }
                     } else {
                         setError("Patient not found");
                         return;
                     }
-
-                    // Mark patient as not processed
                     patient.processed = false;
-
-                    // update the origin pool's startedProcessingAt.
-                    if (originPool.poolType === PoolType.MedService &&
-                        index == 0 && originPool.patients.length > 0) {
+                    if (originPool.poolType === PoolType.MedService && index === 0 && originPool.patients.length > 0) {
                         originPool.startedProcessingAt = Date.now();
                     }
-                    // Add patient to the destination pool.
                     overPool.patients.push(patient);
-
-                    // For MedService pools, if after adding the patient becomes the first one and is not processed,
-                    // update the destination pool's startedProcessingAt.
-                    if (overPool.poolType === PoolType.MedService &&
+                    if (
+                        overPool.poolType === PoolType.MedService &&
                         overPool.patients.length > 0 &&
                         overPool.patients[0].id === patient.id &&
-                        !patient.processed) {
+                        !patient.processed
+                    ) {
                         overPool.startedProcessingAt = Date.now();
                     }
-
                     sendEvent(getActiveEvent());
                 }
             } else {
@@ -105,11 +91,8 @@ export default function EventVisualization({getActiveEvent}: { getActiveEvent: (
     function handleDragOver(event: DragOverEvent) {
         console.log("over", event.active.id);
         if (!originPoolId && event.over) {
-            if (typeof event.over.id === "string") {
-                setOriginPoolIdId(parseInt(event.over.id));
-            } else {
-                setOriginPoolIdId(event.over.id);
-            }
+            const id = typeof event.over.id === "string" ? parseInt(event.over.id) : event.over.id;
+            setOriginPoolIdId(id);
         }
     }
 
@@ -117,35 +100,37 @@ export default function EventVisualization({getActiveEvent}: { getActiveEvent: (
         <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart} onDragOver={handleDragOver}>
             <h2>{event.name}</h2>
             <ErrorMessage errorMessage={error}/>
-            <div className="row">
-                {/* First Column: Bay Panels */}
-                <div className="col">
-                    {event.pools.map((template, idx) =>
-                        template.poolType === PoolType.Bay ? (
-                            <div key={idx}>
-                                <BayPanel bay={template} getActiveEvent={getActiveEvent}/>
-                            </div>
-                        ) : null
-                    )}
+            <div className="container-fluid">
+                <div className="row">
+                    {/* First Column: Bay Panels */}
+                    <div className="col-4">
+                        {event.pools.map((template, idx) =>
+                            template.poolType === PoolType.Bay ? (
+                                <div key={idx} className="mb-3">
+                                    <BayPanel bay={template} getActiveEvent={getActiveEvent}/>
+                                </div>
+                            ) : null
+                        )}
+                    </div>
+                    {/* Second Column: MedService Panels */}
+                    <div className="col-8">
+                        <div className="row row-cols-4 g-2">
+                            {event.pools.map((template, idx) =>
+                                template.poolType === PoolType.MedService ? (
+                                    <div key={idx} className="col">
+                                        <MedServicePanel service={template} getActiveEvent={getActiveEvent}/>
+                                    </div>
+                                ) : null
+                            )}
+                        </div>
+                    </div>
                 </div>
-                {/* Second Column: MedService Panels */}
-                <div className="col">
-                    {event.pools.map((template, idx) =>
-                        template.poolType === PoolType.MedService ? (
-                            <div key={idx}>
-                                <MedServicePanel service={template} getActiveEvent={getActiveEvent}/>
-                            </div>
-                        ) : null
-                    )}
-                </div>
-                {/* Horizontal separator */}
-                <div className="row content-center">Floors</div>
+                <div className="row content-center mt-4">Floors</div>
                 <hr/>
-                {/* Third Section: Floor Panels in three columns */}
                 <div className="row row-cols-3">
                     {event.pools.map((template, idx) =>
                         template.poolType === PoolType.Floor ? (
-                            <div key={idx} className="col">
+                            <div key={idx} className="col mb-3">
                                 <FloorPanel floor={template} getActiveEvent={getActiveEvent}/>
                             </div>
                         ) : null
@@ -156,7 +141,7 @@ export default function EventVisualization({getActiveEvent}: { getActiveEvent: (
                 {activePatient ? (
                     <PatientIcon
                         patient={activePatient}
-                        patientList={[]} // this overlay doesn't need the full list
+                        patientList={[]}
                         getActiveEvent={getActiveEvent}
                     />
                 ) : null}

@@ -1,13 +1,20 @@
 import {Event} from "./../models/event";
 import {EventTmp} from "@/app/models/eventTmp";
+import Cookies from "js-cookie";
 
 export const dynamic = 'force-static'
-
-const domain = process.env.DOMAIN || 'localhost'
-const API_BASE_URL = "https://" + domain + ":8430";
+let API_BASE_URL = "";
 const ENDPOINT = "/api/events"
 
+// Helper to resolve the domain safely
+function GetDomain(): void {
+    const domain = Cookies.get("domain") || "localhost"
+    API_BASE_URL = "https://" + domain;
+}
+
+
 export async function getAllEvents(): Promise<Event[]> {
+    GetDomain()
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "GET",
         headers: {
@@ -24,6 +31,7 @@ export async function getAllEvents(): Promise<Event[]> {
  * Create a new event
  */
 export async function createEvent(event: EventTmp): Promise<EventTmp> {
+    GetDomain()
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "POST",
         headers: {
@@ -42,6 +50,7 @@ export async function createEvent(event: EventTmp): Promise<EventTmp> {
  * Optionally, delete a event
  */
 export async function deleteEvent(id: number, setError: (error: string) => void): Promise<void> {
+    GetDomain()
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT + "/" + `${id}`, {
         method: "DELETE",
     });
@@ -52,6 +61,7 @@ export async function deleteEvent(id: number, setError: (error: string) => void)
 }
 
 export async function getActiveEvent(setEvent: (event: Event | null) => void, setError: (error: string) => void): Promise<void> {
+    GetDomain()
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT + "/active", {
         method: "GET",
         headers: {

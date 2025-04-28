@@ -1,14 +1,21 @@
+import Cookies from "js-cookie";
+
 export const dynamic = 'force-static'
 import {PatientPoolTmp} from "../models/patientPoolTmp";
 
-const domain = process.env.DOMAIN || 'localhost'
-const API_BASE_URL = "https://" + domain + ":8430";
+let API_BASE_URL = ""
 const ENDPOINT = "/api/pools/templates"
 
+// Helper to resolve the domain safely
+function GetDomain(): void {
+    const domain = Cookies.get("domain") || "localhost"
+    API_BASE_URL = "https://" + domain;
+}
 /**
  * Fetch all pools from the backend
  */
 export async function getAllPoolTemplates(): Promise<PatientPoolTmp[]> {
+    GetDomain()
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "GET",
         headers: {
@@ -26,6 +33,7 @@ export async function getAllPoolTemplates(): Promise<PatientPoolTmp[]> {
  * Create a new pool
  */
 export async function createPoolTemplate(pool: PatientPoolTmp): Promise<PatientPoolTmp> {
+    GetDomain()
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT, {
         method: "POST",
         headers: {
@@ -45,6 +53,7 @@ export async function createPoolTemplate(pool: PatientPoolTmp): Promise<PatientP
  * Optionally, delete a event
  */
 export async function deletePoolTemplate(id: number, setError: (error: string) => void): Promise<void> {
+    GetDomain()
     const res = await fetch(`${API_BASE_URL}` + ENDPOINT + "/" + `${id}`, {
         method: "DELETE",
     });

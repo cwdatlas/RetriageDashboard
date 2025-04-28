@@ -2,16 +2,22 @@ import {useEffect} from 'react';
 import {Event} from "@/app/models/event";
 import {Client, IMessage} from "@stomp/stompjs";
 import {ResponseWrapper} from "@/app/models/responseWrapper";
+import Cookies from "js-cookie";
 
-const domain = process.env.DOMAIN || 'localhost'
-const API_BASE_URL = "https://" + domain + ":8430";
+let API_BASE_URL = ""
 const ENDPOINT = "/active_event";
 const UPDATE_EVENT = "/ws/update";
 const TOPIC = "/topic/event_updates";
 let client: Client;
 
-export function useConnectEventWebSocket(setActiveEvent: (event: Event | null) => void, setError: (error: string) => void): void {
+// Helper to resolve the domain safely
+function GetDomain(): void {
+    const domain = Cookies.get("domain") || "localhost"
+    API_BASE_URL = "https://" + domain;
+}
 
+export function useConnectEventWebSocket(setActiveEvent: (event: Event | null) => void, setError: (error: string) => void): void {
+    GetDomain()
     useEffect(() => {
         // Create the STOMP client
         const stompClient = new Client({
