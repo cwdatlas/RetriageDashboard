@@ -1,10 +1,14 @@
 package com.retriage.retriage.configurations;
 
 import com.retriage.retriage.exceptions.SamlAuthenticationSuccessHandler;
+import jakarta.servlet.http.Cookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
@@ -24,7 +28,6 @@ import java.util.Set;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-
 /**
  * SecurityConfiguration
  * <br></br>
@@ -38,6 +41,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfiguration {
     private final SamlAuthenticationSuccessHandler samlAuthenticationSuccessHandler;
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     /**
      * Constructor to inject the custom SAML authentication success handler.
@@ -74,6 +78,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/topic/**").permitAll()
                         .requestMatchers("/active_event").permitAll()
+                        .requestMatchers( "favicon.ico","/api/debug/cookies").permitAll()
+                        .requestMatchers("/index.html").authenticated()
                         .anyRequest().authenticated() // All other endpoints require authentication
                 )
                 // Login Settings
@@ -82,13 +88,22 @@ public class SecurityConfiguration {
                         .successHandler(samlAuthenticationSuccessHandler) // Sets JWT after successful login
                 )
                 // Logout Settings
-                .saml2Logout(withDefaults()) // Enable default SAML logout handling
+                .saml2Logout(Customizer.withDefaults()) // Enable default SAML logout handling
                 .logout(logout -> logout
-
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-                        .logoutSuccessUrl("/index.html") // Redirect here after logout                        .invalidateHttpSession(true) // Clear session
-                        .clearAuthentication(true) // Clear auth context
-                        .deleteCookies("JSESSIONID", "token", "firstname", "lastname", "email") // Clear session cookie
+                        .addLogoutHandler((request, response, authentication) -> {
+                            Cookie jwtCookie = new Cookie("token", null);
+                            jwtCookie.setPath("/");
+                            jwtCookie.setHttpOnly(true);
+                            jwtCookie.setSecure(false); // ✅ for localhost
+                            jwtCookie.setMaxAge(0);
+                            response.addCookie(jwtCookie);
+                        })
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.sendRedirect("https://dev-32534403.okta.com/login/signout");
+                        })
+
+
                 )
                 // Security Headers
                 .headers(headers -> headers

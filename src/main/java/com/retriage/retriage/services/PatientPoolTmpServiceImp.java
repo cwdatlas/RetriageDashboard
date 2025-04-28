@@ -10,27 +10,38 @@ import java.util.List;
 import java.util.Optional;
 
 
+/**
+ * Implementation of the {@link PatientPoolTmpService} interface.
+ * Provides the concrete business logic for managing {@link PatientPoolTmp} entities,
+ * interacting with the database via {@link PatientPoolTmpRepo}.
+ */
 @Service
 public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
 
+    /**
+     * Logger for this service implementation.
+     */
     private static final Logger logger = LoggerFactory.getLogger(PatientPoolTmpServiceImp.class);
+    /**
+     * Repository for accessing and managing PatientPoolTmp entities in the database.
+     */
     private final PatientPoolTmpRepo poolTemplateRepository;
 
     /**
-     * PatientPoolTmpServiceImp
+     * Constructs an instance of {@code PatientPoolTmpServiceImp}.
      *
-     * @param poolTemplateRepository Repository declared in PatientPoolTmpServiceImp
+     * @param poolTemplateRepository The {@link PatientPoolTmpRepo} used for database operations on patient pool templates.
      */
     public PatientPoolTmpServiceImp(PatientPoolTmpRepo poolTemplateRepository) {
         this.poolTemplateRepository = poolTemplateRepository;
     }
 
     /**
-     * savePoolTmp
-     * Saves/updates any pool, after first checking if it's not null
+     * Saves a patient pool template (Create/Update) in the database.
+     * Performs validation before saving.
      *
-     * @param pool the pool you're trying to save
-     * @return True if the pool is not null
+     * @param pool The patient pool template to save.
+     * @return true if the patient pool template is saved successfully, false otherwise (e.g., validation failure).
      */
     @Override
     public boolean savePoolTmp(PatientPoolTmp pool) {
@@ -53,10 +64,9 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
     }
 
     /**
-     * findAllPoolTmp
-     * Find and pull every pool
+     * Retrieves all existing patient pool templates from the database.
      *
-     * @return Every pool
+     * @return List of all patient pool templates. Returns an empty list if no templates exist.
      */
     @Override
     public List<PatientPoolTmp> findAllPoolTmp() {
@@ -66,11 +76,10 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
     }
 
     /**
-     * findPoolTmpById
-     * Find a specific pool with a given ID
+     * Finds a specific patient pool template by its unique ID.
      *
-     * @param id The ID of the pool to look for
-     * @return The pool you're looking for
+     * @param id The ID of the patient pool template to look for.
+     * @return The patient pool template if found, otherwise {@code null}.
      */
     @Override
     public PatientPoolTmp findPoolTmpById(Long id) {
@@ -86,10 +95,10 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
     }
 
     /**
-     * deletePoolTmpById
-     * Deletes a specified pool
+     * Deletes a specified patient pool template by its ID.
+     * Checks if the template exists before attempting deletion.
      *
-     * @param id The ID of the pool to be deleted
+     * @param id The ID of the patient pool template to be deleted.
      */
     @Override
     public void deletePoolTmpById(Long id) {
@@ -102,11 +111,11 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
     }
 
     /**
-     * validatePoolTmp
-     * Validates a PatientPoolTmp object before saving.
+     * Validates a PatientPoolTmp object before saving or updating.
+     * Checks for null object and null/empty name.
      *
      * @param pool The PatientPoolTmp object to validate.
-     * @throws IllegalArgumentException if the pool is invalid.
+     * @throws IllegalArgumentException if the pool is invalid (e.g., null object or null/empty name).
      */
     private void validatePoolTmp(PatientPoolTmp pool) {
         if (pool == null) {
@@ -116,6 +125,14 @@ public class PatientPoolTmpServiceImp implements PatientPoolTmpService {
         if (pool.getName() == null || pool.getName().trim().isEmpty()) {
             logger.warn("validatePoolTmp - PatientPoolTmp name is null or empty.");
             throw new IllegalArgumentException("PatientPoolTmp name cannot be null or empty.");
+        }
+        if (pool.getProcessTime() == null || pool.getProcessTime() < 0) {
+            logger.warn("validatePoolTmp - Process time is null or negative.");
+            throw new IllegalArgumentException("Process time must be a non-negative value.");
+        }
+        if (pool.getPoolNumber() < 0) {
+            logger.warn("validatePoolTmp - Pool number is less than 1.");
+            throw new IllegalArgumentException("Pool number must be at least 1.");
         }
     }
 }

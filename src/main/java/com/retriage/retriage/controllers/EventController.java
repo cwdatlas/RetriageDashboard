@@ -24,6 +24,12 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * REST controller for managing {@link Event} resources.
+ * Provides API endpoints for creating, retrieving, and deleting events,
+ * including managing their associated patient pools.
+ * Handles cross-origin requests via {@link CrossOrigin}.
+ */
 @RestController
 @CrossOrigin
 @RequestMapping("/api/events")
@@ -33,7 +39,10 @@ public class EventController {
     private final UserService userService;
 
     /**
-     * Constructor injection of the service
+     * Constructs an instance of {@code EventController}.
+     *
+     * @param eventService The service for managing events.
+     * @param userService  The service for managing users.
      */
     public EventController(EventService eventService, UserService userService) {
         this.eventService = eventService;
@@ -42,8 +51,16 @@ public class EventController {
 
     /**
      * createEvent
-     * Creates a new Event with the given form data
-     * Only accessible to users with the 'Director' role
+     * Creates a new Event with the given form data.
+     * Validates the provided {@link EventTmpForm}, creates {@link PatientPool} objects based on
+     * the template data, and saves the new {@link Event}.
+     * Only accessible to users with the 'Director' role.
+     *
+     * @param eventform The form containing the event and patient pool template data.
+     * @return A {@link ResponseEntity} indicating the result of the creation.
+     * Returns HTTP 201 (Created) with a {@link SuccessResponse} on success,
+     * or HTTP 400 (Bad Request) with an {@link ErrorResponse} if validation fails,
+     * or HTTP 500 (Internal Server Error) with an {@link ErrorResponse} if saving fails.
      */
     @PostMapping(consumes = "application/json", produces = "application/json")
     @PreAuthorize("hasRole('Director')") //Restricts to Director roles only
@@ -98,7 +115,8 @@ public class EventController {
             boolean saved = eventService.saveEvent(newEvent);
             if (saved) {
                 logger.info("createEvent - Event saved successfully with ID: {}", newEvent.getId());
-                return ResponseEntity.created(URI.create("/events/")).body(new SuccessResponse("Successfully saved event", newEvent.getId()));
+                // Assuming the URI for a created event would be /api/events/{id}
+                return ResponseEntity.created(URI.create("/api/events/" + newEvent.getId())).body(new SuccessResponse("Successfully saved event", newEvent.getId()));
             } else {
                 logger.error("createEvent - Unknown error occurred while saving event");
                 ErrorResponse errorResponse = new ErrorResponse(List.of("Unknown error saving event."), HttpStatus.INTERNAL_SERVER_ERROR.value(), "SAVE_FAILED");
@@ -113,6 +131,12 @@ public class EventController {
 
     /**
      * findEventByID
+     * Retrieves an {@link Event} by its unique identifier.
+     * Only accessible to users with 'Director' or 'Nurse' roles.
+     *
+     * @param id The ID associated to the event you are looking for.
+     * @return A {@link ResponseEntity} containing the {@link Event} object if found,
+     * or HTTP 404 (Not Found) with an {@link ErrorResponse} if not found.
      */
     @GetMapping(value = "/{id}", produces = "application/json")
     @PreAuthorize("hasAnyRole('Director', 'Nurse')") // Restricts to Director and Nurse roles only
@@ -129,9 +153,11 @@ public class EventController {
 
     /**
      * getAllEvents
-     * Returns every previously created Event
+     * Returns every previously created Event.
+     * Accessible to all authenticated users (implied by the absence of {@code @PreAuthorize} and controller-level security).
      *
-     * @return The list of every event
+     * @return A {@link ResponseEntity} containing a list of all {@link Event} objects,
+     * or an empty list if none exist, with HTTP 200 (OK).
      */
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getAllEvents() {
@@ -139,6 +165,13 @@ public class EventController {
         return new ResponseEntity<>(events, HttpStatus.OK); // Returning 200 OK with the list of events
     }
 
+    /**
+     * Retrieves the currently active {@link Event}.
+     * The definition of "active" is determined by the {@link EventService}.
+     *
+     * @return A {@link ResponseEntity} containing the active {@link Event} object if found,
+     * or HTTP 404 (Not Found) if no active event exists.
+     */
     @Transactional
     @GetMapping(value = "/active", produces = "application/json")
     public ResponseEntity<Event> getActiveEvent() {
@@ -152,10 +185,14 @@ public class EventController {
 
     /**
      * deleteEvent
-     * Deletes a specified Event by first finding the passed ID, then deleting it
+     * Deletes a specified Event by its ID.
+     * Only accessible to users with the 'Director' role.
      *
-     * @param id The ID associated to the event you are looking for
-     * @return Returns a confirmation that the event was deleted
+     * @param id The ID associated to the event you are looking for.
+     * @return A {@link ResponseEntity} indicating the result of the deletion.
+     * Returns HTTP 200 (OK) on successful deletion,
+     * HTTP 404 (Not Found) if the event does not exist,
+     * or HTTP 500 (Internal Server Error) if deletion fails after finding the event.
      */
     @DeleteMapping(value = "/{id}", produces = "application/json")
     @PreAuthorize("hasRole('Director')") // Restricts to Director Roles only
@@ -165,6 +202,7 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         eventService.deleteEventById(id);
+        // Verify deletion
         if (eventService.findEventById(id) != null) {
             logger.info("deleteEvent - Event failed to delete with id: {}", id);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -173,5 +211,4 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
-
 }

@@ -7,11 +7,17 @@ import java.util.List;
  * Used to send authentication details back to the client after successful login.
  */
 public class AuthResponse {
+    /**
+     * The JSON Web Token (JWT) generated upon successful authentication.
+     */
     private final String token; // JWT authentication token.
+    /**
+     * A list of roles or authorities granted to the authenticated user.
+     */
     private final List<String> roles; // List of user roles associated with the token.
 
     /**
-     * Constructor for AuthResponse.
+     * Constructs a new {@code AuthResponse}.
      *
      * @param token The JWT authentication token.
      * @param roles The list of user roles associated with the token.
