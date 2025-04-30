@@ -17,14 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * PageController.java
- * <br></br>
  * Controller for handling requests to the home page after successful SAML authentication.
  * This controller is responsible for displaying user information retrieved from the
  * {@link Saml2AuthenticatedPrincipal} after the user has been authenticated via SAML.
  * Also handles redirects to other static pages like event and event creation pages.
  *
- * @Author: John Botonakis
- * @Author: With help provided by Matt Raible (<a href="https://developer.okta.com/blog/2022/08/05/spring-boot-saml">...</a>)
+ * @author John Botonakis
+ * @author With help provided by Matt Raible (<a href="https://developer.okta.com/blog/2022/08/05/spring-boot-saml">...</a>)
  */
 @Controller
 @CrossOrigin

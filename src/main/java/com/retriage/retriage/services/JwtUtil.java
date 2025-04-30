@@ -14,12 +14,11 @@ import java.util.*;
 
 /**
  * JwtUtil
- * <br><br>
  * Utility class for generating, validating, and parsing JSON Web Tokens (JWT).
  * Uses HS256 symmetric signing and stores roles/username in token claims.
  * Provides methods for creating tokens with user details and extracting information from them.
  *
- * @Author: John Botonakis
+ * @author John Botonakis
  */
 @Service
 public class JwtUtil {

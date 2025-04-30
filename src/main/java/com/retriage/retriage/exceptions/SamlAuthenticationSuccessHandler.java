@@ -25,8 +25,8 @@ import java.util.List;
  * to process SAML attributes, create or update a local user record, generate a JWT,
  * set it as an HTTP-only cookie, and redirect the client to the application's index page.
  *
- * @Author: John Botonakis
- * @Author: With help provided by Matt Raible (<a href="https://developer.okta.com/blog/2022/08/05/spring-boot-saml">...</a>)
+ * @author John Botonakis
+ * @author With help provided by Matt Raible (<a href="https://developer.okta.com/blog/2022/08/05/spring-boot-saml">...</a>)
  */
 @Component
 public class SamlAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {

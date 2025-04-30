@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * JwtAuthenticationFilter
- * <br><br>
  * A custom Spring Security filter that intercepts incoming requests to:
  * <ul>
  * <li>Extract a JWT from the {@code Authorization} header (Bearer token) or a "token" cookie.</li>
@@ -34,7 +33,7 @@ import java.util.List;
  * </ul>
  * This filter ensures that requests requiring authentication have a valid JWT.
  *
- * @Author: John Botonakis
+ * @author John Botonakis
  */
 @Service
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

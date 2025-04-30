@@ -16,6 +16,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 public class RetriageApplication {
 
     /**
+     * Default constructor for the main RetriageApplication class.
+     * Primarily used internally by the Spring Boot framework upon startup.
+     */
+    public RetriageApplication() {
+        super();
+    }
+
+    /**
      * The main method that starts the Spring Boot application.
      *
      * @param args Command line arguments passed to the application.
