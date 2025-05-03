@@ -22,6 +22,22 @@
 
 ### Running Instructions
 
+### SSL
+SSL requires a cert in the main/resources folder.
+Create a self-signed certificate named retriage.p12 in the main/resources/keystore/ folder
+
+### Okta Integration
+There are four pieces of data that are needed before okta is set up.
+1. certificate
+2. key
+3. Audience URI
+4. Metadata URI
+
+You will get these pieces of data from your intended app in your okta dev portal.
+Make sure that the below lines have the correct file names set in application.properties. exp: local.crt or local.key
+`spring.security.saml2.relyingparty.registration.okta.signing.credentials[0].private-key-location=classpath:`
+`spring.security.saml2.relyingparty.registration.okta.signing.credentials[0].certificate-location=classpath`
+
 #### Database Creation (Container)
 #### Docker
 Open a terminal and run the following command to create a docker container:  
@@ -42,9 +58,25 @@ Build the applications jar by typing:
 `./gradlew build`
 
 Now you are ready to start the spring backend. 
-**Required Environment Variables**
-DOMAIN; example: localhost or 10.0.0.10
+
+**Default Required Environment Variables**
+DOMAIN=localhost
+KEYSTOREPASS
+AUDIENCEURI
+METADATAURI
+DATABASEPASS=secretPass
+
+Run the command below to start the application
 `java -jar /build/libs/retriage-0.0.1-SNAPSHOT.jar`
 
-Connect to localhost:8080, login and have fun.
+Connect to https://localhost, Login with a user you have created on your okta dev account.
+Users can have one of three groups:
+- Director
+- Nurse
+- Guest
+
+Give your user the Director group, so they can edit, start, stop and delete events.
+Give your user the Nurse group, so they can only create and move patients.
+Give your user the Guest group, so they can only view patients and where they are.
+
 `crtl^c` to stop application

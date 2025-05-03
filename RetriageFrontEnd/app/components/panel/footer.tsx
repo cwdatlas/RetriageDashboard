@@ -4,9 +4,6 @@ export default function Footer() {
             <div className="container p-4">
                 <div className="row">
                     <div className="col-lg-12 mb-4 mb-md-0">
-                        <h5 className="text-uppercase">Devs</h5>
-                        <p>Aidan Scott</p>
-                        <p>John Botonakis</p>
                     </div>
                 </div>
             </div>

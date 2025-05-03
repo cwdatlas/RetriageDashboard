@@ -28,22 +28,14 @@ export default function FloorPanel({ floor, getActiveEvent }: { floor: PatientPo
                 </div>
             </div>
             <div className="card-body">
-                <div className="d-flex align-items-center">
+                <div className="d-flex row row-cols">
                     {/*
             Patient icons in a horizontal scroll if many,
             each in a small container to keep them from blowing up
           */}
                     <div className="d-flex flex-row flex-nowrap overflow-auto" style={{ flex: 1 }}>
                         {floor.patients.map((patient, idx) => (
-                            <div
-                                key={idx}
-                                // A small wrapper around the PatientIcon to ensure it stays small
-                                style={{
-                                    minWidth: "80px", // or 100px, depending on your taste
-                                    maxWidth: "80px",
-                                    marginRight: "8px",
-                                }}
-                            >
+                            <div key={idx} className="col-sm-4">
                                 <PatientIcon
                                     patient={patient}
                                     patientList={floor.patients}
@@ -55,18 +47,7 @@ export default function FloorPanel({ floor, getActiveEvent }: { floor: PatientPo
 
                     {/* Floor icon container - fixed smaller size */}
                     {floor.icon && (
-                        <div
-                            className="ms-2"
-                            style={{
-                                width: "90px",
-                                height: "90px",
-                                border: "1px solid #dee2e6",
-                                borderRadius: "4px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
+                        <div className="ms-1 col-sm-3">
                             <img
                                 src={`/images/${floor.icon}`}
                                 alt={floor.name}

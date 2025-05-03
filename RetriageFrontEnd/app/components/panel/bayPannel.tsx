@@ -26,9 +26,9 @@ export default function BayPanel({bay, getActiveEvent}: { bay: PatientPool, getA
                 </div>
             </div>
             <div className="card-body">
-                <div className="row row-cols-6">
+                <div className="row row-cols">
                     {bay.patients.map((patient, idx) => (
-                        <div key={idx} className="col mb-2">
+                        <div key={idx} className="col-sm-4 mb-1">
                             <PatientIcon patient={patient} patientList={bay.patients} getActiveEvent={getActiveEvent}/>
                         </div>
                     ))}

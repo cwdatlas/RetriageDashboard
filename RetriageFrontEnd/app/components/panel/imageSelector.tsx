@@ -12,7 +12,8 @@ const imageFiles = [
     "helicopter.png",
     "xray.png",
     "mri.png",
-    "ct.png"
+    "ct.png",
+    "morgue.png"
 ];
 
 export default function ImageSelector({icon, setIcon}: { icon: string; setIcon: (icon: string) => void }) {

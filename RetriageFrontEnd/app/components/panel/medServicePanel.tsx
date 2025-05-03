@@ -92,7 +92,7 @@ export default function MedServicePanel({ service, getActiveEvent }: {
                 <div className="d-flex align-items-center">
                     {/* Patients container – here we render the patients.
               If the patient is currently processing, we add a progress bar overlay. */}
-                    <div className="d-flex align-items-center row row-cols-6">
+                    <div className="row row-cols">
                         {service.patients.map((patient, idx) => {
                             const isProcessing =
                                 currentlyProcessing &&
@@ -100,7 +100,7 @@ export default function MedServicePanel({ service, getActiveEvent }: {
                                 !patient.processed;
                             if (isProcessing) {
                                 return (
-                                    <div key={patient.id || idx} className="col mb-2" style={{ position: "relative" }}>
+                                    <div key={patient.id || idx} className="col-sm-4 mb-1" style={{ position: "relative" }}>
                                         <PatientIcon
                                             patient={patient}
                                             patientList={service.patients}
@@ -111,7 +111,7 @@ export default function MedServicePanel({ service, getActiveEvent }: {
                                 );
                             } else {
                                 return (
-                                    <div key={patient.id || idx} className="col mb-2">
+                                    <div key={patient.id || idx} className="col-sm-4 mb-1">
                                         <PatientIcon
                                             patient={patient}
                                             patientList={service.patients}
@@ -124,18 +124,7 @@ export default function MedServicePanel({ service, getActiveEvent }: {
                     </div>
                     {/* Icon container: fixed size, outlined, aligned to right */}
                     {service.icon && (
-                        <div
-                            className="ms-auto"
-                            style={{
-                                width: "90px",
-                                height: "90px",
-                                border: "1px solid #dee2e6",
-                                borderRadius: "4px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
+                        <div className="ms-auto col-sm-3">
                             <img
                                 src={`/images/${service.icon}`}
                                 alt={service.name}

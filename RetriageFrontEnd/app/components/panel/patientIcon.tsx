@@ -202,9 +202,9 @@ export default function PatientIcon({
             </div>
 
             {/* Bottom section with patient card ID */}
-            <div style={{padding: "5%"}}>
-                {error && <p>{error}</p>}
-                <p className="mb-0">{patient.cardId}</p>
+            <div className="p-2 text-center">
+                {error && <p className="text-danger small mb-1">{error}</p>}
+                <p className="mb-0 md-6 small text-nowrap">{patient.cardId}</p>
             </div>
 
             {menuVisible && renderContextMenu()}

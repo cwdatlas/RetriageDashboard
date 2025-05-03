@@ -29,7 +29,7 @@ public class Patient {
      * This field is required and must be unique across all patients.
      */
     @NotBlank(message = "Card ID cannot be blank")
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String cardId;
 
     /**
