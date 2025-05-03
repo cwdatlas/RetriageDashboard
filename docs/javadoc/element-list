@@ -1,0 +1,9 @@
+com.retriage.retriage
+com.retriage.retriage.configurations
+com.retriage.retriage.controllers
+com.retriage.retriage.enums
+com.retriage.retriage.exceptions
+com.retriage.retriage.forms
+com.retriage.retriage.models
+com.retriage.retriage.repositories
+com.retriage.retriage.services
